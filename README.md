@@ -11,10 +11,13 @@ The jScaffold can generate testing as well, see the following example.
 ```text
 DDL annotation syntax
 
---#Type[,attribute]
+--#Type[,attribute]*
 attribute := attribute_name '=' attribute_value
 attribute_name := enum (MIN, MAX, VALUES, STEP, FORMAT, VARNAME, LABEL, UITYPE, REF, GROUPLEVEL, ORDER, ITEMSPERPAGE, GROUPFUNCTION, GROUPVIEW, IGNOREVIEW, IGNOREREST, ORDERBY, AUTOGEN, DRILLDOWN)
 attribute_value := number literal, quote string literal, boolean lateral
+
+example:
+--#TIMESTAMP,format="yyyy-MM-dd HH:mm:ss",label="Created On",
 
 ```
 
@@ -64,15 +67,17 @@ javaGen.doCodeGen();
 
 ##Examples how to generate test data:
 ```text
-CodeGenConfig config = new CodeGenConfig();
-config.setBaseSrcDir(".");
-config.setBasePackageName("com.foo");
-config.setWebappContext("test");		
-config.setAppBootstrapClassName("WebAppBoostrap");
-config.setOverwriteStrategy(CodeOverwriteStrategy.OVERWRITE);
-config.setSchemaFiles("demo.ddl.sql");
-JavaCodeGen javaGen = new JavaCodeGen(config);
-javaGen.doCodeGen();		
+SQLScriptLexer lexer = new SQLScriptLexer(getClass().getResourceAsStream("/TestAngularGen.ddl.sql"));
+SQLScriptParser tokenReader = new SQLScriptParser(lexer);
+Schema schema = tokenReader.parseSql();		
+BottomUpSchemaDataGenerator sgen = new BottomUpSchemaDataGenerator(schema);
+SchemaDataConfig config = new SchemaDataConfig();
+config.setNumberOfRecords(500);
+config.setOutputType(SchemaOutputType.INSERT);
+config.setOutputUri("src/test/resources");
+//config.setDebug(true);
+sgen.setConfig(config);
+sgen.generateData();		
 ```
 
 

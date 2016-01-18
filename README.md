@@ -3,7 +3,7 @@ This is an application that scaffolds the spring framework MVC based Restful ser
 
 The front-end template is based on  SB Admin v2.0 rewritten in AngularJS (https://github.com/start-angular/sb-admin-angular); it has embedded Jetty as HTTP engine and H2 in memory database configured.
 
-The jScaffold can generate testing as well, see the following example.
+The jScaffold can generate testing data as well, see the following example.
 
 
 ## Examples

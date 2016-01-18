@@ -1,5 +1,6 @@
 package com.asksunny.schema;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,15 @@ public class Entity {
 		return null;
 	}
 
+	public boolean hasDatetimeField() {
+		for (Field fd : fields) {
+			if (fd.isDatetimeField()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean hasUniqueField() {
 
 		for (Field fd : fields) {
@@ -90,13 +100,13 @@ public class Entity {
 	}
 
 	public List<Field> getKeyFields() {
-		List<Field> refs = new ArrayList<Field>();		
+		List<Field> refs = new ArrayList<Field>();
 		if (this.fields != null) {
 			for (Field fd : this.fields) {
 				if (fd.isPrimaryKey()) {
 					refs.add(fd);
 				}
-				
+
 			}
 		}
 		return refs;

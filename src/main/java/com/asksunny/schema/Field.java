@@ -1,5 +1,6 @@
 package com.asksunny.schema;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,6 @@ public class Field {
 	String varname;
 	String label;
 	String dbTypeName;
-	
 
 	CodeGenType dataType;
 	String format;
@@ -200,6 +200,13 @@ public class Field {
 		this.container = container;
 	}
 
+	public boolean isDatetimeField() {
+		if (getJdbcType() == Types.DATE || getJdbcType() == Types.TIME || getJdbcType() == Types.TIMESTAMP) {
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 
@@ -251,7 +258,7 @@ public class Field {
 	}
 
 	public String getLabel() {
-		return label==null?getObjectname():label;
+		return label == null ? getObjectname() : label;
 	}
 
 	public void setLabel(String uiname) {
@@ -347,8 +354,6 @@ public class Field {
 		this.ignoreView = ignoreViewstr != null && ignoreViewstr.trim().equalsIgnoreCase("true");
 	}
 
-	
-
 	public boolean isAutogen() {
 		return autogen;
 	}
@@ -356,11 +361,12 @@ public class Field {
 	public void setAutogen(boolean autogen) {
 		this.autogen = autogen;
 	}
-	
+
 	public void setAutogen(String autogenstr) {
-		this.autogen =  autogenstr != null && autogenstr.trim().equalsIgnoreCase("true");;
+		this.autogen = autogenstr != null && autogenstr.trim().equalsIgnoreCase("true");
+		;
 	}
-	
+
 	public void setAnnotation(CodeGenAnnotation anno) {
 		this.setEnumValues(anno.getEnumValues());
 		this.setFormat(anno.getFormat());
@@ -386,8 +392,8 @@ public class Field {
 	public void setDrillDown(int drillDown) {
 		this.drillDown = drillDown;
 	}
-	
-	public void setDrillDown(String drillDownStr) {		
+
+	public void setDrillDown(String drillDownStr) {
 		if (drillDownStr != null && drillDownStr.matches("^\\d+$")) {
 			this.drillDown = Integer.valueOf(drillDownStr);
 		}

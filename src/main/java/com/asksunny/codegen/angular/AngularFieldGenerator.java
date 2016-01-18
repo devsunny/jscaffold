@@ -127,22 +127,22 @@ public class AngularFieldGenerator {
 			if (htmlFormInputType == HtmlFormInputType.DATETIME_LOCAL) {
 				HTML_INPUT_TYPE = "datetime_local";
 			}
-			String dtFilter = "";
+			String datePicker = "";
 			String fmt = field.getFormat();
-			if (this.field.getJdbcType() == Types.DATE || this.field.getJdbcType() == Types.TIME
-					|| this.field.getJdbcType() == Types.TIMESTAMP) {
+			if (this.field.isDatetimeField()) {
 				if (fmt == null) {
 					fmt = this.field.getJdbcType() == Types.DATE ? "yyyy-MM-dd"
 							: (this.field.getJdbcType() == Types.TIMESTAMP) ? "yyyy-MM-dd HH:mm:ss" : "HH:mm:ss";
-				}
-				dtFilter = String.format(" | date:'%s'", fmt);
-			}
-
+				}				
+				datePicker = String.format("<datetimepicker data-ng-model=\"%s.%s\"></datetimepicker>", entityVarName, fieldVarName);
+			}else{
+				fmt = null;
+			}			
 			generated = TemplateUtil.renderTemplate(
-					IOUtils.toString(getClass().getResourceAsStream("angularField.input.html.tmpl")),
+					IOUtils.toString(getClass().getResourceAsStream("angularEntityField.input.html.tmpl")),
 					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName)
 							.addMapEntry("HTML_TYPE", HTML_INPUT_TYPE).addMapEntry("ENTITY_VAR_NAME", entityVarName)
-							.addMapEntry("DATETIME_FILTER", dtFilter).addMapEntry("FIELD_ATTRIBUTES", attrValue)
+							.addMapEntry("DATEPICKER_PICKER_FOR_DATETIME", datePicker).addMapEntry("FIELD_ATTRIBUTES", attrValue)
 							.addMapEntry("FIELD_INPUT_TYPE", element).addMapEntry("FIELD_LABEL", label).buildMap());
 			break;
 		}

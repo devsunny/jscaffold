@@ -2,7 +2,7 @@ package com.asksunny.codegen;
 
 import org.junit.Test;
 
-import com.asksunny.codegen.angular.AngularFieldGenerator;
+import com.asksunny.codegen.angular.AngularEntityFieldGenerator;
 import com.asksunny.codegen.java.MyBatisXmlEntityGenerator;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;

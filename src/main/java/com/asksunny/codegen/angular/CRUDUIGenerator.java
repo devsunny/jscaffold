@@ -91,7 +91,7 @@ public class CRUDUIGenerator {
 	public String genForm() throws IOException {
 		StringBuilder fields = new StringBuilder();
 		for (Field field : entity.getFields()) {
-			AngularFieldGenerator fg = new AngularFieldGenerator(entity, field);
+			AngularEntityFieldGenerator fg = new AngularEntityFieldGenerator(entity, field);
 			fields.append(fg.genField());
 		}
 

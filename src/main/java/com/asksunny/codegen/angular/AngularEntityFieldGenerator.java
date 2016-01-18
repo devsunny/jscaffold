@@ -12,12 +12,12 @@ import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.parser.JdbcSqlTypeMap;
 
-public class AngularFieldGenerator {
+public class AngularEntityFieldGenerator {
 
 	private Entity entity;
 	private Field field;
 
-	public AngularFieldGenerator(Entity entity, Field field) {
+	public AngularEntityFieldGenerator(Entity entity, Field field) {
 		super();
 		this.entity = entity;
 		this.field = field;
@@ -97,6 +97,7 @@ public class AngularFieldGenerator {
 						IOUtils.toString(getClass().getResourceAsStream("angularRadioOpt.html.tmpl")),
 						ParamMapBuilder.newBuilder().addMapEntry("OPTION_VALUE", enumvals[i])
 								.addMapEntry("ENTITY_VAR_NAME", entityVarName)
+								.addMapEntry("FIELD_NAME", field.getObjectname())
 								.addMapEntry("FIELD_VAR_NAME_SEQ", String.format("%s%02d", fieldVarName, i + 1))
 								.addMapEntry("FIELD_VAR_NAME", fieldVarName).addMapEntry("FIELD_LABEL", label)
 								.buildMap());
@@ -138,9 +139,18 @@ public class AngularFieldGenerator {
 			}else{
 				fmt = null;
 			}			
+			String templ = "angularEntityField.input.html.tmpl";
+			if(this.field.getJdbcType() == Types.DATE){
+				templ = "angularEntityFieldDatePicker.html.tmpl";
+			}else if(this.field.getJdbcType() == Types.TIMESTAMP){
+				templ = "angularEntityFieldDatetimePicker.html.tmpl";
+			}else if(this.field.getJdbcType() == Types.TIME){
+				templ = "angularEntityFieldTimePicker.html.tmpl";
+			} 
+			
 			generated = TemplateUtil.renderTemplate(
-					IOUtils.toString(getClass().getResourceAsStream("angularEntityField.input.html.tmpl")),
-					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName)
+					IOUtils.toString(getClass().getResourceAsStream(templ)),
+					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName).addMapEntry("FIELD_NAME", field.getObjectname())
 							.addMapEntry("HTML_TYPE", HTML_INPUT_TYPE).addMapEntry("ENTITY_VAR_NAME", entityVarName)
 							.addMapEntry("DATEPICKER_PICKER_FOR_DATETIME", datePicker).addMapEntry("FIELD_ATTRIBUTES", attrValue)
 							.addMapEntry("FIELD_INPUT_TYPE", element).addMapEntry("FIELD_LABEL", label).buildMap());

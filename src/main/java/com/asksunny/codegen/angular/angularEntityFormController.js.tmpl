@@ -16,8 +16,7 @@ angular.module('#{ANGULAR_APP_NAME}')
    }
    
     var fetchhandler = function(jsonEnvlope){ 
-   		$scope.#{ENTITY_VAR_NAME}=jsonEnvlope.data ; 
-   		$scope.$digest();
+   		$scope.#{ENTITY_VAR_NAME}=jsonEnvlope.data ;    		
    	}
    	
    	var updatehandler = function(jsonEnvlope){ 

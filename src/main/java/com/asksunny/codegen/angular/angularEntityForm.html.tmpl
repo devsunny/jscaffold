@@ -4,10 +4,13 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                #{ENTITY_LABEL}
-            </div>
-            <div class="panel-body">
+            </div>            
+            <div class="panel-body" ng-init="get()"   ng-controller="#{ENTITY_NAME}FormCtrl">
                 <div class="row">
-                    <div class="col-lg-6"  ng-init="get()"   ng-controller="#{ENTITY_NAME}FormCtrl">
+                {{message}}
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
                         <form role="form"  novalidate >
                             #{FORM_FIELDS}  
                             <button ng-click="save()"  type="submit" class="btn btn-default">Add New</button>

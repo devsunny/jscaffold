@@ -9,10 +9,11 @@
 angular.module('#{ANGULAR_APP_NAME}')
   .controller('#{ENTITY_NAME}FormCtrl', ['$scope', '$filter', '$interpolate', '$http', '$stateParams', function ($scope, $filter, $interpolate, $http,  $stateParams) {
    $scope.#{ENTITY_VAR_NAME}={};   
-   
+   $scope.message="";
    
    var errhandler = function(errresponse){ 
-   	$scope.error=errresponse.data || "failed on request"; 
+   		$scope.error=errresponse.data || "failed on request"; 
+   		$scope.message="Server unable to process the request." ; 
    }
    
     var fetchhandler = function(jsonEnvlope){ 
@@ -20,16 +21,23 @@ angular.module('#{ANGULAR_APP_NAME}')
    	}
    	
    	var updatehandler = function(jsonEnvlope){ 
-   		$scope.#{ENTITY_VAR_NAME}=jsonEnvlope.data ; 
+   		$scope.message="Sucessfully updated" ; 
    	}
+   	
+   	var savehandler = function(jsonEnvlope){ 
+   		$scope.message="Sucessfully inserted" ; 
+   	}
+   	
    	   	
    	$scope.save=function()
    	{   		
-   		$http.post('#{INSERT_UPDATE_URI}', $scope.#{ENTITY_VAR_NAME}).then(updatehandler, errhandler);  	
+   		$scope.message="";
+   		$http.post('#{INSERT_UPDATE_URI}', $scope.#{ENTITY_VAR_NAME}).then(savehandler, errhandler);  	
    	};
    	
    	$scope.update=function()
    	{
+   		$scope.message="";
    		$http.put('#{INSERT_UPDATE_URI}', $scope.#{ENTITY_VAR_NAME}).then(updatehandler, errhandler);   		
    	};
    

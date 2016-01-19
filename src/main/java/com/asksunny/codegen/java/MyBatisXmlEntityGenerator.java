@@ -78,11 +78,11 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 			if (!fd.isAutogen()) {
 				collist.add(fd.getName());
 				if ((fd.getJdbcType() == Types.BIT || fd.getJdbcType() == Types.BOOLEAN)) {
-					vallist.add(String.format("#{%s,javaType=boolean,jdbcType=%s}", fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					vallist.add(String.format("#{%s,jdbcType=%s,javaType=%s}", fd.getVarname(),
+							 JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 				} else {
-					vallist.add(String.format("#{%s,jdbcType=%s}", fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					vallist.add(String.format("#{%s,jdbcType=%s,javaType=%s}", fd.getVarname(),
+							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 
 				}
 
@@ -112,21 +112,21 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		for (int i = 0; i < fieldsSize; i++) {
 			Field fd = this.allFields.get(i);
 			if (!fd.isAutogen()) {
-				updateList.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
-						JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+				updateList.add(String.format("%s=#{%s,jdbcType=%s,javaType=%s}", fd.getName(), fd.getVarname(),
+						JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 			}
 
 			if (hasKey) {
 				if (fd.isPrimaryKey()) {
-					keyCols.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					keyCols.add(String.format("%s=#{%s,jdbcType=%s,javaType=%s}", fd.getName(), fd.getVarname(),
+							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 					keyName.append(fd.getObjectname());
 					knum++;
 				}
 			} else if (hasUnique) {
 				if (fd.isUnique()) {
-					keyCols.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					keyCols.add(String.format("%s=#{%s,jdbcType=%s,javaType=%s}", fd.getName(), fd.getVarname(),
+							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 					keyName.append(fd.getObjectname());
 					knum++;
 				}
@@ -159,15 +159,15 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 			Field fd = this.allFields.get(i);
 			if (hasKey) {
 				if (fd.isPrimaryKey()) {
-					keyCols.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					keyCols.add(String.format("%s=#{%s,jdbcType=%s,javaType=%s}", fd.getName(), fd.getVarname(),
+							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 					keyName.append(fd.getObjectname());
 					knum++;
 				}
 			} else if (hasUnique) {
 				if (fd.isUnique()) {
-					keyCols.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
-							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType())));
+					keyCols.add(String.format("%s=#{%s,jdbcType=%s,javaType=%s}", fd.getName(), fd.getVarname(),
+							JdbcSqlTypeMap.getJdbcTyepName(fd.getJdbcType()), JdbcSqlTypeMap.toJavaTypeName(fd)));
 					keyName.append(fd.getObjectname());
 					knum++;
 				}

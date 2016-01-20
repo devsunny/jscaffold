@@ -2,6 +2,7 @@ package com.asksunny.schema;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,7 @@ public class Entity {
 				}
 			}
 		}
+		Collections.sort(refs, new FieldGroupLevelComparator());
 		return refs;
 	}
 
@@ -172,6 +174,7 @@ public class Entity {
 				}
 			}
 		}
+		Collections.sort(refs, new FieldDrillDownComparator());
 		return refs;
 	}
 

@@ -88,7 +88,7 @@ public class FieldGeneratorFactory {
 		case Types.BINARY:
 		case Types.BLOB:
 		case Types.VARBINARY:
-		case Types.LONGVARBINARY:
+		case Types.LONGVARBINARY:		
 			gen = new BinaryGenerator(field);
 			break;
 		case Types.DATE:

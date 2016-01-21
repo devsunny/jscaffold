@@ -39,6 +39,10 @@ public final class JdbcSqlTypeMap {
 			lname = "INTEGER";
 		} else if (name.equalsIgnoreCase("LONG")) {
 			lname = "BIGINT";
+		}else if (name.equalsIgnoreCase("IMAGE")) {
+			lname = "BINARY";
+		}else if (name.equalsIgnoreCase("TEXT")) {
+			lname = "CLOB";
 		}
 		Integer t = jdbcTypeMap.get(lname.toUpperCase());
 		if (t == null) {

@@ -32,8 +32,10 @@ public final class TextUtils {
 	}
 
 	public String getText(int minSize, int maxSize) {
-		StringBuilder buf = new StringBuilder();		
-		int size = minSize + RandomUtil.getInstance().getUnsignedInt(maxSize - minSize);
+		StringBuilder buf = new StringBuilder();
+
+		int size = minSize + (((maxSize - minSize) != 0)
+				? RandomUtil.getInstance().getUnsignedInt(Math.abs(maxSize - minSize)) : 0);
 		int len = 0;
 		while (buf.length() < size) {
 			if (buf.length() > 0) {

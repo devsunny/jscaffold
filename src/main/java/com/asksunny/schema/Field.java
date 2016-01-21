@@ -79,6 +79,20 @@ public class Field {
 		return new Field(jdbcType, scale, precision, displaySize, nullable, name, dataType, minValue, maxValue, format,
 				step);
 	}
+	
+	public boolean isNumericField()
+	{
+		return this.jdbcType==Types.BIGINT ||
+				this.jdbcType==Types.INTEGER ||
+				this.jdbcType==Types.SMALLINT ||
+				this.jdbcType==Types.TINYINT ||
+				this.jdbcType==Types.DOUBLE ||
+				this.jdbcType==Types.FLOAT ||
+				this.jdbcType==Types.REAL ||
+				this.jdbcType==Types.DECIMAL ||
+				this.jdbcType==Types.NUMERIC
+				;
+	}
 
 	public List<Field> getReferencedBy() {
 		return referencedBy;

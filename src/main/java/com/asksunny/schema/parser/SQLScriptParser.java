@@ -343,7 +343,7 @@ public class SQLScriptParser {
 			// }
 			ret.setJdbcType(JdbcSqlTypeMap.getInstance().findJdbcType(tname));
 			ret.setDbTypeName(tname);
-			if (peekMatch(0, LexerTokenKind.LPAREN)) {
+			if (peekMatch(0, LexerTokenKind.LPAREN) && !peekMatch(1, LexerTokenKind.RPAREN) ) {
 				consume();
 				Token num1 = consume();				
 				if (num1.getKeyword() == Keyword.ASTERISK) {
@@ -375,6 +375,14 @@ public class SQLScriptParser {
 					Token p = tokenReader.peek(0);
 					throw new InvalidSQLException(LexerTokenKind.RPAREN.name(), p.getImage(), p.getLine(),
 							p.getColumn());
+				}
+			}else if(peekMatch(0, LexerTokenKind.LPAREN) && peekMatch(1, LexerTokenKind.RPAREN)){
+				consume();
+				if(ret!=null && ret.isNumericField()){
+					ret.setPrecision(16);
+					ret.setDisplaySize(16);
+					ret.setMaxValue("100000");
+					ret.setMinValue("0");					
 				}
 			}
 			while (tokenReader.peek(0) != null && !peekMatch(0, LexerTokenKind.COMMA)

@@ -1,4 +1,4 @@
-package com.asksunny.codegen.data;
+package com.asksunny.codegen;
 
 public enum SchemaOutputType {
 	INSERT, CSV, JDBC

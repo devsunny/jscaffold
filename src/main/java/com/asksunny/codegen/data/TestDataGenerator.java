@@ -3,6 +3,8 @@ package com.asksunny.codegen.data;
 import java.io.File;
 
 import com.asksunny.CLIArguments;
+import com.asksunny.codegen.CodeGenConfig;
+import com.asksunny.codegen.SchemaOutputType;
 import com.asksunny.schema.parser.SQLScriptParser;
 
 public class TestDataGenerator {
@@ -51,10 +53,10 @@ public class TestDataGenerator {
 		SQLScriptParser parser = new SQLScriptParser(f);
 		BottomUpSchemaDataGenerator dg = null;
 		try {
-			SchemaDataConfig config = new SchemaDataConfig();
+			CodeGenConfig config = new CodeGenConfig();
 			config.setNumberOfRecords(numStr);
 			config.setOutputType(SchemaOutputType.valueOf(type.toUpperCase()));
-			config.setOutputUri(outfile);
+			config.setDataOutputDir(outfile);
 			dg = new BottomUpSchemaDataGenerator(parser.parseSql());
 			dg.setConfig(config);
 			dg.generateData();

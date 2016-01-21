@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.asksunny.codegen.CodeGenConfig;
+import com.asksunny.codegen.SchemaOutputType;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.generator.ForeignKeyFieldGenerator;
@@ -23,7 +25,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	protected static final int MAX_SET_SIZE = 24;
 
 	private Entity entity;
-	private SchemaDataConfig config;
+	private CodeGenConfig config;
 	private List<Generator<?>> fieldGenerators = null;
 	private List<BottomUpEntityDataGenerator> parentEntityGenerators = new ArrayList<>();
 
@@ -191,12 +193,12 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 					parentEntityGenerators.add(buGen);
 				}
 				this.totalRecordCount = this.getConfig().getNumberOfRecords();
-				if (this.getConfig().getOutputUri() != null) {
+				if (this.getConfig().getDataOutputDir() != null) {
 					String fileName = String.format("%s.%s", entity.getName(), "csv");
 					if (this.getConfig().getOutputType() == SchemaOutputType.INSERT) {
 						fileName = String.format("%s.%s", entity.getName(), "sql");
 					}
-					File fout = new File(this.getConfig().getOutputUri(), fileName);
+					File fout = new File(this.getConfig().getDataOutputDir(), fileName);
 					out = new PrintWriter(fout);
 				} else {
 					out = new PrintWriter(System.out);
@@ -240,7 +242,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 
 	public void close() {
 		if (this.openned.compareAndSet(true, false)) {
-			if (this.getConfig().getOutputUri() != null && this.out != null) {
+			if (this.getConfig().getDataOutputDir() != null && this.out != null) {
 				this.out.close();
 			}
 		}
@@ -262,11 +264,11 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 		this.insertTemplate = insertTemplate;
 	}
 
-	public SchemaDataConfig getConfig() {
+	public CodeGenConfig getConfig() {
 		return config;
 	}
 
-	public void setConfig(SchemaDataConfig config) {
+	public void setConfig(CodeGenConfig config) {
 		this.config = config;
 	}
 

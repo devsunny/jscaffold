@@ -27,6 +27,11 @@ public class CodeGenConfig {
 	String angularAppName = "sbAdminApp";
 	String appBootstrapPackage;
 	String appBootstrapClassName;
+	
+	private SchemaOutputType outputType;
+	private String outputUri;	
+	private long numberOfRecords;
+	private boolean debug = false;
 
 	String SSLIssuerDN = "CN=Test Certificate";
 
@@ -305,6 +310,38 @@ public class CodeGenConfig {
 
 	public void setGenPomXml(boolean genPomXml) {
 		this.genPomXml = genPomXml;
+	}
+
+	public SchemaOutputType getOutputType() {
+		return outputType;
+	}
+
+	public void setOutputType(SchemaOutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	public String getDataOutputDir() {
+		return outputUri;
+	}
+
+	public void setDataOutputDir(String outputUri) {
+		this.outputUri = outputUri;
+	}
+
+	public long getNumberOfRecords() {
+		return numberOfRecords;
+	}
+
+	public void setNumberOfRecords(long numberOfRecords) {
+		this.numberOfRecords = numberOfRecords;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
 }

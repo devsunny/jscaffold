@@ -1,12 +1,13 @@
 package com.asksunny.codegen.data;
 
+import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Schema;
 
 public class BottomUpSchemaDataGenerator {
 
 	private Schema schema;
-	private SchemaDataConfig config;
+	private CodeGenConfig config;
 	private String schemaUri;
 
 	public void generateData() {
@@ -48,11 +49,11 @@ public class BottomUpSchemaDataGenerator {
 		this.schemaUri = schemaUri;
 	}
 
-	public SchemaDataConfig getConfig() {
+	public CodeGenConfig getConfig() {
 		return config;
 	}
 
-	public void setConfig(SchemaDataConfig config) {
+	public void setConfig(CodeGenConfig config) {
 		this.config = config;
 	}
 

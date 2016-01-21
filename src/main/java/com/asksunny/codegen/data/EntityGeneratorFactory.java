@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.schema.Entity;
 
 public final class EntityGeneratorFactory {
 
 	private static Map<String, BottomUpEntityDataGenerator> cachedEntityGenerators = new ConcurrentHashMap<>();
 
-	public static BottomUpEntityDataGenerator createEntityGenerator(Entity entity, SchemaDataConfig config) {
+	public static BottomUpEntityDataGenerator createEntityGenerator(Entity entity, CodeGenConfig config) {
 		BottomUpEntityDataGenerator entityGen = cachedEntityGenerators.get(entity.getName().toUpperCase());
 		if (entityGen == null) {
 			entityGen = new BottomUpEntityDataGenerator(entity);

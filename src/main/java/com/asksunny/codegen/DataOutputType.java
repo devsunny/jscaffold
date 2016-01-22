@@ -1,5 +1,5 @@
 package com.asksunny.codegen;
 
-public enum SchemaOutputType {
+public enum DataOutputType {
 	INSERT, CSV, JDBC
 }

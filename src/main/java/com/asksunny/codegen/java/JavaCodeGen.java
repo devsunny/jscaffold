@@ -18,6 +18,7 @@ import com.asksunny.codegen.utils.TemplateUtil;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Schema;
 import com.asksunny.schema.parser.SQLScriptParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JavaCodeGen extends CodeGenerator {
 
@@ -34,7 +35,6 @@ public class JavaCodeGen extends CodeGenerator {
 		if (schemaFiles == null) {
 			throw new IOException("Schema DDL file has not been specified");
 		}
-		Schema schema = null;
 		String[] sfs = schemaFiles.split("\\s*[,;]\\s*");
 		for (int i = 0; i < sfs.length; i++) {
 			InputStream in = getClass().getResourceAsStream(String.format("/%s", sfs[i]));
@@ -73,6 +73,10 @@ public class JavaCodeGen extends CodeGenerator {
 			writeCode(new File(configuration.getSpringXmlBaseDir()), "log4j.xml", log4j);
 		}
 
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(schema.getAllEntities());
+		writeCode(new File(configuration.getSpringXmlBaseDir()), "object_mode.json", json);
+
 	}
 
 	public void doCodeGen(Schema schema) throws IOException {
@@ -110,6 +114,12 @@ public class JavaCodeGen extends CodeGenerator {
 			domainGen.doCodeGen();
 
 		}
+
+		String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
+		writeCode(new File(configuration.getJavaBaseDir(), filePath), "JScaffoldObjectModelController.java",
+				TemplateUtil.renderTemplate(
+						IOUtils.toString(getClass().getResourceAsStream("JScaffoldObjectModelController.java.tmpl")),
+						ParamMapBuilder.newBuilder().buildMap()));
 
 		if (configuration.isGenAngular()) {
 			AngularUIGenerator augularGenerator = new AngularUIGenerator(configuration, schema);

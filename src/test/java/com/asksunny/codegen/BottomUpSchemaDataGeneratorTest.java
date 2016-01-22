@@ -17,7 +17,7 @@ public class BottomUpSchemaDataGeneratorTest {
 		BottomUpSchemaDataGenerator sgen = new BottomUpSchemaDataGenerator(schema);
 		CodeGenConfig config = new CodeGenConfig();
 		config.setNumberOfRecords(10);
-		config.setOutputType(SchemaOutputType.INSERT);
+		config.setOutputType(DataOutputType.INSERT);
 		config.setDataOutputDir(null);
 		//config.setDebug(true);
 		sgen.setConfig(config);

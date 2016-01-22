@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.asksunny.codegen.CodeGenConfig;
-import com.asksunny.codegen.SchemaOutputType;
+import com.asksunny.codegen.DataOutputType;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.generator.ForeignKeyFieldGenerator;
@@ -111,12 +111,12 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 
 	protected void doOutput(List<Field> fields, List<String> values) {
 
-		if (this.getConfig().getOutputType() == SchemaOutputType.INSERT) {
+		if (this.getConfig().getOutputType() == DataOutputType.INSERT) {
 			if (this.config.isDebug()) {
 				System.out.println(String.format("Output a %s INSERT record %s ", this.entity.getName(), values));
 			}
 			doInsertOutput(fields, values);
-		} else if (this.getConfig().getOutputType() == SchemaOutputType.CSV) {
+		} else if (this.getConfig().getOutputType() == DataOutputType.CSV) {
 			if (this.config.isDebug()) {
 				System.out.println(String.format("Output a %s CSV record %s ", this.entity.getName(), values));
 			}
@@ -195,7 +195,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 				this.totalRecordCount = this.getConfig().getNumberOfRecords();
 				if (this.getConfig().getDataOutputDir() != null) {
 					String fileName = String.format("%s.%s", entity.getName(), "csv");
-					if (this.getConfig().getOutputType() == SchemaOutputType.INSERT) {
+					if (this.getConfig().getOutputType() == DataOutputType.INSERT) {
 						fileName = String.format("%s.%s", entity.getName(), "sql");
 					}
 					File fout = new File(this.getConfig().getDataOutputDir(), fileName);
@@ -208,7 +208,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 				throw new RuntimeException("Failed to open output file");
 			}
 
-			if (this.getConfig().getOutputType() == SchemaOutputType.INSERT) {
+			if (this.getConfig().getOutputType() == DataOutputType.INSERT) {
 				StringBuilder buf = new StringBuilder();
 				buf.append("INSERT INTO ").append(entity.getName());
 				buf.append(" (");

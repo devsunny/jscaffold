@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.asksunny.CLIArguments;
 import com.asksunny.codegen.CodeGenConfig;
-import com.asksunny.codegen.SchemaOutputType;
+import com.asksunny.codegen.DataOutputType;
 import com.asksunny.schema.parser.SQLScriptParser;
 
 public class TestDataGenerator {
@@ -55,7 +55,7 @@ public class TestDataGenerator {
 		try {
 			CodeGenConfig config = new CodeGenConfig();
 			config.setNumberOfRecords(numStr);
-			config.setOutputType(SchemaOutputType.valueOf(type.toUpperCase()));
+			config.setOutputType(DataOutputType.valueOf(type.toUpperCase()));
 			config.setDataOutputDir(outfile);
 			dg = new BottomUpSchemaDataGenerator(parser.parseSql());
 			dg.setConfig(config);

@@ -149,4 +149,12 @@ public abstract class CodeGenerator {
 		return tmpl;
 	}
 
+	public Schema getSchema() {
+		return schema;
+	}
+
+	public void setSchema(Schema schema) {
+		this.schema = schema;
+	}
+
 }

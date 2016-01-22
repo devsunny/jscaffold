@@ -95,7 +95,23 @@ angular
         }
       })
       #{APPLICATION_STATES}      
-      .state('dashboard.form',{
+     .state('dashboard.jscaffold',{
+	        url:'/jscaffold',	       
+	        controller: 'JScaffoldCtrl',
+	        templateUrl:'views/JScaffold.html',
+	        resolve: {
+	          loadMyFiles:function($ocLazyLoad) {
+	            return $ocLazyLoad.load({
+	              name:'sbAdminApp',
+	              files:[
+	              	'bower_components/angular-utils-pagination/dirPagination.js',
+	              	'scripts/controllers/JScaffoldCtrlController.js'	              		
+	              ]
+	            });
+	          }
+	        }
+	})
+     .state('dashboard.form',{
         templateUrl:'views/form.html',
         url:'/form'
     })

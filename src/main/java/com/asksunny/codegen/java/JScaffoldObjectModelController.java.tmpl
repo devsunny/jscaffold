@@ -1,0 +1,135 @@
+package com.xperia.dg.rest;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(value = "/jscaffoldObjectModel")
+public class JScaffoldObjectModelController {
+
+	@Autowired
+	DataSource datasource;
+
+	public JScaffoldObjectModelController() {
+
+	}
+
+	@RequestMapping(method = { RequestMethod.GET })
+	@ResponseBody
+	public String getDataObjectModel() {
+
+		InputStream in = null;
+		try {
+			in = getClass().getResourceAsStream("/object_mode.json");
+			if (in == null) {
+				return "[]";
+			}
+			String json = IOUtils.toString(in);
+			return json;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					;
+				}
+			}
+		}
+
+		return "[]";
+	}
+
+	@RequestMapping(method = { RequestMethod.POST })
+	@ResponseBody
+	public Map<String, Object> executeSQL(@RequestBody String query) {
+		Map<String, Object> response = new HashMap<>();
+		
+		List<List<String>> result = new ArrayList<>();
+		Connection conn = null;
+		try {
+			conn = getDatasource().getConnection();
+			Statement stmt = conn.createStatement();
+			if (query.trim().toUpperCase().startsWith("SELECT ")) {
+				ResultSet rs = stmt.executeQuery(query);
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int count = rsmd.getColumnCount();
+				List<String> colNames = new ArrayList<>();
+				for (int i = 1; i <= count; i++) {
+					colNames.add(rsmd.getColumnName(i));
+				}
+				response.put("header", colNames);
+				int rows = 0;
+				while (rs.next()) {
+					rows++;
+					List<String> row = new ArrayList<>();
+					for (int i = 1; i <= count; i++) {
+						row.add(rs.getString(i));
+					}
+					result.add(row);
+					if(rows>=1000){
+						break;
+					}
+				}
+				response.put("body", result);
+				rs.close();
+			} else {
+				int effected = stmt.executeUpdate(query);
+				List<String> colNames = new ArrayList<>();
+				colNames.add("Effected rows");
+				response.put("header", colNames);
+				List<String> row = new ArrayList<>();
+				row.add(String.valueOf(effected));
+				result.add(row);
+				response.put("body", result);
+			}
+			stmt.close();
+		} catch (Exception ex) {
+			List<String> colNames = new ArrayList<>();
+			colNames.add("Error Message");
+			response.put("header", colNames);
+			List<String> row = new ArrayList<>();
+			row.add(ex.toString());
+			result.add(row);
+			response.put("body", result);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					;
+				}
+			}
+		}
+		return response;
+	}
+
+	public DataSource getDatasource() {
+		return datasource;
+	}
+
+	public void setDatasource(DataSource datasource) {
+		this.datasource = datasource;
+	}
+
+}

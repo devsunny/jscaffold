@@ -9,41 +9,66 @@ import com.asksunny.codegen.CodeGenType;
 import com.asksunny.codegen.GroupFunction;
 import com.asksunny.codegen.GroupView;
 import com.asksunny.codegen.utils.JavaIdentifierUtil;
+import com.asksunny.schema.parser.JdbcSqlTypeMap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Field {
 
-	Entity container;
-	int jdbcType;
+	
 	int scale;
 	int precision;
 	int displaySize;
 	boolean nullable;
 	boolean primaryKey;
 	String name;
-	String varname;
 	String label;
 	String dbTypeName;
-
-	CodeGenType dataType;
-	String format;
-	String maxValue;
-	String minValue;
-	String step;
 	int fieldIndex;
-	String enumValues;
-	String uitype;
-
-	List<Field> referencedBy = new ArrayList<Field>();
-	Field reference;
 	boolean unique;
 
-	int groupLevel;
-	int drillDown;
-	int order;
-	boolean ignoreView;
-	boolean autogen;
+	@JsonIgnore
+	Entity container;
+	@JsonIgnore
+	int jdbcType;
+	
+	@JsonIgnore
+	String varname;
 
+	@JsonIgnore
+	String format;
+	@JsonIgnore
+	String maxValue;
+	@JsonIgnore
+	String minValue;
+	@JsonIgnore
+	String step;
+
+	@JsonIgnore
+	CodeGenType dataType;
+
+	@JsonIgnore
+	String enumValues;
+	@JsonIgnore
+	String uitype;
+
+	@JsonIgnore
+	List<Field> referencedBy = new ArrayList<Field>();
+	@JsonIgnore
+	Field reference;
+
+	@JsonIgnore
+	int groupLevel;
+	@JsonIgnore
+	int drillDown;
+	@JsonIgnore
+	int order;
+	@JsonIgnore
+	boolean ignoreView;
+	@JsonIgnore
+	boolean autogen;
+	@JsonIgnore
 	GroupFunction groupFunction = GroupFunction.NONE;
+	@JsonIgnore
 	GroupView groupView = GroupView.TABLE;
 
 	public Field() {
@@ -66,6 +91,10 @@ public class Field {
 		this.step = step;
 	}
 
+	public String getJdbcTypeName() {
+		return JdbcSqlTypeMap.getJdbcTyepName(getJdbcType());
+	}
+
 	public int getFieldIndex() {
 		return fieldIndex;
 	}
@@ -79,19 +108,11 @@ public class Field {
 		return new Field(jdbcType, scale, precision, displaySize, nullable, name, dataType, minValue, maxValue, format,
 				step);
 	}
-	
-	public boolean isNumericField()
-	{
-		return this.jdbcType==Types.BIGINT ||
-				this.jdbcType==Types.INTEGER ||
-				this.jdbcType==Types.SMALLINT ||
-				this.jdbcType==Types.TINYINT ||
-				this.jdbcType==Types.DOUBLE ||
-				this.jdbcType==Types.FLOAT ||
-				this.jdbcType==Types.REAL ||
-				this.jdbcType==Types.DECIMAL ||
-				this.jdbcType==Types.NUMERIC
-				;
+
+	public boolean isNumericField() {
+		return this.jdbcType == Types.BIGINT || this.jdbcType == Types.INTEGER || this.jdbcType == Types.SMALLINT
+				|| this.jdbcType == Types.TINYINT || this.jdbcType == Types.DOUBLE || this.jdbcType == Types.FLOAT
+				|| this.jdbcType == Types.REAL || this.jdbcType == Types.DECIMAL || this.jdbcType == Types.NUMERIC;
 	}
 
 	public List<Field> getReferencedBy() {

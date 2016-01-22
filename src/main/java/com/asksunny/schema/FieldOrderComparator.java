@@ -10,7 +10,10 @@ public class FieldOrderComparator implements Comparator<Field> {
 
 	@Override
 	public int compare(Field arg0, Field arg1) {
-		return Integer.valueOf(arg0.getOrder()).compareTo(Integer.valueOf(arg1.getOrder()));
+		
+		int i1 = arg0.getOrder()==0?arg0.getFieldIndex():arg0.getOrder();
+		int i2 = arg1.getOrder()==0?arg1.getFieldIndex():arg1.getOrder();		
+		return Integer.valueOf(i1).compareTo(Integer.valueOf(i2));
 	}
 
 }

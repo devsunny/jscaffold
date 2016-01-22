@@ -24,6 +24,12 @@ public class BottomUpSchemaDataGenerator {
 
 	}
 
+	public BottomUpSchemaDataGenerator(CodeGenConfig config, Schema schema) {
+		super();
+		this.config = config;
+		this.schema = schema;
+	}
+
 	public Schema getSchema() {
 		return schema;
 	}

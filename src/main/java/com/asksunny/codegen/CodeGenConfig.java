@@ -28,7 +28,7 @@ public class CodeGenConfig {
 	String appBootstrapPackage;
 	String appBootstrapClassName;
 	
-	private SchemaOutputType outputType;
+	private DataOutputType outputType;
 	private String outputUri;	
 	private long numberOfRecords;
 	private boolean debug = false;
@@ -312,11 +312,11 @@ public class CodeGenConfig {
 		this.genPomXml = genPomXml;
 	}
 
-	public SchemaOutputType getOutputType() {
+	public DataOutputType getOutputType() {
 		return outputType;
 	}
 
-	public void setOutputType(SchemaOutputType outputType) {
+	public void setOutputType(DataOutputType outputType) {
 		this.outputType = outputType;
 	}
 

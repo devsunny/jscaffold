@@ -1,0 +1,45 @@
+'use strict';
+/**
+ * @ngdoc function
+ * @name sbAdminApp.controller:DataObjectListCtrl
+ * @description # DataObjectListCtrl Controller of the sbAdminApp
+ */
+angular.module('sbAdminApp', ['angularUtils.directives.dirPagination'])
+  .controller('JScaffoldCtrl', ['$scope', '$filter', '$http', '$stateParams', '$timeout', function ($scope, $filter, $http,  $stateParams, $timeout) {
+   $scope.models=[];  
+   $scope.resultset=[];  
+   $scope.sqlstatement="";  
+   
+   var errhandler = function(errresponse){ 
+   	$scope.errorMessage=errresponse.data || "failed on request"; 
+   }
+   
+    var fetchResulthandler = function(jsonEnvlope){ 
+   		$scope.resultset=jsonEnvlope.data ;    		
+   	}
+    var fetchModelhandler = function(jsonEnvlope){ 
+   		$scope.models=jsonEnvlope.data ;    		
+   	}
+   	
+   	var updatehandler = function(jsonEnvlope){ 
+   		$scope.dataObject=jsonEnvlope.data ; 
+   	} 	   	   
+   
+   $scope.getModel=function(){
+   		$http.get('/WebUI/jscaffoldObjectModel.json').then(fetchModelhandler, errhandler);   		
+   };
+   
+   $scope.executeSql=function(){
+	   console.log( $scope.sqlstatement);
+	   var req = {
+			   method: 'POST',
+			   url: '/WebUI/jscaffoldObjectModel.json',
+	   			 headers: {
+	   			   'Content-Type': 'text/plain'
+	   			 },
+	   			 data:  $scope.sqlstatement
+			  };
+	   $http(req).then(fetchResulthandler, errhandler);   		
+   };
+   
+}]);

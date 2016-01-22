@@ -22,11 +22,15 @@ public class AngularUIGenerator extends CodeGenerator {
 
 	File appJsDir = null;
 	File navigationDir = null;
+	File controllerDir = null;
+	File viewDir = null;
 
 	public AngularUIGenerator(CodeGenConfig configuration, Schema schema) {
 		super(configuration, schema);
 		appJsDir = new File(configuration.getWebBaseSrcDir(), "scripts");
 		navigationDir = new File(configuration.getWebBaseSrcDir(), "scripts/directives/sidebar");
+		controllerDir = new File(configuration.getWebBaseSrcDir(), "scripts/controllers");
+		viewDir = new File(configuration.getWebBaseSrcDir(), "views");
 	}
 
 	@Override
@@ -59,6 +63,16 @@ public class AngularUIGenerator extends CodeGenerator {
 				IOUtils.toString(getClass().getResourceAsStream("AngularNavigation.html.tmpl")),
 				ParamMapBuilder.newBuilder().addMapEntry("APP_NAVIGATIONS", navigations.toString()).buildMap());
 		writeCode(navigationDir, "sidebar.html", navgiator);
+
+		String html = TemplateUtil.renderTemplate(
+				IOUtils.toString(getClass().getResourceAsStream("JScaffold.html.tmpl")),
+				ParamMapBuilder.newBuilder().addMapEntry("APP_NAVIGATIONS", navigations.toString()).buildMap());
+		writeCode(viewDir, "JScaffold.html", html);
+
+		html = TemplateUtil.renderTemplate(IOUtils.toString(getClass().getResourceAsStream("JScaffoldCtrl.js.templ")),
+				ParamMapBuilder.newBuilder().addMapEntry("APP_NAVIGATIONS", navigations.toString()).buildMap());
+		writeCode(controllerDir, "JScaffoldCtrlController.js", html);
+
 	}
 
 	protected void genEntityForm(StringBuilder states, StringBuilder navigations, Entity entity) throws IOException {
@@ -67,29 +81,26 @@ public class AngularUIGenerator extends CodeGenerator {
 		// System.out.println(formGen.genForm());
 		// System.out.println(formGen.genFormController());
 		states.append(formGen.genAngularState());
-		
-		
 		AngularEntityListGenerator listGen = new AngularEntityListGenerator(configuration, entity);
 		listGen.doCodeGen();
 		states.append(listGen.genAngularState());
 		navigations.append(listGen.genNavigationItem());
-		
-		
+
 	}
 
 	protected void expandTemplate() throws IOException {
-		File webappPath = new File(configuration.getWebBaseSrcDir());		
+		File webappPath = new File(configuration.getWebBaseSrcDir());
 		ZipInputStream zipin = new ZipInputStream(getClass().getResourceAsStream("/sbadmin-template.zip"));
 		try {
 			ZipEntry entry = null;
 			while ((entry = zipin.getNextEntry()) != null) {
 				File path = new File(webappPath, entry.getName());
-				if(path.exists() || entry.isDirectory()){
+				if (path.exists() || entry.isDirectory()) {
 					continue;
 				}
 				if (!path.getParentFile().exists() && !path.getParentFile().mkdirs()) {
 					throw new IOException("Failed to extract template, permission denied:" + path.getParentFile());
-				}				
+				}
 				FileOutputStream fout = new FileOutputStream(path);
 				try {
 					IOUtils.copy(zipin, fout);

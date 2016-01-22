@@ -70,6 +70,8 @@ public class Field {
 	GroupFunction groupFunction = GroupFunction.NONE;
 	@JsonIgnore
 	GroupView groupView = GroupView.TABLE;
+	@JsonIgnore
+	private boolean ignoreData;
 
 	public Field() {
 		super();
@@ -418,6 +420,7 @@ public class Field {
 		this.setGroupView(anno.getGroupView());
 		this.setAutogen(anno.getAutogen());
 		this.setDrillDown(anno.getDrillDown());
+		this.setIgnoreData(anno.getIgnoreData());
 	}
 
 	public int getDrillDown() {
@@ -440,6 +443,14 @@ public class Field {
 
 	public void setDbTypeName(String dbTypeName) {
 		this.dbTypeName = dbTypeName;
+	}
+	
+	public void setIgnoreData(boolean ignoreData) {
+		this.ignoreData = ignoreData;
+	}
+	
+	public void setIgnoreData(String ignoreDatastr) {
+		this.ignoreData = ignoreDatastr!=null && ignoreDatastr.equalsIgnoreCase("true");
 	}
 
 }

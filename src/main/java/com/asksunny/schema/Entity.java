@@ -1,6 +1,5 @@
 package com.asksunny.schema;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +23,7 @@ public class Entity {
 	private int itemsPerPage = 10;
 	private boolean ignoreView;
 	private boolean ignoreRest;
+	private boolean ignoreData;
 	private String orderBy;
 
 	public String getName() {
@@ -62,6 +62,7 @@ public class Entity {
 		}
 		return null;
 	}
+
 	@JsonIgnore
 	public boolean hasDatetimeField() {
 		for (Field fd : fields) {
@@ -71,6 +72,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public boolean hasUniqueField() {
 
@@ -81,6 +83,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public List<Field> getUniqueFields() {
 		List<Field> refs = new ArrayList<Field>();
@@ -93,6 +96,7 @@ public class Entity {
 		}
 		return refs;
 	}
+
 	@JsonIgnore
 	public boolean hasKeyField() {
 
@@ -103,7 +107,7 @@ public class Entity {
 		}
 		return false;
 	}
-	
+
 	public List<Field> getKeyFields() {
 		List<Field> refs = new ArrayList<Field>();
 		if (this.fields != null) {
@@ -116,6 +120,7 @@ public class Entity {
 		}
 		return refs;
 	}
+
 	@JsonIgnore
 	public Field getKeyField() {
 
@@ -136,6 +141,7 @@ public class Entity {
 		}
 		this.fields.addAll(pfields);
 	}
+
 	@JsonIgnore
 	public Field findField(String name) {
 		if (name != null) {
@@ -143,6 +149,7 @@ public class Entity {
 		}
 		return null;
 	}
+
 	@JsonIgnore
 	public List<Field> getGroupByFields() {
 		List<Field> refs = new ArrayList<Field>();
@@ -156,6 +163,7 @@ public class Entity {
 		Collections.sort(refs, new FieldGroupLevelComparator());
 		return refs;
 	}
+
 	@JsonIgnore
 	public boolean hasGroupByFields() {
 
@@ -168,6 +176,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public List<Field> getDrillDownFields() {
 		List<Field> refs = new ArrayList<Field>();
@@ -181,6 +190,7 @@ public class Entity {
 		Collections.sort(refs, new FieldDrillDownComparator());
 		return refs;
 	}
+
 	@JsonIgnore
 	public Field getDrillDownRoot() {
 		if (this.fields != null) {
@@ -192,6 +202,7 @@ public class Entity {
 		}
 		return null;
 	}
+
 	@JsonIgnore
 	public boolean hasDrillDownFields() {
 
@@ -204,6 +215,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public List<Field> getAllReferences() {
 		List<Field> refs = new ArrayList<Field>();
@@ -219,6 +231,7 @@ public class Entity {
 		}
 		return refs;
 	}
+
 	@JsonIgnore
 	public boolean hasReferencedBy() {
 		if (this.fields != null) {
@@ -230,6 +243,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public boolean hasMultiReferencedBy() {
 		if (this.fields != null) {
@@ -241,6 +255,7 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	public boolean hasReference() {
 		if (this.fields != null) {
@@ -252,16 +267,19 @@ public class Entity {
 		}
 		return false;
 	}
+
 	@JsonIgnore
 	@Override
 	public String toString() {
 		return "Entity [name=" + name + ", fields=\n" + fields + "\n]";
 	}
+
 	@JsonIgnore
 	public String getEntityObjectName() {
 		return this.varname == null ? JavaIdentifierUtil.toObjectName(this.name)
 				: JavaIdentifierUtil.capitalize(this.varname);
 	}
+
 	@JsonIgnore
 	public String getEntityVarName() {
 		return varname == null ? JavaIdentifierUtil.toVariableName(this.name) : varname;
@@ -270,6 +288,7 @@ public class Entity {
 	public Map<String, Field> getFieldMaps() {
 		return fieldMaps;
 	}
+
 	@JsonIgnore
 	public String getLabel() {
 		return label == null ? getEntityObjectName() : label;
@@ -278,6 +297,7 @@ public class Entity {
 	public void setLabel(String label) {
 		this.label = label;
 	}
+
 	@JsonIgnore
 	public int getItemsPerPage() {
 		return itemsPerPage;
@@ -292,6 +312,7 @@ public class Entity {
 			this.itemsPerPage = Integer.valueOf(itemsPerPageStr);
 		}
 	}
+
 	@JsonIgnore
 	public boolean isIgnoreView() {
 		return ignoreView;
@@ -304,6 +325,7 @@ public class Entity {
 	public void setIgnoreView(String ignoreViewstr) {
 		this.ignoreView = ignoreViewstr != null && ignoreViewstr.equalsIgnoreCase("true");
 	}
+
 	@JsonIgnore
 	public boolean isIgnoreRest() {
 		return ignoreRest;
@@ -316,6 +338,7 @@ public class Entity {
 	public void setIgnoreRest(String ignoreRestStr) {
 		this.ignoreRest = ignoreRestStr != null && ignoreRestStr.equalsIgnoreCase("true");
 	}
+
 	@JsonIgnore
 	public String getOrderBy() {
 		return orderBy;
@@ -345,7 +368,9 @@ public class Entity {
 		if (anno.getOrderBy() != null) {
 			this.setOrderBy(anno.getOrderBy());
 		}
+		this.setIgnoreData(anno.getIgnoreData());
 	}
+
 	@JsonIgnore
 	public String getVarname() {
 		return varname == null ? JavaIdentifierUtil.toVariableName(name) : varname;
@@ -354,6 +379,7 @@ public class Entity {
 	public void setVarname(String varname) {
 		this.varname = JavaIdentifierUtil.decapitalize(varname);
 	}
+
 	@JsonIgnore
 	public Field getGroupFunctionField() {
 		if (this.fields != null) {
@@ -364,6 +390,19 @@ public class Entity {
 			}
 		}
 		return null;
+	}
+
+	@JsonIgnore
+	public boolean isIgnoreData() {
+		return ignoreData;
+	}
+
+	public void setIgnoreData(boolean ignoreData) {
+		this.ignoreData = ignoreData;
+	}
+
+	public void setIgnoreData(String ignoreDatastr) {
+		this.ignoreData = ignoreDatastr != null && ignoreDatastr.equalsIgnoreCase("true");
 	}
 
 }

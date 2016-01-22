@@ -30,13 +30,15 @@ public class PomXmlGenerator extends CodeGenerator {
 
 	@Override
 	public void doCodeGen() throws IOException {
-
+		if (!configuration.isGenPomXml()) {
+			return;
+		}
 		File pomFile = new File("pom.xml");
 		StringBuilder generator = new StringBuilder();
-		String groupId ="com.foo";
+		String groupId = "com.foo";
 		String artifactId = "scaffold-template";
 		String version = "0.0.1.SNAPSHOT";
-		
+
 		if (pomFile.exists() && pomFile.isFile()) {
 
 			try {
@@ -44,7 +46,7 @@ public class PomXmlGenerator extends CodeGenerator {
 				InputSource in = new InputSource("pom.xml");
 				Document doc = factory.newDocumentBuilder().parse(in);
 				NodeList dependNodes = doc.getElementsByTagName("dependency");
-				int cnt = dependNodes.getLength();	
+				int cnt = dependNodes.getLength();
 				for (int i = 0; i < cnt; i++) {
 					Element el = (Element) dependNodes.item(i);
 					if (el.getTextContent().indexOf(GENERATOR_PROJECT_NAME) != -1) {
@@ -61,7 +63,7 @@ public class PomXmlGenerator extends CodeGenerator {
 						generator.append("</dependency>").append(NEW_LINE);
 					}
 
-				}	
+				}
 				groupId = getElementTextValue(doc.getDocumentElement(), "groupId");
 				artifactId = getElementTextValue(doc.getDocumentElement(), "artifactId");
 				version = getElementTextValue(doc.getDocumentElement(), "version");
@@ -72,24 +74,19 @@ public class PomXmlGenerator extends CodeGenerator {
 		}
 
 		String pomXml = TemplateUtil.renderTemplate(IOUtils.toString(getClass().getResourceAsStream("pom.xml.tmpl")),
-				ParamMapBuilder.newBuilder()
-				.addMapEntry("MAVEN_GROUP_ID", groupId)
-				.addMapEntry("MAVEN_ARTIFACT_ID", artifactId)
-				.addMapEntry("MAVEN_VERSION", version)
-				.addMapEntry("GENERATOR_PROJECT_DEPENDENCY", generator.toString())
-						.buildMap());
+				ParamMapBuilder.newBuilder().addMapEntry("MAVEN_GROUP_ID", groupId)
+						.addMapEntry("MAVEN_ARTIFACT_ID", artifactId).addMapEntry("MAVEN_VERSION", version)
+						.addMapEntry("GENERATOR_PROJECT_DEPENDENCY", generator.toString()).buildMap());
 		writeCode(new File(configuration.getBaseSrcDir()), "pom.xml", pomXml);
 
 	}
-	
-	
-	protected String getElementTextValue(Element parent, String name)
-	{
+
+	protected String getElementTextValue(Element parent, String name) {
 		NodeList dependNodes = parent.getChildNodes();
-		int cnt = dependNodes.getLength();	
+		int cnt = dependNodes.getLength();
 		for (int i = 0; i < cnt; i++) {
-			Node el =  dependNodes.item(i);
-			if(el instanceof Element && ((Element)el).getTagName().equals(name)){
+			Node el = dependNodes.item(i);
+			if (el instanceof Element && ((Element) el).getTagName().equals(name)) {
 				return el.getTextContent();
 			}
 		}

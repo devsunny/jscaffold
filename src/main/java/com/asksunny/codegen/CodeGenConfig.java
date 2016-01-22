@@ -40,10 +40,12 @@ public class CodeGenConfig {
 	boolean genAngularController = true;
 	boolean genDomainObject = true;
 	boolean genMyBatisMapper = true;
+	boolean genMyBatisXmlMapper = true;
 	boolean genRestController = true;
 	boolean genSpringContext = true;
 	boolean genMyBatisSpringBeans = true;
 	boolean suffixSequenceIfExists = true;
+	boolean genScaffoldTools = true;
 	boolean genPomXml = true;
 
 	CaselessHashSet includes = new CaselessHashSet();
@@ -342,6 +344,22 @@ public class CodeGenConfig {
 
 	public void setDebug(boolean debug) {
 		this.debug = debug;
+	}
+
+	public boolean isGenMyBatisXmlMapper() {
+		return genMyBatisXmlMapper;
+	}
+
+	public void setGenMyBatisXmlMapper(boolean genMyBatisXmlMapper) {
+		this.genMyBatisXmlMapper = genMyBatisXmlMapper;
+	}
+
+	public boolean isGenScaffoldTools() {
+		return genScaffoldTools;
+	}
+
+	public void setGenScaffoldTools(boolean genScaffoldTools) {
+		this.genScaffoldTools = genScaffoldTools;
 	}
 
 }

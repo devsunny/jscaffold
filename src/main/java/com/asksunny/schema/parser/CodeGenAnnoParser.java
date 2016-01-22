@@ -113,6 +113,9 @@ public class CodeGenAnnoParser {
 		case DRILLDOWN:
 			anno.setDrillDown(val.getImage());
 			break;
+		case IGNOREDATA:
+			anno.setIgnoreData(val.getImage());;
+			break;	
 		}
 
 	}

@@ -23,6 +23,7 @@ public class CodeGenAnnotation {
 	String orderBy;
 	String autogen;
 	String drillDown;
+	String ignoreData;
 	
 	
 	
@@ -145,6 +146,12 @@ public class CodeGenAnnotation {
 	}
 	public void setDrillDown(String drillDown) {
 		this.drillDown = drillDown;
+	}
+	public String getIgnoreData() {
+		return ignoreData;
+	}
+	public void setIgnoreData(String ignoreData) {
+		this.ignoreData = ignoreData;
 	}
 	
 	

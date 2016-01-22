@@ -63,6 +63,7 @@ public class JavaCodeGen extends CodeGenerator {
 			in.close();
 		}
 		writeCode(new File(configuration.getSpringXmlBaseDir()), "schema_ddl.sql", sqlBuffer.toString());
+
 		if (new File(configuration.getSpringXmlBaseDir(), "seed_data.sql").exists() == false) {
 			writeCode(new File(configuration.getSpringXmlBaseDir()), "seed_data.sql", "");
 		}
@@ -101,25 +102,34 @@ public class JavaCodeGen extends CodeGenerator {
 				continue;
 			}
 
-			JavaMyBatisMapperGenerator myBatisGen = new JavaMyBatisMapperGenerator(configuration, entity);
-			myBatisGen.doCodeGen();
+			if (configuration.isGenMyBatisMapper()) {
+				JavaMyBatisMapperGenerator myBatisGen = new JavaMyBatisMapperGenerator(configuration, entity);
+				myBatisGen.doCodeGen();
+			}
 
-			JavaRestControllerGenerator restGen = new JavaRestControllerGenerator(configuration, entity);
-			restGen.doCodeGen();
-
-			MyBatisXmlEntityGenerator myBatisXmlGen = new MyBatisXmlEntityGenerator(configuration, entity);
-			myBatisXmlGen.doCodeGen();
-
-			JavaDomainObjectGenerator domainGen = new JavaDomainObjectGenerator(configuration, entity);
-			domainGen.doCodeGen();
+			if (configuration.isGenRestController()) {
+				JavaRestControllerGenerator restGen = new JavaRestControllerGenerator(configuration, entity);
+				restGen.doCodeGen();
+			}
+			if (configuration.isGenMyBatisXmlMapper()) {
+				MyBatisXmlEntityGenerator myBatisXmlGen = new MyBatisXmlEntityGenerator(configuration, entity);
+				myBatisXmlGen.doCodeGen();
+			}
+			if (configuration.isGenDomainObject()) {
+				JavaDomainObjectGenerator domainGen = new JavaDomainObjectGenerator(configuration, entity);
+				domainGen.doCodeGen();
+			}
 
 		}
 
-		String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
-		writeCode(new File(configuration.getJavaBaseDir(), filePath), "JScaffoldObjectModelController.java",
-				TemplateUtil.renderTemplate(
-						IOUtils.toString(getClass().getResourceAsStream("JScaffoldObjectModelController.java.tmpl")),
-						ParamMapBuilder.newBuilder().buildMap()));
+		if (configuration.isGenScaffoldTools()) {
+			String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
+			writeCode(new File(configuration.getJavaBaseDir(), filePath), "JScaffoldObjectModelController.java",
+					TemplateUtil.renderTemplate(
+							IOUtils.toString(
+									getClass().getResourceAsStream("JScaffoldObjectModelController.java.tmpl")),
+							ParamMapBuilder.newBuilder().buildMap()));
+		}
 
 		if (configuration.isGenAngular()) {
 			AngularUIGenerator augularGenerator = new AngularUIGenerator(configuration, schema);

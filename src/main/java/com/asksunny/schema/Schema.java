@@ -1,6 +1,7 @@
 package com.asksunny.schema;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +39,9 @@ public class Schema extends HashMap<String, Entity> {
 	}
 
 	public List<Entity> getAllEntities() {
-		return new ArrayList<>(this.values());
+		List<Entity> entities = new ArrayList<>(this.values());
+		Collections.sort(entities, new EntityOrderComparator());
+		return entities;
 	}
 
 	@Override

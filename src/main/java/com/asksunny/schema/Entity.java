@@ -14,17 +14,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Entity {
 
 	private String name;
-	private String varname;
+
 	private String label;
 
 	private final List<Field> fields = new ArrayList<>();
-	private final Map<String, Field> fieldMaps = new HashMap<>();
 
+	@JsonIgnore
+	private String varname;
+	@JsonIgnore
+	private final Map<String, Field> fieldMaps = new HashMap<>();
+	@JsonIgnore
 	private int itemsPerPage = 10;
+	@JsonIgnore
 	private boolean ignoreView;
+	@JsonIgnore
 	private boolean ignoreRest;
+	@JsonIgnore
 	private boolean ignoreData;
+	@JsonIgnore
 	private String orderBy;
+	@JsonIgnore
+	private boolean readonly;
+	@JsonIgnore
+	private int viewOrder;
 
 	public String getName() {
 		return name;
@@ -42,6 +54,11 @@ public class Entity {
 	public List<Field> getFields() {
 		ArrayList<Field> ff = new ArrayList<>(fields);
 		Collections.sort(ff, new FieldOrderComparator());
+		if (isReadonly()) {
+			for (Field field : ff) {
+				field.setReadonly(true);
+			}
+		}
 		return ff;
 	}
 
@@ -369,6 +386,8 @@ public class Entity {
 			this.setOrderBy(anno.getOrderBy());
 		}
 		this.setIgnoreData(anno.getIgnoreData());
+		this.setReadonly(anno.getReadonly());
+		this.setViewOrder(anno.getOrder());
 	}
 
 	@JsonIgnore
@@ -405,4 +424,27 @@ public class Entity {
 		this.ignoreData = ignoreDatastr != null && ignoreDatastr.equalsIgnoreCase("true");
 	}
 
+	public boolean isReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
+
+	public void setReadonly(String readonly) {
+		this.readonly = readonly != null && readonly.equalsIgnoreCase("true");
+	}
+
+	public int getViewOrder() {
+		return viewOrder;
+	}
+
+	public void setViewOrder(int viewOrder) {
+		this.viewOrder = viewOrder;
+	}
+
+	public void setViewOrder(String viewOrder) {
+		this.viewOrder = viewOrder != null ? Integer.valueOf(viewOrder) : 10;
+	}
 }

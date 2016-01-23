@@ -24,6 +24,9 @@ public class JavaDomainObjectGenerator extends CodeGenerator {
 	}
 
 	public void doCodeGen() throws IOException {
+		if (!configuration.isGenDomainObject()) {
+			return;
+		}
 
 		StringBuilder declarations = new StringBuilder();
 		StringBuilder methods = new StringBuilder();

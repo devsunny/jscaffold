@@ -24,6 +24,7 @@ public class CodeGenAnnotation {
 	String autogen;
 	String drillDown;
 	String ignoreData;
+	String readonly;
 	
 	
 	
@@ -152,6 +153,12 @@ public class CodeGenAnnotation {
 	}
 	public void setIgnoreData(String ignoreData) {
 		this.ignoreData = ignoreData;
+	}
+	public String getReadonly() {
+		return readonly;
+	}
+	public void setReadonly(String readonly) {
+		this.readonly = readonly;
 	}
 	
 	

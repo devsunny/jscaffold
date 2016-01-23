@@ -32,6 +32,10 @@ public class AngularEntityFieldGenerator {
 		String uiType = field.getUitype();
 		String element = "input";
 		String attrValue = field.isNullable() ? "" : "required";
+		System.out.printf("%s.%s %b\n", field.getContainer().getName(), field.getName(), field.isReadonly());
+		if (field.isReadonly()) {
+			attrValue = attrValue + " ng-readonly='true' ";
+		}
 
 		if (uiType == null) {
 			uiType = "text";
@@ -45,21 +49,21 @@ public class AngularEntityFieldGenerator {
 		} catch (Exception ex) {
 			;
 		}
-		if(uiType==null || htmlFormInputType==HtmlFormInputType.TEXT){
-			if(field.getJdbcType()==Types.DATE){
+		if (uiType == null || htmlFormInputType == HtmlFormInputType.TEXT) {
+			if (field.getJdbcType() == Types.DATE) {
 				htmlFormInputType = HtmlFormInputType.DATE;
 				uiType = "date";
-			}else if (field.getJdbcType()==Types.TIMESTAMP){
+			} else if (field.getJdbcType() == Types.TIMESTAMP) {
 				htmlFormInputType = HtmlFormInputType.DATETIME_LOCAL;
 				uiType = "datetime-local";
-			}else if (field.getJdbcType()==Types.TIME){
+			} else if (field.getJdbcType() == Types.TIME) {
 				htmlFormInputType = HtmlFormInputType.TIME;
 				uiType = "time";
 			}
-			
 		}
-		
-		//System.out.println(String.format("%s %s > %s", field.getName(), uiType, JdbcSqlTypeMap.getJdbcTyepName(field.getJdbcType())));
+
+		// System.out.println(String.format("%s %s > %s", field.getName(),
+		// uiType, JdbcSqlTypeMap.getJdbcTyepName(field.getJdbcType())));
 
 		String generated = "";
 		String HTML_INPUT_TYPE = "";
@@ -134,26 +138,39 @@ public class AngularEntityFieldGenerator {
 				if (fmt == null) {
 					fmt = this.field.getJdbcType() == Types.DATE ? "yyyy-MM-dd"
 							: (this.field.getJdbcType() == Types.TIMESTAMP) ? "yyyy-MM-dd HH:mm:ss" : "HH:mm:ss";
-				}				
-				datePicker = String.format("<datetimepicker data-ng-model=\"%s.%s\"></datetimepicker>", entityVarName, fieldVarName);
-			}else{
+				}
+				datePicker = String.format("<datetimepicker data-ng-model=\"%s.%s\"></datetimepicker>", entityVarName,
+						fieldVarName);
+
+			} else {
 				fmt = null;
-			}			
+			}
 			String templ = "angularEntityField.input.html.tmpl";
-			if(this.field.getJdbcType() == Types.DATE){
-				templ = "angularEntityFieldDatePicker.html.tmpl";
-			}else if(this.field.getJdbcType() == Types.TIMESTAMP){
-				templ = "angularEntityFieldDatetimePicker.html.tmpl";
-			}else if(this.field.getJdbcType() == Types.TIME){
-				templ = "angularEntityFieldTimePicker.html.tmpl";
-			} 
-			
-			generated = TemplateUtil.renderTemplate(
-					IOUtils.toString(getClass().getResourceAsStream(templ)),
-					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName).addMapEntry("FIELD_NAME", field.getObjectname())
-							.addMapEntry("HTML_TYPE", HTML_INPUT_TYPE).addMapEntry("ENTITY_VAR_NAME", entityVarName)
-							.addMapEntry("DATEPICKER_PICKER_FOR_DATETIME", datePicker).addMapEntry("FIELD_ATTRIBUTES", attrValue)
-							.addMapEntry("FIELD_INPUT_TYPE", element).addMapEntry("FIELD_LABEL", label).buildMap());
+			if(!field.isReadonly()){
+				switch(this.field.getJdbcType())
+				{
+				case Types.DATE:
+					templ = "angularEntityFieldDatePicker.html.tmpl";
+					break;
+				case Types.TIMESTAMP:
+					templ = "angularEntityFieldDatetimePicker.html.tmpl";
+					break;
+				case Types.TIME:
+					templ = "angularEntityFieldTimePicker.html.tmpl";
+					break;
+				default:
+					templ = "angularEntityField.input.html.tmpl";
+					break;
+				}				
+			}
+			System.out.println(templ);
+			generated = TemplateUtil.renderTemplate(IOUtils.toString(getClass().getResourceAsStream(templ)),
+					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName)
+							.addMapEntry("FIELD_NAME", field.getObjectname()).addMapEntry("HTML_TYPE", HTML_INPUT_TYPE)
+							.addMapEntry("ENTITY_VAR_NAME", entityVarName)
+							.addMapEntry("DATEPICKER_PICKER_FOR_DATETIME", datePicker)
+							.addMapEntry("FIELD_ATTRIBUTES", attrValue).addMapEntry("FIELD_INPUT_TYPE", element)
+							.addMapEntry("FIELD_LABEL", label).buildMap());
 			break;
 		}
 		return generated;

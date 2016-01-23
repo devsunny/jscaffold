@@ -29,6 +29,9 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 	}
 
 	public void doCodeGen() throws IOException {
+		if (!configuration.isGenMyBatisMapper()) {
+			return;
+		}
 		List<Field> keyFields = entity.getKeyFields();
 		if (keyFields.size() == 0 && entity.hasUniqueField()) {
 			keyFields = entity.getUniqueFields();

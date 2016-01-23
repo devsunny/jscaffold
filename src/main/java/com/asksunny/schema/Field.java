@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Field {
 
-	
 	int scale;
 	int precision;
 	int displaySize;
@@ -30,7 +29,7 @@ public class Field {
 	Entity container;
 	@JsonIgnore
 	int jdbcType;
-	
+
 	@JsonIgnore
 	String varname;
 
@@ -72,6 +71,9 @@ public class Field {
 	GroupView groupView = GroupView.TABLE;
 	@JsonIgnore
 	private boolean ignoreData;
+
+	@JsonIgnore
+	private boolean readonly;
 
 	public Field() {
 		super();
@@ -421,6 +423,7 @@ public class Field {
 		this.setAutogen(anno.getAutogen());
 		this.setDrillDown(anno.getDrillDown());
 		this.setIgnoreData(anno.getIgnoreData());
+		this.setReadonly(anno.getReadonly());
 	}
 
 	public int getDrillDown() {
@@ -444,17 +447,29 @@ public class Field {
 	public void setDbTypeName(String dbTypeName) {
 		this.dbTypeName = dbTypeName;
 	}
-	
+
 	public boolean isIgnoreData() {
 		return this.ignoreData;
 	}
-	
+
 	public void setIgnoreData(boolean ignoreData) {
 		this.ignoreData = ignoreData;
 	}
-	
+
 	public void setIgnoreData(String ignoreDatastr) {
-		this.ignoreData = ignoreDatastr!=null && ignoreDatastr.equalsIgnoreCase("true");
+		this.ignoreData = ignoreDatastr != null && ignoreDatastr.equalsIgnoreCase("true");
+	}
+
+	public boolean isReadonly() {
+		return readonly;
+	}
+
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
+
+	public void setReadonly(String readonly) {
+		this.readonly = readonly != null && readonly.equalsIgnoreCase("true");
 	}
 
 }

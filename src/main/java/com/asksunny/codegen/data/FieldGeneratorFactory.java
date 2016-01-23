@@ -18,6 +18,7 @@ import com.asksunny.schema.generator.FirstNameGenerator;
 import com.asksunny.schema.generator.ForeignKeyFieldGenerator;
 import com.asksunny.schema.generator.FormattedStringGenerator;
 import com.asksunny.schema.generator.Generator;
+import com.asksunny.schema.generator.IdentifierGenerator;
 import com.asksunny.schema.generator.IntegerGenerator;
 import com.asksunny.schema.generator.LastNameGenerator;
 import com.asksunny.schema.generator.LuxuryPriceGenerator;
@@ -32,6 +33,7 @@ import com.asksunny.schema.generator.TimeGenerator;
 import com.asksunny.schema.generator.TimestampGenerator;
 import com.asksunny.schema.generator.TinyIntGenerator;
 import com.asksunny.schema.generator.UIntegerGenerator;
+import com.asksunny.schema.generator.UserNameGenerator;
 import com.asksunny.schema.generator.ZipGenerator;
 
 public class FieldGeneratorFactory {
@@ -96,7 +98,7 @@ public class FieldGeneratorFactory {
 			break;
 		case Types.TIME:
 			gen = new TimeGenerator(field);
-			break;
+			break;			
 		case Types.TIMESTAMP:
 			gen = new TimestampGenerator(field);
 			break;
@@ -193,6 +195,12 @@ public class FieldGeneratorFactory {
 			break;
 		case BINARY:
 			gen = new BinaryGenerator(field);
+			break;
+		case IDENTIFIER:
+			gen = new IdentifierGenerator(field);
+			break;
+		case USERNAME:
+			gen = new UserNameGenerator(field);
 			break;
 		case ENUM:
 			gen = new EnumGenerator(field);

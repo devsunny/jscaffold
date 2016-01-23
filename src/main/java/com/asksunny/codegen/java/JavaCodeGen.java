@@ -82,7 +82,6 @@ public class JavaCodeGen extends CodeGenerator {
 
 	public void doCodeGen(Schema schema) throws IOException {
 		schema.buildRelationship();
-
 		if (configuration.isGenSpringContext()) {
 			SpringContextGenerator springContext = new SpringContextGenerator(configuration, schema);
 			springContext.doCodeGen();
@@ -128,7 +127,8 @@ public class JavaCodeGen extends CodeGenerator {
 					TemplateUtil.renderTemplate(
 							IOUtils.toString(
 									getClass().getResourceAsStream("JScaffoldObjectModelController.java.tmpl")),
-							ParamMapBuilder.newBuilder().buildMap()));
+							ParamMapBuilder.newBuilder()
+									.addMapEntry("REST_PACKAGE_NAME", configuration.getRestPackageName()).buildMap()));
 		}
 
 		if (configuration.isGenAngular()) {

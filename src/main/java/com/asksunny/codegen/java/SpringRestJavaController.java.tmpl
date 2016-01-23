@@ -28,6 +28,7 @@ public class #{ENTITY_NAME}RestController {
 	@Autowired
 	private #{ENTITY_NAME}Mapper #{ENTITY_VAR_NAME}Mapper;
 	
+    
     @RequestMapping(method = { RequestMethod.POST })
     @ResponseBody
     public #{ENTITY_NAME} add#{ENTITY_NAME}(@RequestBody #{ENTITY_NAME} #{ENTITY_VAR_NAME}){
@@ -36,6 +37,15 @@ public class #{ENTITY_NAME}RestController {
     	}
         this.#{ENTITY_VAR_NAME}Mapper.insert#{ENTITY_NAME}(#{ENTITY_VAR_NAME});
         return #{ENTITY_VAR_NAME};
+    }
+    
+    @RequestMapping(value="/new", method = { RequestMethod.GET })
+    @ResponseBody
+    public #{ENTITY_NAME} new#{ENTITY_NAME}(){
+    	if(logger.isDebugEnabled()){
+    		 logger.debug("Receive new object request");
+    	}
+    	return new #{ENTITY_NAME}();
     }
 
     @RequestMapping(method = { RequestMethod.GET })
@@ -47,7 +57,6 @@ public class #{ENTITY_NAME}RestController {
         java.util.List<#{ENTITY_NAME}> ret = this.#{ENTITY_VAR_NAME}Mapper.select#{ENTITY_NAME}();
         return ret;
     }
-
     
     #{MORE_REST_METHODS}
 

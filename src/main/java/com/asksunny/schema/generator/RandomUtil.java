@@ -79,6 +79,9 @@ public final class RandomUtil {
 	public long getRandomLong(long min, long max) {
 
 		long rlong = random.nextLong();
+		if(rlong<0 && min>=0){
+			rlong = rlong * -1;
+		}
 		if (rlong >= min && rlong <= max) {
 			return rlong;
 		} else if (rlong > max) {

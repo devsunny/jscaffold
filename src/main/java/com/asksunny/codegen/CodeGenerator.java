@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.asksunny.codegen.CodeGenConfig.CodeOverwriteStrategy;
 import com.asksunny.schema.Entity;

@@ -445,6 +445,10 @@ public class Field {
 		this.dbTypeName = dbTypeName;
 	}
 	
+	public boolean isIgnoreData() {
+		return this.ignoreData;
+	}
+	
 	public void setIgnoreData(boolean ignoreData) {
 		this.ignoreData = ignoreData;
 	}

@@ -49,7 +49,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 			}
 			List<Field> fields = entity.getFields();
 			for (int i = 0; i < fieldGenerators.size(); i++) {
-				
+
 				if (fieldGenerators.get(i) instanceof ForeignKeyFieldGenerator) {
 					Field fd = fields.get(i);
 					List<List<String>> pds = parentDataSets
@@ -106,12 +106,13 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 		if (this.config.isDebug()) {
 			System.out.println(String.format("a %s record %s ", this.entity.getName(), values));
 		}
-		doOutput(fields, values);
+		if (!entity.isIgnoreData()) {
+			doOutput(fields, values);
+		}
 		return values;
 	}
 
 	protected void doOutput(List<Field> fields, List<String> values) {
-
 		if (this.getConfig().getOutputType() == DataOutputType.INSERT) {
 			if (this.config.isDebug()) {
 				System.out.println(String.format("Output a %s INSERT record %s ", this.entity.getName(), values));
@@ -133,8 +134,13 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	protected void doInsertOutput(List<Field> fields, List<String> values) {
 		StringBuilder buf = new StringBuilder();
 		int size = fields.size();
-		int lastIdx = size - 1;
 		for (int i = 0; i < size; i++) {
+			if (fields.get(i).isIgnoreData()) {
+				continue;
+			}
+			if (buf.length() > 0) {
+				buf.append(",");
+			}
 			switch (fields.get(i).getJdbcType()) {
 			case Types.BIT:
 			case Types.TINYINT:
@@ -146,8 +152,9 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 			case Types.DOUBLE:
 			case Types.NUMERIC:
 			case Types.DECIMAL:
+			case Types.BINARY:
 				buf.append(values.get(i));
-				break;
+				break;			
 			default:
 				String val = values.get(i);
 				if (val == null) {
@@ -157,9 +164,6 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 					buf.append("'").append(val).append("'");
 				}
 				break;
-			}
-			if (i < lastIdx) {
-				buf.append(",");
 			}
 		}
 		out.println(String.format(insertTemplate, buf.toString()));
@@ -214,13 +218,14 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 				buf.append("INSERT INTO ").append(entity.getName());
 				buf.append(" (");
 				int cnt = 0;
-				int size = entity.getFields().size();
 				for (Field fd : entity.getFields()) {
-					cnt++;
-					buf.append(fd.getName());
-					if (cnt < size) {
+					fd.isIgnoreData();
+					if (cnt > 0) {
 						buf.append(",");
 					}
+					cnt++;
+					buf.append(fd.getName());
+
 				}
 				buf.append(") VALUES (%s);");
 				insertTemplate = buf.toString();

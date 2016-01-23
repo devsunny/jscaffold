@@ -6,6 +6,7 @@ public class EnumGenerator implements Generator<String> {
 
 	private Field field;
 	private String[] enumValues;
+	private int enumPos = 0;
 
 	public EnumGenerator(Field field) {
 		super();
@@ -25,8 +26,12 @@ public class EnumGenerator implements Generator<String> {
 		if ((this.field.isNullable() && RandomUtil.getInstance().isOddEnough()) || enumValues == null) {
 			return null;
 		}
-		int idx = RandomUtil.getInstance().getUnsignedInt(enumValues.length);
-		return enumValues[idx];
+		if (field.isUnqiueEnum()) {
+			return enumValues[enumPos++%enumValues.length];
+		} else {
+			int idx = RandomUtil.getInstance().getUnsignedInt(enumValues.length);
+			return enumValues[idx];
+		}
 	}
 
 }

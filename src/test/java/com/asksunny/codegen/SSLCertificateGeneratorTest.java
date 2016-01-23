@@ -12,5 +12,8 @@ public class SSLCertificateGeneratorTest {
 		SSLCertificateGenerator gen = new SSLCertificateGenerator(cfg);
 		gen.doCodeGen();
 	}
+	
+	
+	
 
 }

@@ -40,13 +40,16 @@ public class SQLScriptParser {
 					if (args[i] instanceof String && args.length > 1) {
 						debugWriter.print(args[i]);
 						debugWriter.print(" ");
+
 					} else {
 						debugWriter.println(args[i]);
 					}
-					debugWriter.flush();
+
 				}
 
 			}
+			debugWriter.println();
+			debugWriter.flush();
 		}
 	}
 
@@ -80,7 +83,7 @@ public class SQLScriptParser {
 				debug(t);
 				switch (t.getKind()) {
 				case KEYWORD:
-					debug("Parse satetement\n");
+					debug(String.format("start parsing statement:[%s]", t.getImage()));
 					parseStatement(schema, t);
 					break;
 				default:
@@ -117,6 +120,7 @@ public class SQLScriptParser {
 		}
 		debug("parse Table body", entity);
 		parseCreateTableBody(entity);
+		debug(String.format("Add table to schema:[%s]\n", entity.getName()));
 		schema.put(entity.getName(), entity);
 	}
 
@@ -137,7 +141,9 @@ public class SQLScriptParser {
 
 		Token table = consume();
 		Token action = consume();
+		debug(String.format("Found Entity Name:[%s]", table.getImage()));
 		Entity entity = schema.get(table.getImage());
+		debug("Found entity?", entity != null);
 
 		if (action.getKeyword() == Keyword.ADD) {
 			Token actName = tokenReader.peek(0);
@@ -207,6 +213,7 @@ public class SQLScriptParser {
 			Token anxtTok = tokenReader.peek(0);
 			switch (anxtTok.getKeyword()) {
 			case TABLE:
+				debug(String.format("Alter table:[%s]", tokenReader.peek(1).getImage()));
 				drain(1);
 				parseAlterTableStatement(schema);
 				break;
@@ -232,6 +239,7 @@ public class SQLScriptParser {
 		}
 		Field field = null;
 		while ((field = parseField(entity)) != null) {
+			debug(String.format("Adding field [%s] to [%s]", field.getName(), entity.getName()));
 			entity.addField(field);
 		}
 		debug("All field parsed.");
@@ -255,7 +263,9 @@ public class SQLScriptParser {
 				}
 			}
 		}
-
+		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
+			ignoreStatement();
+		}
 	}
 
 	protected void parsePKConstraint(Entity entity) throws IOException {
@@ -269,23 +279,32 @@ public class SQLScriptParser {
 				}
 			}
 		}
+		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
+			ignoreStatement();
+		}
 	}
 
 	protected void parseFKConstraint(Entity entity) throws IOException {
+		if (entity == null) {
+			throw new RuntimeException("Foreign key table cannot be null");
+		}
 		drain(2);
 		List<Token> ftoks = consumeItemList();
-		debug("Hello FK reference:", ftoks);
+		debug("Hello FK columns:", ftoks);
 		Token reference = consume();
-		debug("Hello FK reference:", reference);
+		debug("Hello FK Keyword:", reference);
 		Token tb = consume(); // refrence table name
-		debug("Hello FK reference:", tb);
+		debug("Hello FK reference table:", tb);
 		debug("before FK token:", tokenReader.peek(0));
 		List<Token> rtoks = consumeItemList();
 		int size = ftoks.size();
+		debug("FK columns size:", ftoks.size());
+		debug("Reference columns size:", rtoks.size());
 		debug("Hello FK reference:", rtoks);
 		for (int i = 0; i < size; i++) {
 			Token fk = ftoks.get(i);
 			Token rk = rtoks.get(i);
+			debug("Lookup foreign key:", fk.image);
 			Field fd = entity.findField(fk.image);
 			Entity e = new Entity(tb.image);
 			Field rd = new Field();
@@ -294,6 +313,9 @@ public class SQLScriptParser {
 			fd.setReference(rd);
 		}
 		debug("after FK token:", tokenReader.peek(0));
+		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
+			ignoreStatement();
+		}
 	}
 
 	protected void parseEntityClause(Entity entity) throws IOException {
@@ -343,9 +365,9 @@ public class SQLScriptParser {
 			// }
 			ret.setJdbcType(JdbcSqlTypeMap.getInstance().findJdbcType(tname));
 			ret.setDbTypeName(tname);
-			if (peekMatch(0, LexerTokenKind.LPAREN) && !peekMatch(1, LexerTokenKind.RPAREN) ) {
+			if (peekMatch(0, LexerTokenKind.LPAREN) && !peekMatch(1, LexerTokenKind.RPAREN)) {
 				consume();
-				Token num1 = consume();				
+				Token num1 = consume();
 				if (num1.getKeyword() == Keyword.ASTERISK) {
 					ret.setPrecision(16);
 					ret.setDisplaySize(16);
@@ -367,8 +389,8 @@ public class SQLScriptParser {
 				}
 				if (peekMatch(0, Keyword.BYTE)) {
 					consume();
-				} 
-				
+				}
+
 				if (peekMatch(0, LexerTokenKind.RPAREN)) {
 					consume();
 				} else {
@@ -376,13 +398,13 @@ public class SQLScriptParser {
 					throw new InvalidSQLException(LexerTokenKind.RPAREN.name(), p.getImage(), p.getLine(),
 							p.getColumn());
 				}
-			}else if(peekMatch(0, LexerTokenKind.LPAREN) && peekMatch(1, LexerTokenKind.RPAREN)){
+			} else if (peekMatch(0, LexerTokenKind.LPAREN) && peekMatch(1, LexerTokenKind.RPAREN)) {
 				consume();
-				if(ret!=null && ret.isNumericField()){
+				if (ret != null && ret.isNumericField()) {
 					ret.setPrecision(16);
 					ret.setDisplaySize(16);
 					ret.setMaxValue("100000");
-					ret.setMinValue("0");					
+					ret.setMinValue("0");
 				}
 			}
 			while (tokenReader.peek(0) != null && !peekMatch(0, LexerTokenKind.COMMA)

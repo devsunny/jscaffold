@@ -7,6 +7,7 @@ import java.util.Date;
 import org.apache.commons.io.IOUtils;
 
 import com.asksunny.schema.Schema;
+import com.asksunny.tools.Keytool;
 
 /**
  * 
@@ -61,24 +62,10 @@ public class SSLCertificateGenerator extends CodeGenerator {
 	}
 
 	public void doCodeGen() {
-		String javaHome = System.getProperty("java.home");
-
-		File keytool = File.pathSeparatorChar == ';' ? new File(javaHome, "bin/keytool.exe")
-				: new File(javaHome, "bin/keytool");
-		System.out.println(keytool);
-
-		try {
-			ProcessBuilder builder = new ProcessBuilder(keytool.toString());
-			builder.redirectErrorStream(true);
-			Process p = builder.start();
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			IOUtils.copy(p.getInputStream(), bout);
-			System.out.println(new String(bout.toByteArray()));
-			p.waitFor();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Keytool keytool = new Keytool();
+		
+		//keytool.generateKey("CN=www.xperia.com", "xperiawebserver", "goodpass", new File("target/test_key.jsk"), null);
+		keytool.generateKeyCSR(new File("target/xperia.csr"), "CN=www.xperia.com, OU=R&D, O=Company Ltd., L=New York City, S=New York, C=US", "xperiawebserver", "goodpass", new File("target/xperia_key.jsk"), null);
 
 	}
 

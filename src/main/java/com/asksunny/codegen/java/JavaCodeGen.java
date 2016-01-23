@@ -43,6 +43,9 @@ public class JavaCodeGen extends CodeGenerator {
 			}
 			try {
 				SQLScriptParser parser = new SQLScriptParser(new InputStreamReader(in));
+				if(configuration.isDebug()){
+					parser.setDebug(true);
+				}				
 				Schema schemax = parser.parseSql();
 				if (schema == null) {
 					schema = schemax;

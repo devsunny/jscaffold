@@ -36,7 +36,6 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 
 	public List<List<String>> generateDataSet() {
 		int size = totalRecordCount <= MAX_SET_SIZE ? (int) totalRecordCount : Math.abs(rand.nextInt(MAX_SET_SIZE));
-
 		Map<String, List<List<String>>> parentDataSets = new HashMap<>();
 		if (parentEntityGenerators.size() > 0) {
 			for (BottomUpEntityDataGenerator egen : parentEntityGenerators) {
@@ -49,7 +48,6 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 			}
 			List<Field> fields = entity.getFields();
 			for (int i = 0; i < fieldGenerators.size(); i++) {
-
 				if (fieldGenerators.get(i) instanceof ForeignKeyFieldGenerator) {
 					Field fd = fields.get(i);
 					List<List<String>> pds = parentDataSets

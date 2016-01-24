@@ -2,15 +2,20 @@ package com.asksunny.codegen.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.CodeGenerator;
+import com.asksunny.codegen.utils.FMParamMapBuilder;
 import com.asksunny.codegen.utils.ParamMapBuilder;
 import com.asksunny.codegen.utils.TemplateUtil;
 import com.asksunny.schema.Entity;
@@ -18,6 +23,14 @@ import com.asksunny.schema.Field;
 import com.asksunny.schema.FieldDrillDownComparator;
 import com.asksunny.schema.FieldGroupLevelComparator;
 import com.asksunny.schema.parser.JdbcSqlTypeMap;
+import com.asksunny.tools.ClasspathTemplateLoader;
+
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.Version;
 
 public class JavaRestControllerGenerator extends CodeGenerator {
 
@@ -34,118 +47,34 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 		if (!configuration.isGenRestController()) {
 			return;
 		}
-
-		List<Field> keyFields = entity.getKeyFields();
-		StringBuilder methods = new StringBuilder();
-		if (keyFields.size() == 1) {
-			doSingleKey(keyFields.get(0), methods);
-		} else if (keyFields.size() > 1) {
-			doMultipleKey(keyFields, methods);
-		}
+		StringBuilder methods = new StringBuilder();		
 		doGroupBy(methods);
-		doDrillDown(methods);
-		String generated = TemplateUtil.renderTemplate(
-				IOUtils.toString(getClass().getResourceAsStream("SpringRestJavaController.java.tmpl")),
-				ParamMapBuilder.newBuilder().addMapEntry("MAPPER_PACKAGE_NAME", configuration.getMapperPackageName())
-						.addMapEntry("DOMAIN_PACKAGE_NAME", configuration.getDomainPackageName())
-						.addMapEntry("REST_PACKAGE_NAME", configuration.getRestPackageName())
-						.addMapEntry("MORE_REST_METHODS", methods.toString())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
-						.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
-
-		String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
-		writeCode(new File(configuration.getJavaBaseDir(), filePath),
-				String.format("%sRestController.java", entity.getEntityObjectName()), generated);
-
+		doDrillDown(methods);		
+		try {
+			Configuration cfg = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);		
+			cfg.setClassForTemplateLoading(getClass(), "");			
+			cfg.setDefaultEncoding("UTF-8");
+			cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+			Template temp = cfg.getTemplate("SpringRestJavaController.java.ftl", Locale.US);
+			StringWriter out = new StringWriter();
+			temp.process(FMParamMapBuilder.newBuilder()
+					.addMapEntry("MAPPER_PACKAGE_NAME", configuration.getMapperPackageName())
+					.addMapEntry("DOMAIN_PACKAGE_NAME", configuration.getDomainPackageName())
+					.addMapEntry("REST_PACKAGE_NAME", configuration.getRestPackageName())
+					.addMapEntry("entity", entity)
+					.addMapEntry("MORE_REST_METHODS", methods.toString())
+					.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
+					.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+					.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap(), out);
+			out.flush();
+			String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
+			writeCode(new File(configuration.getJavaBaseDir(), filePath),
+					String.format("%sRestController.java", entity.getEntityObjectName()), out.toString());
+		} catch (TemplateException e) {
+			throw new IOException("Failed to render template", e);
+		}
 	}
 
-	protected void doMultipleKey(List<Field> keyFields, StringBuilder methods) {
-		if (!entity.hasKeyField()) {
-			return;
-		}
-		StringBuilder uri = new StringBuilder();
-		List<String> params = new ArrayList<>();
-		StringBuilder keyName = new StringBuilder();
-
-		for (Field kf : keyFields) {
-			uri.append("/{").append(kf.getVarname()).append("}");
-			params.add(String.format("@PathVariable(\"%1$s\")%2$s %1$s", kf.getVarname(),
-					JdbcSqlTypeMap.toJavaTypeName(kf)));
-			keyName.append(kf.getObjectname());
-		}
-		String paramsString = StringUtils.join(params, ", ");
-		methods.append(String.format("%2$s@RequestMapping(value=\"%1$s\", method = { RequestMethod.GET })\n",
-				uri.toString(), INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic %1$s get%1$sBy%4$s(%3$s){\n", entity.getEntityObjectName(),
-				INDENDENT_2, paramsString, keyName.toString()));
-
-		methods.append(String.format("%2$s%1$s %3$s = new  %1$s();\n", entity.getEntityObjectName(), INDENDENT_2,
-				entity.getEntityVarName()));
-		for (Field kf : keyFields) {
-			methods.append(String.format("%2$s %3$s.set%1$s(%4$s);\n", kf.getObjectname(), INDENDENT_2,
-					entity.getEntityVarName(), kf.getVarname()));
-		}
-		methods.append(String.format("%2$sreturn this.%3$sMapper.select%1$sBy%4$s(%3$s);", entity.getEntityObjectName(),
-				INDENDENT_2, entity.getEntityVarName(), keyName.toString())).append("\n");
-		methods.append(INDENDENT_2).append("}\n\n");
-
-		methods.append(String.format("%1$s@RequestMapping(method = { RequestMethod.PUT })\n", INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic int update%1$sBy%4$s(@RequestBody %1$s %3$s){\n",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyName.toString()));
-		methods.append(String.format("%2$sreturn this.%3$sMapper.update%1$sBy%4$s(%3$s);\n",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyName.toString()));
-		methods.append(INDENDENT_2).append("}\n\n");
-
-		methods.append(String.format("%1$s@RequestMapping(method = { RequestMethod.DELETE })\n", INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic int delete%1$sBy%4$s(@RequestBody %1$s %3$s){\n",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyName.toString()));
-		methods.append(String.format("%2$sreturn this.%3$sMapper.delete%1$sBy%4$s(%3$s);\n",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyName.toString()));
-		methods.append(INDENDENT_2).append("}\n\n");
-	}
-
-	protected void doSingleKey(Field keyField, StringBuilder methods) throws IOException {
-		if (!entity.hasKeyField()) {
-			return;
-		}
-
-		methods.append(String.format("%2$s@RequestMapping(value=\"/{%1$s}\", method = { RequestMethod.GET })\n",
-				keyField.getVarname(), INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic %1$s get%1$sBy%3$s(@PathVariable(\"%4$s\") %5$s %4$s){",
-				entity.getEntityObjectName(), INDENDENT_2, keyField.getObjectname(), keyField.getVarname(),
-				JdbcSqlTypeMap.toJavaTypeName(keyField))).append("\n");
-		methods.append(String.format("%2$sreturn this.%6$sMapper.select%1$sBy%3$s(%4$s);", entity.getEntityObjectName(),
-				INDENDENT_2, keyField.getObjectname(), keyField.getVarname(), JdbcSqlTypeMap.toJavaTypeName(keyField),
-				entity.getEntityVarName())).append("\n");
-		methods.append(INDENDENT_2).append("}\n\n");
-
-		methods.append(String.format("%2$s@RequestMapping(method = { RequestMethod.PUT })\n", keyField.getVarname(),
-				INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic int update%1$sBy%4$s(@RequestBody %1$s %3$s){",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyField.getObjectname()))
-				.append("\n");
-		methods.append(String.format("%2$sreturn this.%6$sMapper.update%1$sBy%3$s(%6$s);", entity.getEntityObjectName(),
-				INDENDENT_2, keyField.getObjectname(), keyField.getVarname(), JdbcSqlTypeMap.toJavaTypeName(keyField),
-				entity.getEntityVarName())).append("\n");
-		methods.append(INDENDENT_2).append("}\n\n");
-
-		methods.append(String.format("%2$s@RequestMapping(method = { RequestMethod.DELETE })\n", keyField.getVarname(),
-				INDENDENT_2));
-		methods.append(INDENDENT_2).append("@ResponseBody\n");
-		methods.append(String.format("%2$spublic int delete%1$sBy%4$s(@RequestBody %1$s %3$s){",
-				entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), keyField.getObjectname()))
-				.append("\n");
-		methods.append(String.format("%2$sreturn this.%6$sMapper.delete%1$sBy%3$s(%6$s);", entity.getEntityObjectName(),
-				INDENDENT_2, keyField.getObjectname(), keyField.getVarname(), JdbcSqlTypeMap.toJavaTypeName(keyField),
-				entity.getEntityVarName())).append("\n");
-		methods.append(INDENDENT_2).append("}\n\n");
-	}
 
 	protected void doGroupBy(StringBuilder methods) throws IOException {
 		if (!entity.hasGroupByFields()) {

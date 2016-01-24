@@ -37,6 +37,8 @@ public class Entity {
 	private boolean readonly;
 	@JsonIgnore
 	private int viewOrder;
+	@JsonIgnore
+	private boolean usePrincipal;
 
 	public String getName() {
 		return name;
@@ -65,6 +67,9 @@ public class Entity {
 	public void addField(Field field) {
 		field.setContainer(this);
 		field.setFieldIndex(this.fields.size());
+		if (field.getPrincipal() != null) {
+			this.setUsePrincipal(true);
+		}
 		this.fields.add(field);
 		this.fieldMaps.put(field.getName().toUpperCase(), field);
 	}
@@ -446,5 +451,13 @@ public class Entity {
 
 	public void setViewOrder(String viewOrder) {
 		this.viewOrder = viewOrder != null ? Integer.valueOf(viewOrder) : 10;
+	}
+
+	public boolean isUsePrincipal() {
+		return usePrincipal;
+	}
+
+	public void setUsePrincipal(boolean usePrincipal) {
+		this.usePrincipal = usePrincipal;
 	}
 }

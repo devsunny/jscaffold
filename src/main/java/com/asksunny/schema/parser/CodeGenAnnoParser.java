@@ -119,6 +119,9 @@ public class CodeGenAnnoParser {
 		case READONLY:
 			anno.setReadonly(val.getImage());
 			break;
+		case PRINCIPAL:
+			anno.setPrincipal(val.getImage());
+			break;
 		}
 
 	}

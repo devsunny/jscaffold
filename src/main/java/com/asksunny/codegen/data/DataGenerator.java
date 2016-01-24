@@ -50,8 +50,8 @@ public class DataGenerator extends CodeGenerator {
 			}
 		}
 
-		BottomUpSchemaDataGenerator dataGenerator = new BottomUpSchemaDataGenerator(configuration, schema);		
-		dataGenerator.generateData();
+		//BottomUpSchemaDataGenerator dataGenerator = new BottomUpSchemaDataGenerator(configuration, schema);		
+		//dataGenerator.generateData();
 
 	}
 

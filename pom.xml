@@ -9,8 +9,7 @@
 		<java-version>1.7</java-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<freemarker.version>2.3.21</freemarker.version>
+		<freemarker.version>2.3.23</freemarker.version>
 		<jackson.version>2.6.0</jackson.version>
 		<commons-io.version>2.1</commons-io.version>
 		<commons-lang.version>3.3.2</commons-lang.version>

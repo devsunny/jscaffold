@@ -32,7 +32,7 @@ public class AngularEntityFieldGenerator {
 		String uiType = field.getUitype();
 		String element = "input";
 		String attrValue = field.isNullable() ? "" : "required";
-		System.out.printf("%s.%s %b\n", field.getContainer().getName(), field.getName(), field.isReadonly());
+		
 		if (field.isReadonly()) {
 			attrValue = attrValue + " ng-readonly='true' ";
 		}
@@ -162,8 +162,7 @@ public class AngularEntityFieldGenerator {
 					templ = "angularEntityField.input.html.tmpl";
 					break;
 				}				
-			}
-			System.out.println(templ);
+			}			
 			generated = TemplateUtil.renderTemplate(IOUtils.toString(getClass().getResourceAsStream(templ)),
 					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName)
 							.addMapEntry("FIELD_NAME", field.getObjectname()).addMapEntry("HTML_TYPE", HTML_INPUT_TYPE)

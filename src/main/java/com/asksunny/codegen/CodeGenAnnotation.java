@@ -25,6 +25,7 @@ public class CodeGenAnnotation {
 	String drillDown;
 	String ignoreData;
 	String readonly;
+	String principal;
 	
 	
 	
@@ -159,6 +160,12 @@ public class CodeGenAnnotation {
 	}
 	public void setReadonly(String readonly) {
 		this.readonly = readonly;
+	}
+	public String getPrincipal() {
+		return principal;
+	}
+	public void setPrincipal(String principal) {
+		this.principal = principal;
 	}
 	
 	

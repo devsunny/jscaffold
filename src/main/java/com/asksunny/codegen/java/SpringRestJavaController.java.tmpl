@@ -31,7 +31,7 @@ public class #{ENTITY_NAME}RestController {
     
     @RequestMapping(method = { RequestMethod.POST })
     @ResponseBody
-    public #{ENTITY_NAME} add#{ENTITY_NAME}(@RequestBody #{ENTITY_NAME} #{ENTITY_VAR_NAME}){
+    public #{ENTITY_NAME} add#{ENTITY_NAME}(@RequestBody #{ENTITY_NAME} #{ENTITY_VAR_NAME}, java.security.Principal principal){
         if(logger.isDebugEnabled()){
     		 logger.debug("Receive insert request:{}", #{ENTITY_VAR_NAME});
     	}

@@ -45,7 +45,9 @@ angular.module('#{ANGULAR_APP_NAME}')
    $scope.get=function(){
    		 var urlExpr = $interpolate('#{GET_REQUEST_URI}');
    		 var url  = urlExpr($stateParams);
-   		 console.log(url);
+   		 if(url == "/#{WEBCONTEXT}/#{ENTITY_VAR_NAME}/"){
+   		 	return;
+   		 }   		 
    		 $http.get(url).then(fetchhandler, errhandler);   		
    };
    

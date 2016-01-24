@@ -73,6 +73,9 @@ public class Field {
 	private boolean ignoreData;
 
 	@JsonIgnore
+	private String principal;
+
+	@JsonIgnore
 	private boolean readonly;
 
 	public Field() {
@@ -424,6 +427,7 @@ public class Field {
 		this.setDrillDown(anno.getDrillDown());
 		this.setIgnoreData(anno.getIgnoreData());
 		this.setReadonly(anno.getReadonly());
+		this.setPrincipal(anno.getPrincipal());
 	}
 
 	public int getDrillDown() {
@@ -470,6 +474,19 @@ public class Field {
 
 	public void setReadonly(String readonly) {
 		this.readonly = readonly != null && readonly.equalsIgnoreCase("true");
+	}
+
+	public String getPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(String principal) {
+		this.principal = principal;
+	}
+
+	@JsonIgnore
+	public String getJavaTypeName() {
+		return JdbcSqlTypeMap.toJavaTypeName(this);
 	}
 
 }

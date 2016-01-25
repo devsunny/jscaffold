@@ -13,6 +13,7 @@ public class CodeGenConfig {
 	};
 
 	String javaBaseDir = "src/main/java";
+	String junitBaseDir = "src/test/java";
 	String myBatisXmlBaseDir = "src/main/resources";
 	String springXmlBaseDir = "src/main/resources";
 	String webappContext = "spring";
@@ -47,6 +48,7 @@ public class CodeGenConfig {
 	boolean suffixSequenceIfExists = true;
 	boolean genScaffoldTools = true;
 	boolean genPomXml = true;
+	boolean genJunit = true;
 
 	CaselessHashSet includes = new CaselessHashSet();
 	CaselessHashSet excludes = new CaselessHashSet();
@@ -85,6 +87,10 @@ public class CodeGenConfig {
 
 	public String getJavaBaseDir() {
 		return javaBaseDir == null ? String.format("%s/src/main/java", getBaseSrcDir()) : javaBaseDir;
+	}
+	
+	public String getJunitBaseDir() {
+		return junitBaseDir == null ? String.format("%s/src/test/java", getBaseSrcDir()) : junitBaseDir;
 	}
 
 	public void setJavaBaseDir(String javaBaseDir) {
@@ -360,6 +366,14 @@ public class CodeGenConfig {
 
 	public void setGenScaffoldTools(boolean genScaffoldTools) {
 		this.genScaffoldTools = genScaffoldTools;
+	}
+
+	public boolean isGenJunit() {
+		return genJunit;
+	}
+
+	public void setGenJunit(boolean genJunit) {
+		this.genJunit = genJunit;
 	}
 
 }

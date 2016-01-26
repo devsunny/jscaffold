@@ -39,7 +39,7 @@ public class Schema extends HashMap<String, Entity> {
 	}
 
 	public List<Entity> getAllEntities() {
-		List<Entity> entities = new ArrayList<>(this.values());
+		List<Entity> entities = new ArrayList<Entity>(this.values());
 		Collections.sort(entities, new EntityOrderComparator());
 		return entities;
 	}

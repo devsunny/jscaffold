@@ -31,10 +31,10 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 
 	private String javaEntityName = null;
 	private String javaEntityVarName = null;
-	private List<Field> primaryKeys = new ArrayList<>();
+	private List<Field> primaryKeys = new ArrayList<Field>();
 	private List<Field> allFields = null;
-	private List<String> allFieldNames = new ArrayList<>();
-	private List<String> allFieldDbNames = new ArrayList<>();
+	private List<String> allFieldNames = new ArrayList<String>();
+	private List<String> allFieldDbNames = new ArrayList<String>();
 	private int fieldsSize = 0;
 
 	public void doCodeGen() throws IOException {
@@ -71,8 +71,8 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 	}
 
 	public String genInsert() throws IOException {
-		List<String> collist = new ArrayList<>();
-		List<String> vallist = new ArrayList<>();
+		List<String> collist = new ArrayList<String>();
+		List<String> vallist = new ArrayList<String>();
 		for (int i = 0; i < fieldsSize; i++) {
 			Field fd = this.allFields.get(i);
 			if (!fd.isAutogen()) {
@@ -105,8 +105,8 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		if (!(hasKey || hasUnique)) {
 			return null;
 		}
-		List<String> keyCols = new ArrayList<>();
-		List<String> updateList = new ArrayList<>();
+		List<String> keyCols = new ArrayList<String>();
+		List<String> updateList = new ArrayList<String>();
 		int knum = 0;
 		StringBuffer keyName = new StringBuffer();
 		for (int i = 0; i < fieldsSize; i++) {
@@ -152,7 +152,7 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		if (!hasKey && !hasUnique) {
 			return null;
 		}
-		List<String> keyCols = new ArrayList<>();
+		List<String> keyCols = new ArrayList<String>();
 		int knum = 0;
 		StringBuffer keyName = new StringBuffer();
 		for (int i = 0; i < fieldsSize; i++) {
@@ -185,9 +185,9 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 	}
 
 	public String genSelectBasic() throws IOException {
-		List<Field> sortFields = new ArrayList<>(this.allFields);
+		List<Field> sortFields = new ArrayList<Field>(this.allFields);
 		Collections.sort(sortFields, new FieldOrderComparator());
-		List<String> collist = new ArrayList<>();
+		List<String> collist = new ArrayList<String>();
 		for (int i = 0; i < fieldsSize; i++) {
 			Field fd = sortFields.get(i);
 			collist.add(fd.getName());
@@ -207,10 +207,10 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		if (!this.entity.hasKeyField()) {
 			return null;
 		}
-		List<Field> sortFields = new ArrayList<>(this.allFields);
+		List<Field> sortFields = new ArrayList<Field>(this.allFields);
 		Collections.sort(sortFields, new FieldOrderComparator());
-		List<String> collist = new ArrayList<>();
-		List<Field> keyFields = new ArrayList<>();
+		List<String> collist = new ArrayList<String>();
+		List<Field> keyFields = new ArrayList<Field>();
 		for (int i = 0; i < fieldsSize; i++) {
 			Field fd = sortFields.get(i);
 			collist.add(fd.getName());
@@ -219,7 +219,7 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 			}
 		}
 		String keyType = keyFields.size() > 1 ? javaEntityName : JdbcSqlTypeMap.toJavaTypeName(keyFields.get(0));
-		List<String> whereList = new ArrayList<>();
+		List<String> whereList = new ArrayList<String>();
 		StringBuffer keyName = new StringBuffer();
 		for (Field fd : keyFields) {
 			whereList.add(String.format("%s=#{%s,jdbcType=%s}", fd.getName(), fd.getVarname(),
@@ -240,9 +240,9 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 	}
 
 	public String genSelectByGroup() throws IOException {
-		List<Field> sortFields = new ArrayList<>(this.allFields);
+		List<Field> sortFields = new ArrayList<Field>(this.allFields);
 		Collections.sort(sortFields, new FieldOrderComparator());
-		List<String> collist = new ArrayList<>();
+		List<String> collist = new ArrayList<String>();
 		List<Field> groupList = entity.getGroupByFields();
 		Field gffd = entity.getGroupFunctionField();
 		if (gffd != null) {
@@ -255,7 +255,7 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		StringBuilder orderby = new StringBuilder();
 		StringBuilder groupBy = new StringBuilder();
 		StringBuilder groupByKey = new StringBuilder();
-		List<String> gbs = new ArrayList<>();
+		List<String> gbs = new ArrayList<String>();
 		for (int i = 0; i < gpSize; i++) {
 			Field fd = groupList.get(i);
 			collist.add(i, fd.getName());
@@ -277,10 +277,10 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 	}
 
 	public String genDrilldown() throws IOException {
-		List<Field> sortFields = new ArrayList<>(this.allFields);
+		List<Field> sortFields = new ArrayList<Field>(this.allFields);
 		Collections.sort(sortFields, new FieldOrderComparator());
-		List<String> collist = new ArrayList<>();
-		List<String> plainlist = new ArrayList<>();
+		List<String> collist = new ArrayList<String>();
+		List<String> plainlist = new ArrayList<String>();
 		List<Field> groupList = entity.getDrillDownFields();
 		if (groupList.size() > 0) {
 			Collections.sort(groupList, new FieldDrillDownComparator());
@@ -295,9 +295,9 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 		StringBuilder allsql = new StringBuilder();
 		if (gpSize > 0) {
 			StringBuilder cols = new StringBuilder();
-			List<String> gbs = new ArrayList<>();
+			List<String> gbs = new ArrayList<String>();
 			Field fd = groupList.get(0);
-			List<String> acollist = new ArrayList<>(collist);
+			List<String> acollist = new ArrayList<String>(collist);
 			acollist.add(0, fd.getName());
 			gbs.add(fd.getName());
 			cols.append(StringUtils.join(acollist, ','));
@@ -305,11 +305,11 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 			allsql.append(generated);
 		}
 		if (gpSize > 1) {
-			List<String> innercollist = new ArrayList<>(plainlist);
+			List<String> innercollist = new ArrayList<String>(plainlist);
 			innercollist.add(0, groupList.get(0).getName());
 			for (int i = 1; i < gpSize; i++) {
-				List<String> acollist = new ArrayList<>(collist);
-				List<String> whereClauses = new ArrayList<>();
+				List<String> acollist = new ArrayList<String>(collist);
+				List<String> whereClauses = new ArrayList<String>();
 				for (int k = 0; k < i; k++) {
 					Field whfd = groupList.get(k);
 					whereClauses.add(String.format(String.format("%s=#{%s,jdbcType=%s}", whfd.getName(),
@@ -322,9 +322,9 @@ public class MyBatisXmlEntityGenerator extends CodeGenerator {
 				allsql.append("\n").append(generated);
 			}
 		}
-		List<String> selectList = new ArrayList<>();
-		List<String> whereClauses = new ArrayList<>();
-		List<String> orderby = new ArrayList<>();
+		List<String> selectList = new ArrayList<String>();
+		List<String> whereClauses = new ArrayList<String>();
+		List<String> orderby = new ArrayList<String>();
 		for (Field fd : sortFields) {
 			selectList.add(fd.getName());
 		}

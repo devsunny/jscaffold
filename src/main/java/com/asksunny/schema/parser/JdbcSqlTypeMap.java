@@ -7,9 +7,9 @@ import java.util.Map;
 
 public final class JdbcSqlTypeMap {
 	private static final JdbcSqlTypeMap instance = new JdbcSqlTypeMap();
-	private Map<String, Integer> jdbcTypeMap = new HashMap<>();
+	private Map<String, Integer> jdbcTypeMap = new HashMap<String, Integer>();
 
-	private Map<Integer, String> jdbcTypeInvertMap = new HashMap<>();
+	private Map<Integer, String> jdbcTypeInvertMap = new HashMap<Integer, String>();
 
 	private JdbcSqlTypeMap() {
 		try {

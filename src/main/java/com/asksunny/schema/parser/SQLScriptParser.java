@@ -505,7 +505,7 @@ public class SQLScriptParser {
 	}
 
 	protected List<Token> consumeItemList() throws IOException {
-		List<Token> toks = new ArrayList<>();
+		List<Token> toks = new ArrayList<Token>();
 		if (peekMatch(0, LexerTokenKind.LPAREN)) {
 			consume();
 			while (!peekMatch(0, LexerTokenKind.RPAREN)) {

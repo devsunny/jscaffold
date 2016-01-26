@@ -32,7 +32,7 @@ public class ParamMapBuilder {
 	Map<String, String> params;
 
 	public ParamMapBuilder() {
-		params = new HashMap<>();
+		params = new HashMap<String, String>();
 	}
 
 }

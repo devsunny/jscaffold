@@ -32,7 +32,7 @@ public class FMParamMapBuilder {
 	Map<String, Object> params;
 
 	public FMParamMapBuilder() {
-		params = new HashMap<>();
+		params = new HashMap<String, Object>();
 	}
 
 }

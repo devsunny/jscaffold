@@ -147,7 +147,7 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 				restPath.append(String.format("/{%s}", ddFields.get(i - 1).getVarname()));
 			}
 			String drillDownRestPath = restPath.toString();
-			List<String> params = new ArrayList<>();
+			List<String> params = new ArrayList<String>();
 			for (int k = 1; k <= i; k++) {
 				Field ddk = ddFields.get(k - 1);
 				params.add(String.format("@PathVariable(\"%2$s\")%1$s %2$s", JdbcSqlTypeMap.toJavaTypeName(ddk),

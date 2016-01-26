@@ -17,12 +17,12 @@ public class Entity {
 
 	private String label;
 
-	private final List<Field> fields = new ArrayList<>();
+	private final List<Field> fields = new ArrayList<Field>();
 
 	@JsonIgnore
 	private String varname;
 	@JsonIgnore
-	private final Map<String, Field> fieldMaps = new HashMap<>();
+	private final Map<String, Field> fieldMaps = new HashMap<String, Field>();
 	@JsonIgnore
 	private int itemsPerPage = 10;
 	@JsonIgnore
@@ -54,7 +54,7 @@ public class Entity {
 	}
 
 	public List<Field> getFields() {
-		ArrayList<Field> ff = new ArrayList<>(fields);
+		ArrayList<Field> ff = new ArrayList<Field>(fields);
 		Collections.sort(ff, new FieldOrderComparator());
 		if (isReadonly()) {
 			for (Field field : ff) {

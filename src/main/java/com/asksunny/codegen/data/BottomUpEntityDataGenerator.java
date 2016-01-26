@@ -27,7 +27,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	private Entity entity;
 	private CodeGenConfig config;
 	private List<Generator<?>> fieldGenerators = null;
-	private List<BottomUpEntityDataGenerator> parentEntityGenerators = new ArrayList<>();
+	private List<BottomUpEntityDataGenerator> parentEntityGenerators = new ArrayList<BottomUpEntityDataGenerator>();
 
 	private String insertTemplate = "";
 	private long totalRecordCount = 0;
@@ -36,7 +36,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 
 	public List<List<String>> generateDataSet() {
 		int size = totalRecordCount <= MAX_SET_SIZE ? (int) totalRecordCount : Math.abs(rand.nextInt(MAX_SET_SIZE));
-		Map<String, List<List<String>>> parentDataSets = new HashMap<>();
+		Map<String, List<List<String>>> parentDataSets = new HashMap<String, List<List<String>>>();
 		if (parentEntityGenerators.size() > 0) {
 			for (BottomUpEntityDataGenerator egen : parentEntityGenerators) {
 				List<List<String>> refData = egen.generateDataSet();
@@ -53,7 +53,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 					List<List<String>> pds = parentDataSets
 							.get(fd.getReference().getContainer().getName().toUpperCase());
 					int refidx = fd.getReference().getFieldIndex();
-					List<String> pvalues = new ArrayList<>();
+					List<String> pvalues = new ArrayList<String>();
 					for (List<String> record : pds) {
 						if (record.size() > refidx) {
 							pvalues.add(record.get(refidx));
@@ -64,7 +64,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 			}
 		}
 
-		List<List<String>> dataSet = new ArrayList<>();
+		List<List<String>> dataSet = new ArrayList<List<String>>();
 		for (int i = 0; i < size; i++) {
 			List<String> record = generateRecord();
 			dataSet.add(record);
@@ -94,7 +94,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 		}
 		List<Field> fields = entity.getFields();
 		int size = fields.size();
-		List<String> values = new ArrayList<>();
+		List<String> values = new ArrayList<String>();
 		List<Generator<?>> generators = FieldGeneratorFactory.createFieldGenerator(entity);
 		for (int j = 0; j < size; j++) {
 			Generator<?> gen = generators.get(j);

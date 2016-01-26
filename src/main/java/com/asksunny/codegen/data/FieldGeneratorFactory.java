@@ -37,14 +37,14 @@ import com.asksunny.schema.generator.UserNameGenerator;
 import com.asksunny.schema.generator.ZipGenerator;
 
 public class FieldGeneratorFactory {
-	private final static Map<String, List<Generator<?>>> cacheGenerators = new HashMap<>();
+	private final static Map<String, List<Generator<?>>> cacheGenerators = new HashMap<String, List<Generator<?>>>();
 
 	public static synchronized List<Generator<?>> createFieldGenerator(Entity entity) {
 
 		List<Generator<?>> generators = null;
 		generators = cacheGenerators.get(entity.getName().toUpperCase());
 		if (generators == null) {
-			generators = new ArrayList<>();
+			generators = new ArrayList<Generator<?>>();
 			List<Field> fields = entity.getFields();
 			for (Field field : fields) {
 				Generator<?> gen = createFieldGenerator(field);

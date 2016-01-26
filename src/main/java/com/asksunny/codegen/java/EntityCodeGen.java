@@ -29,7 +29,7 @@ public class EntityCodeGen {
 	static final String INDENDENT_4 = "                ";
 	private String javaEntityName = null;
 	private String javaEntityVarName = null;
-	private List<Field> primaryKeys = new ArrayList<>();
+	private List<Field> primaryKeys = new ArrayList<Field>();
 	private List<Field> allFields = null;
 	private List<String> allFieldNames = null;
 	private List<String> allFieldDbNames = null;
@@ -44,8 +44,8 @@ public class EntityCodeGen {
 		this.javaEntityName = JavaIdentifierUtil.toObjectName(entity.getName());
 		this.javaEntityVarName = JavaIdentifierUtil.toVariableName(entity.getName());
 		this.allFields = entity.getFields();
-		allFieldNames = new ArrayList<>();
-		allFieldDbNames = new ArrayList<>();
+		allFieldNames = new ArrayList<String>();
+		allFieldDbNames = new ArrayList<String>();
 		for (Field field : allFields) {
 			if (field.isPrimaryKey()) {
 				primaryKeys.add(field);

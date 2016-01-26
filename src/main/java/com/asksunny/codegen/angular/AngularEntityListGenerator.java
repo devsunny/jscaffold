@@ -96,7 +96,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 		}
 
 		Field groupFunct = entity.getGroupFunctionField();
-		List<String> linkParams = new ArrayList<>();
+		List<String> linkParams = new ArrayList<String>();
 		for (int i = 0; i <= drilldownFields.size(); i++) {
 			String ddname = i < drilldownFields.size()
 					? String.format("Drilldown%s", drilldownFields.get(i).getObjectname()) : "DrilldownDetail";
@@ -236,7 +236,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 		List<Field> keyfields = entity.getKeyFields();
 		if (keyfields.size() == 0)
 			return null;
-		List<String> parms = new ArrayList<>();
+		List<String> parms = new ArrayList<String>();
 		for (Field field : keyfields) {
 			parms.add(String.format("%1$s:listItem.%1$s", field.getVarname()));
 		}

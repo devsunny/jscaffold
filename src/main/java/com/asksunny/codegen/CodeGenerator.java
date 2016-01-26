@@ -64,7 +64,7 @@ public abstract class CodeGenerator {
 		if (entity == null) {
 			return;
 		}
-		List<String> keyVars = new ArrayList<>();
+		List<String> keyVars = new ArrayList<String>();
 		StringBuilder keyUri = new StringBuilder();
 		List<Field> keyFields = entity.getKeyFields();
 		if (keyFields.size() == 0) {
@@ -127,7 +127,7 @@ public abstract class CodeGenerator {
 	}
 
 	public String generateInterpolateURL(List<Field> fields) {
-		List<String> parts = new ArrayList<>();
+		List<String> parts = new ArrayList<String>();
 		for (Field fd : fields) {
 			parts.add(String.format("/{{%s}}", fd.getVarname()));
 		}

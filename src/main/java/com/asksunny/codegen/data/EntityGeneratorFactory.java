@@ -10,7 +10,7 @@ import com.asksunny.schema.Entity;
 
 public final class EntityGeneratorFactory {
 
-	private static Map<String, BottomUpEntityDataGenerator> cachedEntityGenerators = new ConcurrentHashMap<>();
+	private static Map<String, BottomUpEntityDataGenerator> cachedEntityGenerators = new ConcurrentHashMap<String, BottomUpEntityDataGenerator>();
 
 	public static BottomUpEntityDataGenerator createEntityGenerator(Entity entity, CodeGenConfig config) {
 		BottomUpEntityDataGenerator entityGen = cachedEntityGenerators.get(entity.getName().toUpperCase());
@@ -25,7 +25,7 @@ public final class EntityGeneratorFactory {
 	}
 
 	public static List<BottomUpEntityDataGenerator> getAllCachedEntityGenerators() {
-		List<BottomUpEntityDataGenerator> egens = new ArrayList<>(cachedEntityGenerators.values());
+		List<BottomUpEntityDataGenerator> egens = new ArrayList<BottomUpEntityDataGenerator>(cachedEntityGenerators.values());
 		return egens;
 	}
 

@@ -1,13 +1,10 @@
 package com.asksunny.schema.generator;
 
-import java.util.Date;
-
-import com.asksunny.schema.Field;
-
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import com.asksunny.schema.Field;
 
 public class TimestampGenerator implements Generator<Timestamp> {
 

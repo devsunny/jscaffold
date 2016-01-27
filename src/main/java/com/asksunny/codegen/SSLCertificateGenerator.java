@@ -1,7 +1,6 @@
 package com.asksunny.codegen;
 
 import java.io.File;
-import java.util.Date;
 
 import com.asksunny.schema.Schema;
 import com.asksunny.tools.HostnameUtils;

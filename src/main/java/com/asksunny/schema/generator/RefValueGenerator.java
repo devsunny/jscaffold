@@ -5,6 +5,7 @@ import com.asksunny.schema.Field;
 public class RefValueGenerator implements Generator<String> {
 
 	private String refValue;
+	@SuppressWarnings("unused")
 	private Field field;
 
 	public RefValueGenerator(Field field) {

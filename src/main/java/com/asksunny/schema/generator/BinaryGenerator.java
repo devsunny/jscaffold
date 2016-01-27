@@ -1,7 +1,5 @@
 package com.asksunny.schema.generator;
 
-import java.nio.charset.Charset;
-
 import com.asksunny.schema.Field;
 
 public class BinaryGenerator implements Generator<byte[]> {

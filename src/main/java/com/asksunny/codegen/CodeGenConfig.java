@@ -21,6 +21,7 @@ public class CodeGenConfig {
 	String baseSrcDir = ".";
 	String basePackageName = "com.foo";
 	
+	
 	String domainPackageName;
 	String mapperPackageName;
 	String restPackageName;
@@ -33,8 +34,8 @@ public class CodeGenConfig {
 	private String outputUri;	
 	private long numberOfRecords;
 	private boolean debug = false;
-
-	String SSLIssuerDN = "CN=Test Certificate";
+	
+	private String webserverPort = "8181";
 
 	boolean genAngularView = true;
 	boolean genAngularRoute = true;
@@ -44,11 +45,18 @@ public class CodeGenConfig {
 	boolean genMyBatisXmlMapper = true;
 	boolean genRestController = true;
 	boolean genSpringContext = true;
+	boolean enableSpringSecurity = true;
 	boolean genMyBatisSpringBeans = true;
 	boolean suffixSequenceIfExists = true;
 	boolean genScaffoldTools = true;
 	boolean genPomXml = true;
 	boolean genJunit = true;
+	boolean enableSSL = true;
+	String SSLIssuerDN = null;
+	String keypass = "changeit";
+	String keyStoreDirectory ="src/test/resources";
+	String keystoreName = "web_server.jks";
+	String sslCertAlias = "webserver";
 
 	CaselessHashSet includes = new CaselessHashSet();
 	CaselessHashSet excludes = new CaselessHashSet();
@@ -375,5 +383,63 @@ public class CodeGenConfig {
 	public void setGenJunit(boolean genJunit) {
 		this.genJunit = genJunit;
 	}
+
+	public boolean isEnableSpringSecurity() {
+		return enableSpringSecurity;
+	}
+
+	public void setEnableSpringSecurity(boolean enableSpringSecurity) {
+		this.enableSpringSecurity = enableSpringSecurity;
+	}
+
+	public boolean isEnableSSL() {
+		return enableSSL;
+	}
+
+	public void setEnableSSL(boolean enableSSL) {
+		this.enableSSL = enableSSL;
+	}
+
+	public String getKeypass() {
+		return keypass;
+	}
+
+	public void setKeypass(String keypass) {
+		this.keypass = keypass;
+	}
+
+	public String getKeyStoreDirectory() {
+		return keyStoreDirectory;
+	}
+
+	public void setKeyStoreDirectory(String keyStoreDirectory) {
+		this.keyStoreDirectory = keyStoreDirectory;
+	}
+
+	public String getKeystoreName() {
+		return keystoreName;
+	}
+
+	public void setKeystoreName(String keystoreName) {
+		this.keystoreName = keystoreName;
+	}
+
+	public String getSslCertAlias() {
+		return sslCertAlias;
+	}
+
+	public void setSslCertAlias(String sslCertAlias) {
+		this.sslCertAlias = sslCertAlias;
+	}
+
+	public String getWebserverPort() {
+		return webserverPort;
+	}
+
+	public void setWebserverPort(String webserverPort) {
+		this.webserverPort = webserverPort;
+	}
+
+	
 
 }

@@ -26,7 +26,7 @@
 
 	<bean id="springDispatcher" class="org.springframework.web.servlet.DispatcherServlet">
 		<property name="contextConfigLocation"
-			value="classpath:#{MYBATIS_CONTEXT_XML}, classpath:#{UI_CONTEXT_XML}"></property>
+			value="<#if config.enableSpringSecurity >classpath:${WEBAPP_CONTEXT}-spring-security-context.xml,</#if>classpath:${WEBAPP_CONTEXT}-spring-mybatis-context.xml, classpath:${WEBAPP_CONTEXT}-spring-ui-context.xml"></property>
 	</bean>
 	<!-- , classpath:web-view-context.xml -->
 	<bean id="springDispatcherHolder" class="org.eclipse.jetty.servlet.ServletHolder">
@@ -37,7 +37,7 @@
 	<bean
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetObject">
-			<ref bean="servlethandles" />
+			<ref bean="servletContextHandler" />
 		</property>
 		<property name="targetMethod">
 			<value>addServlet</value>
@@ -45,67 +45,55 @@
 		<property name="arguments">
 			<list>
 				<ref bean="springDispatcherHolder"></ref>
-				<value>/#{WEBAPP_CONTEXT}/*</value>
+				<value>/${WEBAPP_CONTEXT}/*</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="servlethandles" class="org.eclipse.jetty.servlet.ServletContextHandler">
+	<bean id="servletContextHandler" class="org.eclipse.jetty.servlet.ServletContextHandler">
 	</bean>
 
-	<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList">
-		<property name="handlers">
-			<array>
-				<ref bean="servlethandles" />
-			</array>
-		</property>
+	<#if config.enableSpringSecurity >
+	<bean id="allDispatchTypes" class="${config.basePackageName}.DispatchTypeEnumSetFactoryBean">
 	</bean>
-
-	<bean id="securityHandler" class="org.eclipse.jetty.security.ConstraintSecurityHandler">
-		<property name="authenticator">
-			<bean class="org.eclipse.jetty.security.authentication.BasicAuthenticator"></bean>
+	
+	<bean id="springFilterProxy" class="${config.basePackageName}.EmbeddedDelegatingFilterProxy">
+		<constructor-arg value="springSecurityFilterChain"></constructor-arg>
+		<constructor-arg ref="springDispatcher"></constructor-arg>
+	</bean>
+	<bean id="filterHolder" class="org.eclipse.jetty.servlet.FilterHolder">
+			<constructor-arg ref="springFilterProxy"></constructor-arg>
+	</bean>
+	
+	
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject">
+			<ref bean="servletContextHandler" />
 		</property>
-		<property name="loginService">
-			<bean class="org.eclipse.jetty.security.HashLoginService">
-				<property name="name" value="FPFWPRealm"></property>
-			</bean>
+		<property name="targetMethod">
+			<value>addFilter</value>
 		</property>
-		<property name="handler">
-			<ref bean="handlers" />
-		</property>
-		<property name="constraintMappings">
+		<property name="arguments">
 			<list>
-				<bean class="org.eclipse.jetty.security.ConstraintMapping">
-					<property name="constraint">
-						<bean class="org.eclipse.jetty.util.security.Constraint">
-							<property name="authenticate" value="true"></property>
-							<!-- public final static String __BASIC_AUTH = "BASIC"; -->
-							<!-- public final static String __FORM_AUTH = "FORM"; -->
-							<!-- public final static String __DIGEST_AUTH = "DIGEST"; -->
-							<!-- public final static String __CERT_AUTH = "CLIENT_CERT"; -->
-							<!-- public final static String __CERT_AUTH2 = "CLIENT-CERT"; -->
-							<!-- public final static String __SPNEGO_AUTH = "SPNEGO"; -->
-							<!-- public final static String __NEGOTIATE_AUTH = "NEGOTIATE"; -->
-							<property name="name" value="BASIC"></property>
-							<property name="roles">
-								<array>
-									<value>ADMIN</value>
-									<value>USER</value>
-								</array>
-							</property>
-						</bean>
-					</property>
-					<property name="pathSpec" value="/XXXXXX"></property>
-				</bean>
+				<ref bean="filterHolder"></ref>
+				<value>/WebUI/*</value>
+				<ref bean="allDispatchTypes"/>
 			</list>
 		</property>
 	</bean>
-	<!-- <bean id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory"> 
-		<property name="KeyStorePath" value="./src/test/resources/webcert.jks"></property> 
-		<property name="KeyStorePassword" value="changeit"></property> <property 
-		name="KeyManagerPassword" value="changeit"></property> <property name="TrustStorePath" 
-		value="./src/test/resources/webcert.jks"></property> <property name="TrustStorePassword" 
-		value="changeit"></property> </bean> -->
+	</#if>	
+
+	 <#if config.enableSSL >
+	 <bean id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory"> 
+	 	<property name="KeyStorePath" value="${config.keyStoreDirectory}/${config.keystoreName}"></property> 
+	 	<property name="KeyStorePassword" value="${config.keypass}"></property>
+	 	<property name="KeyManagerPassword" value="${config.keypass}"></property>
+		<property name="TrustStorePath" value="${config.keyStoreDirectory}/${config.keystoreName}"></property>
+	 	<property name="TrustStorePassword" value="${config.keypass}"></property>
+	 </bean>
+	 </#if>
+	 
 	<bean id="server" name="Main" class="org.eclipse.jetty.server.Server"
 		init-method="start" destroy-method="stop">
 		<constructor-arg>
@@ -118,8 +106,8 @@
 			<list>
 				<bean id="connector" class="org.eclipse.jetty.server.ServerConnector">
 					<constructor-arg ref="server" />
-					<!-- <constructor-arg ref="sslContextFactory" /> -->
-					<property name="port" value="8080" />
+					 <#if config.enableSSL > <constructor-arg ref="sslContextFactory" /> </#if>
+					<property name="port" value="${config.webserverPort}" />
 				</bean>
 			</list>
 		</property>
@@ -127,11 +115,12 @@
 			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
 				<property name="handlers">
 					<list>
-						<ref bean="securityHandler" />
+						<ref bean="servletContextHandler" />
 						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler" />
 					</list>
 				</property>
 			</bean>
 		</property>
 	</bean>
+	
 </beans>

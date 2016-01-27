@@ -1,18 +1,17 @@
 package com.asksunny.codegen;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 
-import org.apache.commons.io.IOUtils;
-
 import com.asksunny.schema.Schema;
+import com.asksunny.tools.HostnameUtils;
 import com.asksunny.tools.Keytool;
 
 /**
  * 
- * Using JDK keytool for selfsigned certificate can reduce dependency of Bouncy castle, openSSL etc.
- * This not Java native way too it, however it does not happen offten.
+ * Using JDK keytool for selfsigned certificate can reduce dependency of Bouncy
+ * castle, openSSL etc. This not Java native way too it, however it does not
+ * happen offten.
  * 
  * 
  * <pre>
@@ -43,15 +42,6 @@ public class SSLCertificateGenerator extends CodeGenerator {
 	public static final String KEY_GENERATION_ALGORITHM = "RSA";
 	public static final boolean REGENERATE_FRESH_CA_CERTIFICATE = false;
 	public static final int ROOT_KEYSIZE = 2048;
-	/**
-	 * Current time minus 1 year
-	 */
-	public static final Date NOT_BEFORE = new Date(System.currentTimeMillis() - 86400000L * 365);
-
-	/**
-	 * Hundred years in the future.
-	 */
-	public static final Date NOT_AFTER = new Date(System.currentTimeMillis() + 86400000L * 365 * 100);
 
 	public SSLCertificateGenerator(CodeGenConfig configuration, Schema schema) {
 		super(configuration, schema);
@@ -62,10 +52,17 @@ public class SSLCertificateGenerator extends CodeGenerator {
 	}
 
 	public void doCodeGen() {
+		if (!configuration.isEnableSSL()) {
+			return;
+		}
+		String dn = configuration.getSSLIssuerDN() == null
+				? String.format("CN=%s, OU=Bar Development, O=Foo Company, L=Garden, S=Babylon, C=SP",
+						HostnameUtils.getHostname())
+				: configuration.getSSLIssuerDN();
 		Keytool keytool = new Keytool();
-		
-		//keytool.generateKey("CN=www.xperia.com", "xperiawebserver", "goodpass", new File("target/test_key.jsk"), null);
-		keytool.generateKeyCSR(new File("target/xperia.csr"), "CN=www.xperia.com, OU=R&D, O=Company Ltd., L=New York City, S=New York, C=US", "xperiawebserver", "goodpass", new File("target/xperia_key.jsk"), null);
+		keytool.generateSelfSignedCertificate(dn, configuration.getSslCertAlias(), 3650, configuration.getKeypass(),
+				new File(configuration.getKeyStoreDirectory(), configuration.getKeystoreName()),
+				configuration.getKeypass());
 
 	}
 

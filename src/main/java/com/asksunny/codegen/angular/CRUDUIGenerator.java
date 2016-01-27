@@ -1,8 +1,6 @@
 package com.asksunny.codegen.angular;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Types;
 
 import org.apache.commons.io.IOUtils;
@@ -18,9 +16,6 @@ public class CRUDUIGenerator {
 
 	private CodeGenConfig configuration;
 	private Entity entity;
-
-	private static final String CONTROLLERS = "scripts/controllers";
-	private static final String VIEWS = "views";
 
 	public CRUDUIGenerator(CodeGenConfig configuration, Entity entity) {
 		super();

@@ -3,7 +3,6 @@ package com.asksunny.codegen.angular;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -15,7 +14,6 @@ import com.asksunny.codegen.CodeGenerator;
 import com.asksunny.codegen.utils.ParamMapBuilder;
 import com.asksunny.codegen.utils.TemplateUtil;
 import com.asksunny.schema.Entity;
-import com.asksunny.schema.Field;
 import com.asksunny.schema.Schema;
 
 public class AngularUIGenerator extends CodeGenerator {

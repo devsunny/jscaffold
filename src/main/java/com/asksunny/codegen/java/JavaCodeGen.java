@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import com.asksunny.CLIArguments;
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.CodeGenerator;
+import com.asksunny.codegen.SSLCertificateGenerator;
 import com.asksunny.codegen.angular.AngularUIGenerator;
 import com.asksunny.codegen.utils.ParamMapBuilder;
 import com.asksunny.codegen.utils.TemplateUtil;
@@ -43,9 +44,9 @@ public class JavaCodeGen extends CodeGenerator {
 			}
 			try {
 				SQLScriptParser parser = new SQLScriptParser(new InputStreamReader(in));
-				if(configuration.isDebug()){
+				if (configuration.isDebug()) {
 					parser.setDebug(true);
-				}				
+				}
 				Schema schemax = parser.parseSql();
 				if (schema == null) {
 					schema = schemax;
@@ -137,6 +138,11 @@ public class JavaCodeGen extends CodeGenerator {
 		if (configuration.isGenAngular()) {
 			AngularUIGenerator augularGenerator = new AngularUIGenerator(configuration, schema);
 			augularGenerator.doCodeGen();
+		}
+
+		if (configuration.isEnableSSL()) {
+			SSLCertificateGenerator sslGen = new SSLCertificateGenerator(configuration);
+			sslGen.doCodeGen();
 		}
 
 	}

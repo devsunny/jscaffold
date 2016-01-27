@@ -2,35 +2,27 @@ package com.asksunny.codegen.java;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.CodeGenerator;
 import com.asksunny.codegen.utils.FMParamMapBuilder;
-import com.asksunny.codegen.utils.ParamMapBuilder;
-import com.asksunny.codegen.utils.TemplateUtil;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.FieldDrillDownComparator;
 import com.asksunny.schema.FieldGroupLevelComparator;
 import com.asksunny.schema.parser.JdbcSqlTypeMap;
-import com.asksunny.tools.ClasspathTemplateLoader;
 
-import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.Version;
 
 public class JavaRestControllerGenerator extends CodeGenerator {
 

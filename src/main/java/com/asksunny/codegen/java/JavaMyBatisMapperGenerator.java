@@ -7,13 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.io.IOUtils;
-
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.CodeGenerator;
 import com.asksunny.codegen.utils.FMParamMapBuilder;
-import com.asksunny.codegen.utils.ParamMapBuilder;
-import com.asksunny.codegen.utils.TemplateUtil;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.FieldDrillDownComparator;

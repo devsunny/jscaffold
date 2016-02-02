@@ -1,9 +1,11 @@
 package com.asksunny.codegen;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import com.asksunny.codegen.CodeGenConfig.CodeOverwriteStrategy;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.Schema;
+import com.asksunny.schema.parser.SQLScriptParser;
 
 public abstract class CodeGenerator {
 
@@ -31,6 +34,34 @@ public abstract class CodeGenerator {
 
 	protected File viewDir = null;
 	protected File controllerDir = null;
+
+	protected void loadSchema() throws IOException {
+		String schemaFiles = configuration.getSchemaFiles();
+		if (schemaFiles == null) {
+			throw new IOException("Schema DDL file has not been specified");
+		}
+		String[] sfs = schemaFiles.split("\\s*[,;]\\s*");
+		for (int i = 0; i < sfs.length; i++) {
+			InputStream in = getClass().getResourceAsStream(String.format("/%s", sfs[i]));
+			if (in == null) {
+				in = new FileInputStream(sfs[i]);
+			}
+			try {
+				SQLScriptParser parser = new SQLScriptParser(new InputStreamReader(in));
+				if (configuration.isDebug()) {
+					parser.setDebug(true);
+				}
+				Schema schemax = parser.parseSql();
+				if (schema == null) {
+					schema = schemax;
+				} else {
+					schema.getAllEntities().addAll(schemax.getAllEntities());
+				}
+			} finally {
+				in.close();
+			}
+		}
+	}
 
 	public CodeGenerator(CodeGenConfig configuration, Entity entity) {
 		super();

@@ -31,47 +31,17 @@ public class JavaCodeGen extends CodeGenerator {
 		super(configuration, (Schema) null);
 	}
 
+	public JavaCodeGen(CodeGenConfig configuration, Schema schema) {
+		super(configuration, schema);
+	}
+
 	public void doCodeGen() throws IOException {
-		String schemaFiles = configuration.getSchemaFiles();
-		if (schemaFiles == null) {
-			throw new IOException("Schema DDL file has not been specified");
-		}
-		String[] sfs = schemaFiles.split("\\s*[,;]\\s*");
-		for (int i = 0; i < sfs.length; i++) {
-			InputStream in = getClass().getResourceAsStream(String.format("/%s", sfs[i]));
-			if (in == null) {
-				in = new FileInputStream(sfs[i]);
-			}
-			try {
-				SQLScriptParser parser = new SQLScriptParser(new InputStreamReader(in));
-				if (configuration.isDebug()) {
-					parser.setDebug(true);
-				}
-				Schema schemax = parser.parseSql();
-				if (schema == null) {
-					schema = schemax;
-				} else {
-					schema.getAllEntities().addAll(schemax.getAllEntities());
-				}
-			} finally {
-				in.close();
-			}
+		if (schema == null) {
+			loadSchema();
 		}
 		doCodeGen(schema);
 
-		StringBuilder sqlBuffer = new StringBuilder();
-		for (int i = 0; i < sfs.length; i++) {
-			InputStream in = getClass().getResourceAsStream(String.format("/%s", sfs[i]));
-			sqlBuffer.append(IOUtils.toString(in));
-			sqlBuffer.append("\n;");
-			in.close();
-		}
-		writeCode(new File(configuration.getSpringXmlBaseDir()), "schema_ddl.sql", sqlBuffer.toString());
-
-		if (new File(configuration.getSpringXmlBaseDir(), "seed_data.sql").exists() == false) {
-			writeCode(new File(configuration.getSpringXmlBaseDir()), "seed_data.sql", "");
-		}
-
+		
 		if (new File(configuration.getSpringXmlBaseDir(), "log4j.xml").exists() == false) {
 			String log4j = TemplateUtil.renderTemplate(getClassTemplate(getClass(), "log4j.xml.tmpl"),
 					ParamMapBuilder.newBuilder().buildMap());

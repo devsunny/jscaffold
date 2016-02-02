@@ -51,6 +51,9 @@ public class CodeGenConfig {
 	boolean genScaffoldTools = true;
 	boolean genPomXml = true;
 	boolean genJunit = true;
+	boolean genSchema = true;
+	boolean genSeedData = false;
+	
 	boolean enableSSL = true;
 	String SSLIssuerDN = null;
 	String keypass = "changeit";
@@ -438,6 +441,22 @@ public class CodeGenConfig {
 
 	public void setWebserverPort(String webserverPort) {
 		this.webserverPort = webserverPort;
+	}
+
+	public boolean isGenSchema() {
+		return genSchema;
+	}
+
+	public void setGenSchema(boolean genSchema) {
+		this.genSchema = genSchema;
+	}
+
+	public boolean isGenSeedData() {
+		return genSeedData;
+	}
+
+	public void setGenSeedData(boolean genSeedData) {
+		this.genSeedData = genSeedData;
 	}
 
 	

@@ -26,6 +26,7 @@ public class CodeGenAnnotation {
 	String ignoreData;
 	String readonly;
 	String principal;
+	String objectName;
 	
 	
 	
@@ -166,6 +167,12 @@ public class CodeGenAnnotation {
 	}
 	public void setPrincipal(String principal) {
 		this.principal = principal;
+	}
+	public String getObjectName() {
+		return objectName;
+	}
+	public void setObjectName(String objectName) {
+		this.objectName = objectName;
 	}
 	
 	

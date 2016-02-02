@@ -122,6 +122,9 @@ public class CodeGenAnnoParser {
 		case PRINCIPAL:
 			anno.setPrincipal(val.getImage());
 			break;
+		case OBJECTNAME:
+			anno.setObjectName(val.getImage());
+			break;
 		}
 
 	}

@@ -14,11 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Entity {
 
 	private String name;
-
 	private String label;
-
 	private final List<Field> fields = new ArrayList<Field>();
 
+	@JsonIgnore
+	private String objectName;
 	@JsonIgnore
 	private String varname;
 	@JsonIgnore
@@ -40,13 +40,39 @@ public class Entity {
 	@JsonIgnore
 	private boolean usePrincipal;
 
-	public String getName() {
-		return name;
-	}
-
 	public Entity(String name) {
 		super();
 		this.name = name;
+	}
+
+	public void setAnnotation(CodeGenAnnotation anno) {
+
+		if (anno.getLabel() != null) {
+			this.setLabel(anno.getLabel());
+		}
+		if (anno.getVarname() != null) {
+			this.setVarname(anno.getVarname());
+		}
+		if (anno.getIgnoreRest() != null) {
+			this.setIgnoreRest(anno.getIgnoreRest());
+		}
+		if (anno.getItemsPerPage() != null) {
+			this.setItemsPerPage(anno.getItemsPerPage());
+		}
+		if (anno.getIgnoreView() != null) {
+			this.setIgnoreView(anno.getIgnoreView());
+		}
+		if (anno.getOrderBy() != null) {
+			this.setOrderBy(anno.getOrderBy());
+		}
+		this.setIgnoreData(anno.getIgnoreData());
+		this.setReadonly(anno.getReadonly());
+		this.setViewOrder(anno.getOrder());
+		this.setObjectName(anno.getObjectName());
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setName(String name) {
@@ -298,13 +324,23 @@ public class Entity {
 
 	@JsonIgnore
 	public String getEntityObjectName() {
-		return this.varname == null ? JavaIdentifierUtil.toObjectName(this.name)
-				: JavaIdentifierUtil.capitalize(this.varname);
+		return this.objectName != null ? this.objectName
+				: (this.varname == null ? JavaIdentifierUtil.toObjectName(this.name)
+						: JavaIdentifierUtil.capitalize(this.varname));
 	}
 
 	@JsonIgnore
 	public String getEntityVarName() {
-		return varname == null ? JavaIdentifierUtil.toVariableName(this.name) : varname;
+		return varname != null ? this.varname
+				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(this.objectName)
+						: JavaIdentifierUtil.toVariableName(this.name));
+	}
+
+	@JsonIgnore
+	public String getVarName() {
+		return varname != null ? this.varname
+				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(this.objectName)
+						: JavaIdentifierUtil.toVariableName(this.name));
 	}
 
 	public Map<String, Field> getFieldMaps() {
@@ -368,31 +404,6 @@ public class Entity {
 
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
-	}
-
-	public void setAnnotation(CodeGenAnnotation anno) {
-
-		if (anno.getLabel() != null) {
-			this.setLabel(anno.getLabel());
-		}
-		if (anno.getVarname() != null) {
-			this.setVarname(anno.getVarname());
-		}
-		if (anno.getIgnoreRest() != null) {
-			this.setIgnoreRest(anno.getIgnoreRest());
-		}
-		if (anno.getItemsPerPage() != null) {
-			this.setItemsPerPage(anno.getItemsPerPage());
-		}
-		if (anno.getIgnoreView() != null) {
-			this.setIgnoreView(anno.getIgnoreView());
-		}
-		if (anno.getOrderBy() != null) {
-			this.setOrderBy(anno.getOrderBy());
-		}
-		this.setIgnoreData(anno.getIgnoreData());
-		this.setReadonly(anno.getReadonly());
-		this.setViewOrder(anno.getOrder());
 	}
 
 	@JsonIgnore
@@ -460,4 +471,13 @@ public class Entity {
 	public void setUsePrincipal(boolean usePrincipal) {
 		this.usePrincipal = usePrincipal;
 	}
+
+	public String getObjectName() {
+		return getEntityObjectName();
+	}
+
+	public void setObjectName(String objectName) {
+		this.objectName = JavaIdentifierUtil.capitalize(objectName);
+	}
+
 }

@@ -28,6 +28,7 @@ public class SpringContextGenerator extends CodeGenerator {
 		List<Entity> entities = schema.getAllEntities();
 		for (Entity entity : entities) {
 			mapperBeans.append(genSpringMyBatisBeanXml(entity)).append("\n");
+			
 		}
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream("spring-mybatis-context.xml.tmpl")),

@@ -1,6 +1,7 @@
 package com.asksunny.codegen;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.asksunny.schema.Schema;
 import com.asksunny.tools.HostnameUtils;
@@ -50,7 +51,7 @@ public class SSLCertificateGenerator extends CodeGenerator {
 		super(configuration, (Schema) null);
 	}
 
-	public void doCodeGen() {
+	public void doCodeGen() throws IOException{
 		if (!configuration.isEnableSSL()) {
 			return;
 		}
@@ -58,10 +59,16 @@ public class SSLCertificateGenerator extends CodeGenerator {
 				? String.format("CN=%s, OU=Bar Development, O=Foo Company, L=Garden, S=Babylon, C=SP",
 						HostnameUtils.getHostname())
 				: configuration.getSSLIssuerDN();
-		Keytool keytool = new Keytool();
-		keytool.generateSelfSignedCertificate(dn, configuration.getSslCertAlias(), 3650, configuration.getKeypass(),
-				new File(configuration.getKeyStoreDirectory(), configuration.getKeystoreName()),
-				configuration.getKeypass());
+		File filePath = new File(configuration.getKeyStoreDirectory(), configuration.getKeystoreName());
+		if(!filePath.exists()){	
+			if(!filePath.getParentFile().exists() && !filePath.getParentFile().mkdirs()){
+				throw new IOException("Permission denied to create directory:" + filePath.getParentFile());
+			}
+			Keytool keytool = new Keytool();
+			keytool.generateSelfSignedCertificate(dn, configuration.getSslCertAlias(), 3650, configuration.getKeypass(),
+					filePath,
+					configuration.getKeypass());
+		}
 
 	}
 

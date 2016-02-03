@@ -37,7 +37,7 @@ import ${DOMAIN_PACKAGE_NAME}.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration({"classpath:${WEBAPP_CONTEXT}-spring-mybatis-context.xml", "classpath:${WEBAPP_CONTEXT}-spring-ui-context.xml"})
-public class ${entity.entityObjectName}RestControllerTest {
+public class ${entity.objectName}RestControllerTest {
  
  
     @Autowired
@@ -46,7 +46,7 @@ public class ${entity.entityObjectName}RestControllerTest {
     private MockMvc mockMvc;
     
     @Autowired
-    private ${entity.entityObjectName}Mapper ${entity.entityVarName}MapperMock;
+    private ${entity.objectName}Mapper ${entity.varName}MapperMock;
     
         
 
@@ -58,26 +58,26 @@ public class ${entity.entityObjectName}RestControllerTest {
    
        
     @Test  
-    public void test_add${entity.entityObjectName}() throws Exception
+    public void test_add${entity.objectName}() throws Exception
     {
-        ${entity.entityObjectName} ${entity.entityVarName} = new ${entity.entityObjectName}();
+        ${entity.objectName} ${entity.varName} = new ${entity.objectName}();
     	ObjectMapper mapper = new ObjectMapper();
-    	String json = mapper.writeValueAsString( ${entity.entityVarName});
-    	RequestBuilder request = post("/${entity.entityVarName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
+    	String json = mapper.writeValueAsString( ${entity.varName});
+    	RequestBuilder request = post("/${entity.varName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
     	this.mockMvc.perform(request);      	
         fail("Not yet implemented");
     }
     
    @Test  
-    public void test_new${entity.entityObjectName}()  throws Exception{
-    	RequestBuilder request = get("/${entity.entityVarName}/new").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    public void test_new${entity.objectName}()  throws Exception{
+    	RequestBuilder request = get("/${entity.varName}/new").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	this.mockMvc.perform(request);    
     	fail("Not yet implemented");
     }
 
    @Test  
-    public void test_get${entity.entityObjectName}()  throws Exception{
-        RequestBuilder request = get("/${entity.entityVarName}.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    public void test_get${entity.objectName}()  throws Exception{
+        RequestBuilder request = get("/${entity.varName}.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	this.mockMvc.perform(request);    
         fail("Not yet implemented");
     }
@@ -85,30 +85,30 @@ public class ${entity.entityObjectName}RestControllerTest {
     <#if (entity.keyFields?size == 1) >
     	<#assign keyField = entity.keyFields?first >
     	@Test  
-    	public void test_get${entity.entityObjectName}By${keyField.objectname}()  throws Exception
+    	public void test_get${entity.objectName}By${keyField.objectName}()  throws Exception
     	{
-    		 RequestBuilder request = get("/${entity.entityVarName}/{${keyField.varname}}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    		 RequestBuilder request = get("/${entity.varName}/{${keyField.varName}}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	     this.mockMvc.perform(request);    
     		fail("Not yet implemented");
     	} 
     	
     	@Test
-    	public void test_update${entity.entityObjectName}By${keyField.objectname}()  throws Exception
+    	public void test_update${entity.objectName}By${keyField.objectName}()  throws Exception
     	{
-    		${entity.entityObjectName} ${entity.entityVarName} = new ${entity.entityObjectName}();
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
 	    	ObjectMapper mapper = new ObjectMapper();
-	    	String json = mapper.writeValueAsString( ${entity.entityVarName});
-	    	RequestBuilder request = put("/${entity.entityVarName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
+	    	String json = mapper.writeValueAsString( ${entity.varName});
+	    	RequestBuilder request = put("/${entity.varName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
 	    	this.mockMvc.perform(request);  
     		fail("Not yet implemented");
     		    		
     	}
     	
     	@Test
-    	public void test_delete${entity.entityObjectName}By${keyField.objectname}()  throws Exception
+    	public void test_delete${entity.objectName}By${keyField.objectName}()  throws Exception
     	{
     		 
-    		 RequestBuilder request = delete("/${entity.entityVarName}/{${keyField.varname}}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    		 RequestBuilder request = delete("/${entity.varName}/{${keyField.varName}}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	     this.mockMvc.perform(request);    
     		 fail("Not yet implemented"); 		
     	}
@@ -116,28 +116,28 @@ public class ${entity.entityObjectName}RestControllerTest {
     	   
     <#elseif (entity.keyFields?size > 1 ) >    	    
     	@Test
-    	public void test_get${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>()  throws Exception   	
+    	public void test_get${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>()  throws Exception   	
     	{
     		 
-    		RequestBuilder request = get("/${entity.entityVarName}<#list entity.keyFields as keyField>/{${keyField.varname}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    		RequestBuilder request = get("/${entity.varName}<#list entity.keyFields as keyField>/{${keyField.varName}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	    this.mockMvc.perform(request); 
     		fail("Not yet implemented"); 	
     	}     	
     	@Test
-    	public void test_update${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>()  throws Exception
+    	public void test_update${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>()  throws Exception
     	{
-    		${entity.entityObjectName} ${entity.entityVarName} = new ${entity.entityObjectName}();
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
 	    	ObjectMapper mapper = new ObjectMapper();
-	    	String json = mapper.writeValueAsString( ${entity.entityVarName});
-	    	RequestBuilder request = put("/${entity.entityVarName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
+	    	String json = mapper.writeValueAsString( ${entity.varName});
+	    	RequestBuilder request = put("/${entity.varName}").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json.getBytes("UTF-8"));
 	    	this.mockMvc.perform(request);  
     		fail("Not yet implemented"); 	
       	}
     	
     	@Test
-    	public void test_delete${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>()  throws Exception
+    	public void test_delete${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>()  throws Exception
     	{
-    		RequestBuilder request = delete("/${entity.entityVarName}/<#list entity.keyFields as keyField>/{${keyField.varname}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    		RequestBuilder request = delete("/${entity.varName}/<#list entity.keyFields as keyField>/{${keyField.varName}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	    this.mockMvc.perform(request); 
     		fail("Not yet implemented"); 
     	}    	
@@ -145,10 +145,10 @@ public class ${entity.entityObjectName}RestControllerTest {
     
      <#if (entity.groupByFields?size >0 ) >
  		@Test
-    	public void test_select${entity.entityObjectName}GroupBy<#list entity.groupByFields as keyField>${keyField.objectname}</#list>()  throws Exception
+    	public void test_select${entity.objectName}GroupBy<#list entity.groupByFields as keyField>${keyField.objectName}</#list>()  throws Exception
     	{
     		   		
-    		RequestBuilder request = get("/${entity.entityVarName}/groupby<#list entity.keyFields as keyField>/{${keyField.varname}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+    		RequestBuilder request = get("/${entity.varName}/groupby<#list entity.keyFields as keyField>/{${keyField.varName}}</#list>.json").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
     	    this.mockMvc.perform(request); 
     		fail("Not yet implemented"); 
     	}  

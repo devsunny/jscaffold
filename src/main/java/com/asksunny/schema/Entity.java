@@ -68,7 +68,7 @@ public class Entity {
 		this.setIgnoreData(anno.getIgnoreData());
 		this.setReadonly(anno.getReadonly());
 		this.setViewOrder(anno.getOrder());
-		// this.setObjectName(anno.getObjectName());
+		this.setObjectName(anno.getObjectName());
 	}
 
 	public String getName() {

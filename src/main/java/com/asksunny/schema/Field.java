@@ -201,7 +201,26 @@ public class Field {
 	}
 
 	public String getFormat() {
-		return format;
+		String fmt = format;
+		if (fmt == null && isDatetime()) {
+			switch (this.jdbcType) {
+			case Types.DATE:
+				fmt = "yyyy-MM-dd";
+				break;
+			case Types.TIME_WITH_TIMEZONE:
+			case Types.TIME:
+				fmt = "HH:mm:ss";
+				break;
+			case Types.TIMESTAMP_WITH_TIMEZONE:
+			case Types.TIMESTAMP:
+				fmt = "yyyy-MM-dd HH:mm:ss";
+				break;
+			default:
+				fmt = null;
+				break;
+			}
+		}
+		return fmt;
 	}
 
 	public void setFormat(String format) {
@@ -251,8 +270,6 @@ public class Field {
 		return false;
 	}
 
-	
-
 	public String getEnumValues() {
 		return enumValues;
 	}
@@ -284,7 +301,7 @@ public class Field {
 	public void setObjectName(String objectName) {
 		this.objectName = JavaIdentifierUtil.capitalize(objectName);
 	}
-	
+
 	public void setVarName(String varname) {
 		this.varname = JavaIdentifierUtil.decapitalize(varname);
 	}
@@ -418,6 +435,7 @@ public class Field {
 		this.setIgnoreData(anno.getIgnoreData());
 		this.setReadonly(anno.getReadonly());
 		this.setPrincipal(anno.getPrincipal());
+		this.setObjectName(anno.getObjectName());
 	}
 
 	public int getDrillDown() {
@@ -477,6 +495,11 @@ public class Field {
 	@JsonIgnore
 	public String getJavaTypeName() {
 		return JdbcSqlTypeMap.toJavaTypeName(this);
+	}
+
+	public boolean isDatetime() {
+		return this.jdbcType == Types.DATE || this.jdbcType == Types.TIME || this.jdbcType == Types.TIMESTAMP
+				|| this.jdbcType == Types.TIME_WITH_TIMEZONE || this.jdbcType == Types.TIMESTAMP_WITH_TIMEZONE;
 	}
 
 	@Override

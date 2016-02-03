@@ -21,16 +21,7 @@ public class JavaCodeGenTest {
 		config.setMapperPackageName("com.xperia.management.mappers");
 		config.setDomainPackageName("com.xperia.management.domain");
 		config.setRestPackageName("com.xperia.management.web.rest");
-		config.setGenAngularController(true);
-		config.setGenAngularRoute(true);
-		config.setGenAngularView(true);
-		config.setGenMyBatisMapper(true);
-		config.setGenMyBatisSpringBeans(true);
-		config.setGenSpringContext(true);		
-		config.setJavaBaseDir("target/src/main/java");
-		config.setMyBatisXmlBaseDir("target/src/main/resources");
-		config.setSpringXmlBaseDir("target/src/main/resources");
-		config.setWebBaseSrcDir("target/src/main/resources/META-INF/app");
+		config.setBaseSrcDir("./target");
 		config.setWebappContext("management");	
 		config.setAppBootstrapClassName("ManConsoleBoostrap");		
 		config.setOverwriteStrategy(CodeOverwriteStrategy.OVERWRITE);		

@@ -39,13 +39,13 @@ public class ${ENTITY_NAME}RestController {
     		if(principal==null){
     			<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 		${ENTITY_VAR_NAME}.set${field.objectname}("${field.principal}");
+				 		${ENTITY_VAR_NAME}.set${field.objectName}("${field.principal}");
 				 	</#if> 
 				</#list>
     		}else{
 	    		<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 		${ENTITY_VAR_NAME}.set${field.objectname}(principal.getName());
+				 		${ENTITY_VAR_NAME}.set${field.objectName}(principal.getName());
 				 	</#if> 
 				</#list>
     		}
@@ -76,112 +76,112 @@ public class ${ENTITY_NAME}RestController {
     
     <#if (entity.keyFields?size == 1) >
     	<#assign keyField = entity.keyFields?first >
-    	@RequestMapping(value="/{${keyField.varname}}", method = { RequestMethod.GET })
+    	@RequestMapping(value="/{${keyField.varName}}", method = { RequestMethod.GET })
     	@ResponseBody
-    	public ${ENTITY_NAME} get${ENTITY_NAME}By${keyField.objectname}(@PathVariable("${keyField.varname}") ${keyField.javaTypeName} ${keyField.varname})
+    	public ${ENTITY_NAME} get${ENTITY_NAME}By${keyField.objectName}(@PathVariable("${keyField.varName}") ${keyField.javaTypeName} ${keyField.varName})
     	{
     		if(logger.isDebugEnabled()){
-    			logger.debug("Select ${entity.entityObjectName} by ${keyField.objectname} [{}]",  ${keyField.varname});
+    			logger.debug("Select ${entity.objectName} by ${keyField.objectName} [{}]",  ${keyField.varName});
     		}
-    		return this.${entity.entityVarName}Mapper.select${entity.entityObjectName}By${keyField.objectname}(${keyField.varname});
+    		return this.${entity.varName}Mapper.select${entity.objectName}By${keyField.objectName}(${keyField.varName});
     	} 
     	
     	@RequestMapping(method = { RequestMethod.PUT })
     	@ResponseBody
-    	public int update${entity.entityObjectName}By${keyField.objectname}(@RequestBody ${entity.entityObjectName} ${entity.entityVarName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
+    	public int update${entity.objectName}By${keyField.objectName}(@RequestBody ${entity.objectName} ${entity.varName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
     	{
     		if(logger.isDebugEnabled()){
-    			logger.debug("Update ${entity.entityObjectName} by ${keyField.objectname} [{}]",  ${entity.entityVarName});
+    			logger.debug("Update ${entity.objectName} by ${keyField.objectName} [{}]",  ${entity.varName});
     		}
     		<#if entity.usePrincipal >
     		if(principal==null){
     			<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 ${entity.entityVarName}.set${field.objectname}("${field.principal}");
+				 ${entity.varName}.set${field.objectName}("${field.principal}");
 				 	</#if> 
 				</#list>
     		}else{
 	    		<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 ${entity.entityVarName}.set${field.objectname}(principal.getName());
+				 ${entity.varName}.set${field.objectName}(principal.getName());
 				 	</#if> 
 				</#list>
     		}    		
 	    	</#if>    	
-	        return this.${entity.entityVarName}Mapper.update${entity.entityObjectName}By${keyField.objectname}(${entity.entityVarName});
+	        return this.${entity.varName}Mapper.update${entity.objectName}By${keyField.objectName}(${entity.varName});
     		    		
     	}
     	
-    	@RequestMapping(value="/{${keyField.varname}}", method = {RequestMethod.DELETE })
+    	@RequestMapping(value="/{${keyField.varName}}", method = {RequestMethod.DELETE })
     	@ResponseBody
-    	public int delete${entity.entityObjectName}By${keyField.objectname}(@PathVariable("${keyField.varname}") ${keyField.javaTypeName} ${keyField.varname}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
+    	public int delete${entity.objectName}By${keyField.objectName}(@PathVariable("${keyField.varName}") ${keyField.javaTypeName} ${keyField.varName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
     	{
     		if(logger.isDebugEnabled()){
-    			logger.debug("Delete ${entity.entityObjectName} by ${keyField.objectname} [{}]",  ${keyField.varname});
+    			logger.debug("Delete ${entity.objectName} by ${keyField.objectName} [{}]",  ${keyField.varName});
     		}
-	        return this.${entity.entityVarName}Mapper.delete${entity.entityObjectName}By${keyField.objectname}(${keyField.varname});
+	        return this.${entity.varName}Mapper.delete${entity.objectName}By${keyField.objectName}(${keyField.varName});
     		    		
     	}
     	
     	   
     <#elseif (entity.keyFields?size > 1 ) >    	    
-    	@RequestMapping(value="<#list entity.keyFields as keyField>/{${keyField.varname}}</#list>", method = { RequestMethod.GET })
+    	@RequestMapping(value="<#list entity.keyFields as keyField>/{${keyField.varName}}</#list>", method = { RequestMethod.GET })
     	@ResponseBody
-    	public ${ENTITY_NAME} get${ENTITY_NAME}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(
+    	public ${ENTITY_NAME} get${ENTITY_NAME}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(
     	<#list entity.keyFields as keyField>
-    	@PathVariable("${keyField.varname}") ${keyField.javaTypeName} ${keyField.varname}<#sep>,
+    	@PathVariable("${keyField.varName}") ${keyField.javaTypeName} ${keyField.varName}<#sep>,
     	</#list>
     	<#if entity.usePrincipal >, java.security.Principal principal</#if>    	
     	)    	
     	{
-    		${entity.entityObjectName} ${entity.entityVarName} = new ${entity.entityObjectName}();
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
     		<#list entity.keyFields as keyField>
-    		${entity.entityVarName}.set${keyField.objectname}(${keyField.varname});
+    		${entity.varName}.set${keyField.objectName}(${keyField.varName});
     		</#list>    		
-    		return this.${entity.entityVarName}Mapper.select${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(${entity.entityVarName});
+    		return this.${entity.varName}Mapper.select${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.varName});
     	}     	
     	@RequestMapping(method = { RequestMethod.PUT })
     	@ResponseBody
-    	public int update${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(@RequestBody ${entity.entityObjectName} ${entity.entityVarName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
+    	public int update${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(@RequestBody ${entity.objectName} ${entity.varName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
     	{
     		if(logger.isDebugEnabled()){
-    			logger.debug("Update ${entity.entityObjectName} by <#list entity.keyFields as keyField>${keyField.objectname}<#sep>,</#list> ",  ${entity.entityVarName});
+    			logger.debug("Update ${entity.objectName} by <#list entity.keyFields as keyField>${keyField.objectName}<#sep>,</#list> ",  ${entity.varName});
     		}
     		<#if entity.usePrincipal >
     		if(principal==null){
     			<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 ${entity.entityVarName}.set${field.objectname}("${field.principal}");
+				 ${entity.varName}.set${field.objectName}("${field.principal}");
 				 	</#if> 
 				</#list>
     		}else{
 	    		<#list entity.fields as field>
 				 	<#if field.principal?? >
-				 ${entity.entityVarName}.set${field.objectname}(principal.getName());
+				 ${entity.varName}.set${field.objectName}(principal.getName());
 				 	</#if> 
 				</#list>
     		}    		
 	    	</#if>    	
-	        return this.${entity.entityVarName}Mapper.update${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(${entity.entityVarName});
+	        return this.${entity.varName}Mapper.update${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.varName});
     		    		
     	}
     	
-    	@RequestMapping(value="<#list entity.keyFields as keyField>/{${keyField.varname}}</#list>", method = {RequestMethod.DELETE })
+    	@RequestMapping(value="<#list entity.keyFields as keyField>/{${keyField.varName}}</#list>", method = {RequestMethod.DELETE })
     	@ResponseBody
-    	public int delete${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(
+    	public int delete${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(
     	<#list entity.keyFields as keyField>
-    	@PathVariable("${keyField.varname}") ${keyField.javaTypeName} ${keyField.varname}<#sep>,
+    	@PathVariable("${keyField.varName}") ${keyField.javaTypeName} ${keyField.varName}<#sep>,
     	</#list>    	
     	<#if entity.usePrincipal >, java.security.Principal principal</#if>)
     	{
     		if(logger.isDebugEnabled()){
-    			logger.debug("Delete ${entity.entityObjectName} by <#list entity.keyFields as keyField>${keyField.objectname} [{}]<#sep>,</#list> ",  <#list entity.keyFields as keyField>${keyField.varname}<#sep>, </#list>);
+    			logger.debug("Delete ${entity.objectName} by <#list entity.keyFields as keyField>${keyField.objectName} [{}]<#sep>,</#list> ",  <#list entity.keyFields as keyField>${keyField.varName}<#sep>, </#list>);
     		}
-    		${entity.entityObjectName} ${entity.entityVarName} = new ${entity.entityObjectName}();
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
     		<#list entity.keyFields as keyField>
-    		${entity.entityVarName}.set${keyField.objectname}(${keyField.varname});
+    		${entity.varName}.set${keyField.objectName}(${keyField.varName});
     		</#list>    
-	        return this.${entity.entityVarName}Mapper.delete${entity.entityObjectName}By<#list entity.keyFields as keyField>${keyField.objectname}</#list>(${entity.entityVarName});    		    		
+	        return this.${entity.varName}Mapper.delete${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.varName});    		    		
     	}    	
 	</#if>
     

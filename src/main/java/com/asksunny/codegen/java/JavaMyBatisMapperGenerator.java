@@ -37,7 +37,7 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 			return;
 		}
 		List<Field> keyFields = entity.getKeyFields();
-		if (keyFields.size() == 0 && entity.hasUniqueField()) {
+		if (keyFields.size() == 0 && entity.isHasUniqueField()) {
 			keyFields = entity.getUniqueFields();
 		}
 
@@ -47,16 +47,16 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 		if (gbFields.size() == 1) {
 			Field keyField = gbFields.get(0);
 			methods.append(String.format("%2$sjava.util.List<%1$s> select%1$sGroupBy%3$s(%5$s %4$s);",
-					entity.getEntityObjectName(), INDENDENT_2, keyField.getObjectname(), keyField.getVarname(),
+					entity.getObjectName(), INDENDENT_2, keyField.getObjectName(), keyField.getVarName(),
 					JdbcSqlTypeMap.toJavaTypeName(keyField))).append("\n");
 
 		} else if (gbFields.size() > 1) {
 			StringBuilder buf = new StringBuilder();
 			for (Field keyField : gbFields) {
-				buf.append(keyField.getObjectname());
+				buf.append(keyField.getObjectName());
 			}
 			methods.append(String.format("%2$sjava.util.List<%1$s> select%1$sGroupBy%4$s(%1$s %3$s);",
-					entity.getEntityObjectName(), INDENDENT_2, entity.getEntityVarName(), buf.toString())).append("\n");
+					entity.getObjectName(), INDENDENT_2, entity.getVarName(), buf.toString())).append("\n");
 		}
 
 		List<Field> ddFields = entity.getDrillDownFields();
@@ -64,21 +64,21 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 		if (ddFields.size() > 0) {
 			Field dd0 = ddFields.get(0);
 			methods.append(String.format("%1$sjava.util.List<%2$s> select%2$sDrilldownBy%4$s(%2$s %3$s);",
-					INDENDENT_2, entity.getEntityObjectName(), entity.getEntityVarName(), dd0.getObjectname(), dd0.getVarname(),
+					INDENDENT_2, entity.getObjectName(), entity.getVarName(), dd0.getObjectName(), dd0.getVarName(),
 					JdbcSqlTypeMap.toJavaTypeName(dd0))).append("\n");
 
 		}
 		if (ddFields.size() > 1) {
 			Field dd1 = ddFields.get(0);
 			StringBuilder restPath = new StringBuilder();
-			restPath.append(String.format("/{%s}", dd1.getVarname()));
+			restPath.append(String.format("/{%s}", dd1.getVarName()));
 			StringBuilder uiPath = new StringBuilder();
-			uiPath.append(String.format("/:%s", dd1.getVarname()));
+			uiPath.append(String.format("/:%s", dd1.getVarName()));
 			for (int i = 1; i < ddFields.size(); i++) {
 				Field dd0 = ddFields.get(i);
 				methods.append(String.format("%2$sjava.util.List<%1$s> select%1$sDrilldownBy%3$s(%1$s %4$s);",
-						entity.getEntityObjectName(), INDENDENT_2, dd0.getObjectname(), entity.getEntityVarName(),
-						JdbcSqlTypeMap.toJavaTypeName(dd0), entity.getVarname())).append("\n");
+						entity.getObjectName(), INDENDENT_2, dd0.getObjectName(), entity.getVarName(),
+						JdbcSqlTypeMap.toJavaTypeName(dd0), entity.getVarName())).append("\n");
 
 			}
 
@@ -89,12 +89,12 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 			StringBuilder uiPath = new StringBuilder();
 			for (int i = 0; i < ddFields.size(); i++) {
 				Field dd0 = ddFields.get(i);
-				restPath.append(String.format("/{%s}", dd0.getVarname()));
-				uiPath.append(String.format("/:%s", dd0.getVarname()));
+				restPath.append(String.format("/{%s}", dd0.getVarName()));
+				uiPath.append(String.format("/:%s", dd0.getVarName()));
 			}
 
 			methods.append(String.format("%1$sjava.util.List<%2$s> select%2$sDrilldownDetail(%2$s %3$s);\n",
-					INDENDENT_2, entity.getEntityObjectName(), entity.getEntityVarName()));
+					INDENDENT_2, entity.getObjectName(), entity.getVarName()));
 		}
 		
 		try {
@@ -109,13 +109,13 @@ public class JavaMyBatisMapperGenerator extends CodeGenerator {
 					.addMapEntry("DOMAIN_PACKAGE", configuration.getDomainPackageName())
 					.addMapEntry("MAPPER_METHODS", methods.toString())					
 					.addMapEntry("entity", entity)					
-					.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-					.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+					.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+					.addMapEntry("ENTITY_NAME", entity.getObjectName())
 					.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap(), out);
 			out.flush();
 			String mapperPath = configuration.getMapperPackageName().replaceAll("[\\.]", "/");
 			writeCode(new File(configuration.getJavaBaseDir(), mapperPath),
-					String.format("%sMapper.java", entity.getEntityObjectName()), out.toString());
+					String.format("%sMapper.java", entity.getObjectName()), out.toString());
 		} catch (TemplateException e) {
 			throw new IOException("Failed to render template", e);
 		}

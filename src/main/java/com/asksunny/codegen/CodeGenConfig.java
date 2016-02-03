@@ -20,8 +20,7 @@ public class CodeGenConfig {
 	String webBaseSrcDir = "src/main/resources/META-INF/app";
 	String baseSrcDir = ".";
 	String basePackageName = "com.foo";
-	
-	
+
 	String domainPackageName;
 	String mapperPackageName;
 	String restPackageName;
@@ -29,12 +28,12 @@ public class CodeGenConfig {
 	String angularAppName = "sbAdminApp";
 	String appBootstrapPackage;
 	String appBootstrapClassName;
-	
+
 	private DataOutputType outputType;
-	private String outputUri;	
+	private String outputUri;
 	private long numberOfRecords;
 	private boolean debug = false;
-	
+
 	private String webserverPort = "8181";
 
 	boolean genAngularView = true;
@@ -53,11 +52,11 @@ public class CodeGenConfig {
 	boolean genJunit = true;
 	boolean genSchema = true;
 	boolean genSeedData = false;
-	
+
 	boolean enableSSL = true;
 	String SSLIssuerDN = null;
 	String keypass = "changeit";
-	String keyStoreDirectory ="src/test/resources";
+	String keyStoreDirectory = "src/test/resources";
 	String keystoreName = "web_server.jks";
 	String sslCertAlias = "webserver";
 
@@ -68,6 +67,44 @@ public class CodeGenConfig {
 
 	public CodeGenConfig() {
 
+	}
+
+	public String getJavaBaseDir() {
+		return javaBaseDir == null ? String.format("%s/src/main/java", getBaseSrcDir())
+				: String.format("%s/%s", getBaseSrcDir(), javaBaseDir);
+	}
+
+	public String getJunitBaseDir() {
+		return junitBaseDir == null ? String.format("%s/src/test/java", getBaseSrcDir())
+				: String.format("%s/%s", getBaseSrcDir(), junitBaseDir);
+	}
+
+	public String getMyBatisXmlBaseDir() {
+		return myBatisXmlBaseDir == null ? String.format("%s/src/main/resources", getBaseSrcDir())
+				: String.format("%s/%s", getBaseSrcDir(), myBatisXmlBaseDir);
+	}
+
+	public void setGenAngularController(boolean genAngularController) {
+		this.genAngularController = genAngularController;
+	}
+
+	public String getSpringXmlBaseDir() {
+		return springXmlBaseDir == null ? String.format("%s/src/main/resources", getBaseSrcDir())
+				: String.format("%s/%s", getBaseSrcDir(), springXmlBaseDir);
+	}
+
+	public String getWebBaseSrcDir() {
+		return webBaseSrcDir == null ? String.format("%s/src/main/resources/META-INF/app", getBaseSrcDir())
+				: String.format("%s/%s", getBaseSrcDir(), webBaseSrcDir);
+	}
+
+	public String getKeyStoreDirectory() {
+		return keyStoreDirectory == null ? String.format("%s/src/test/resources", getBaseSrcDir())
+				: String.format("%s/%S", getBaseSrcDir(), keyStoreDirectory);
+	}
+
+	public void setKeyStoreDirectory(String keyStoreDirectory) {
+		this.keyStoreDirectory = keyStoreDirectory;
 	}
 
 	public Set<String> getIgnores() {
@@ -96,20 +133,8 @@ public class CodeGenConfig {
 		return tableName != null && (!StringUtils.isBlank(tableName)) && this.includes.contains(tableName);
 	}
 
-	public String getJavaBaseDir() {
-		return javaBaseDir == null ? String.format("%s/src/main/java", getBaseSrcDir()) : javaBaseDir;
-	}
-	
-	public String getJunitBaseDir() {
-		return junitBaseDir == null ? String.format("%s/src/test/java", getBaseSrcDir()) : junitBaseDir;
-	}
-
 	public void setJavaBaseDir(String javaBaseDir) {
 		this.javaBaseDir = javaBaseDir;
-	}
-
-	public String getMyBatisXmlBaseDir() {
-		return myBatisXmlBaseDir == null ? String.format("%s/src/main/resources", getBaseSrcDir()) : myBatisXmlBaseDir;
 	}
 
 	public void setMyBatisXmlBaseDir(String myBatisXmlBaseDir) {
@@ -188,10 +213,6 @@ public class CodeGenConfig {
 		this.suffixSequenceIfExists = suffixSequenceIfExists;
 	}
 
-	public String getSpringXmlBaseDir() {
-		return springXmlBaseDir == null ? String.format("%s/src/main/resources", getBaseSrcDir()) : springXmlBaseDir;
-	}
-
 	public void setSpringXmlBaseDir(String springXmlBaseDir) {
 		this.springXmlBaseDir = springXmlBaseDir;
 	}
@@ -239,10 +260,9 @@ public class CodeGenConfig {
 	public boolean isGenAngularRoute() {
 		return genAngularRoute;
 	}
-	
-	public boolean isGenAngular()
-	{
-		return this.isGenAngularController() || this.isGenAngularRoute()||isGenAngularView();
+
+	public boolean isGenAngular() {
+		return this.isGenAngularController() || this.isGenAngularRoute() || isGenAngularView();
 	}
 
 	public void setGenAngularRoute(boolean genAngularRoute) {
@@ -251,15 +271,6 @@ public class CodeGenConfig {
 
 	public boolean isGenAngularController() {
 		return genAngularController;
-	}
-
-	public void setGenAngularController(boolean genAngularController) {
-		this.genAngularController = genAngularController;
-	}
-
-	public String getWebBaseSrcDir() {
-		return webBaseSrcDir == null ? String.format("%s/src/main/resources/META-INF/webapp", getBaseSrcDir())
-				: webBaseSrcDir;
 	}
 
 	public void setWebBaseSrcDir(String webBaseSrcDir) {
@@ -275,8 +286,7 @@ public class CodeGenConfig {
 	}
 
 	public String getAppBootstrapPackage() {
-		return appBootstrapPackage == null
-				? getBasePackageName() : appBootstrapPackage;
+		return appBootstrapPackage == null ? getBasePackageName() : appBootstrapPackage;
 	}
 
 	public void setAppBootstrapPackage(String appBootstrapPackage) {
@@ -411,14 +421,6 @@ public class CodeGenConfig {
 		this.keypass = keypass;
 	}
 
-	public String getKeyStoreDirectory() {
-		return keyStoreDirectory;
-	}
-
-	public void setKeyStoreDirectory(String keyStoreDirectory) {
-		this.keyStoreDirectory = keyStoreDirectory;
-	}
-
 	public String getKeystoreName() {
 		return keystoreName;
 	}
@@ -458,7 +460,5 @@ public class CodeGenConfig {
 	public void setGenSeedData(boolean genSeedData) {
 		this.genSeedData = genSeedData;
 	}
-
-	
 
 }

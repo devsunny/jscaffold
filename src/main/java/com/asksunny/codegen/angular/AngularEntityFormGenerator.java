@@ -19,8 +19,8 @@ public class AngularEntityFormGenerator extends CodeGenerator {
 
 	@Override
 	public void doCodeGen() throws IOException {
-		writeCode(this.viewDir, String.format("%sForm.html", entity.getEntityObjectName()), genForm());
-		writeCode(this.controllerDir, String.format("%sFormController.js", entity.getEntityObjectName()),
+		writeCode(this.viewDir, String.format("%sForm.html", entity.getObjectName()), genForm());
+		writeCode(this.controllerDir, String.format("%sFormController.js", entity.getObjectName()),
 				genFormController());
 	}
 
@@ -39,7 +39,7 @@ public class AngularEntityFormGenerator extends CodeGenerator {
 				IOUtils.toString(getClass().getResourceAsStream("angularEntityForm.html.tmpl")),
 				ParamMapBuilder.newBuilder().addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 						.addMapEntry("FORM_FIELDS", fields.toString())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName()).addMapEntry("ENTITY_LABEL", label)
+						.addMapEntry("ENTITY_NAME", entity.getObjectName()).addMapEntry("ENTITY_LABEL", label)
 						.buildMap());
 		return generated;
 	}
@@ -49,28 +49,28 @@ public class AngularEntityFormGenerator extends CodeGenerator {
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream("AngularNavigationItem.html.tmpl")),
 				ParamMapBuilder.newBuilder().addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
-						.addMapEntry("NAVIGATION_STATE_NAME", entity.getEntityVarName())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName()).addMapEntry("NAVIGATION_LABEL", label)
+						.addMapEntry("NAVIGATION_STATE_NAME", entity.getVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName()).addMapEntry("NAVIGATION_LABEL", label)
 						.buildMap());
 		return generated;
 	}
 
 	public String genFormController() throws IOException {
 		Field kf = entity.getKeyField();
-		String pkName = kf == null ? "uniqueId" : kf.getVarname();
+		String pkName = kf == null ? "uniqueId" : kf.getVarName();
 		String generated = TemplateUtil
 				.renderTemplate(IOUtils.toString(getClass().getResourceAsStream("angularEntityFormController.js.tmpl")),
 						ParamMapBuilder.newBuilder().addMapEntry("PK_FIELD_VAR_NAME", pkName)
 								.addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 								.addMapEntry("INSERT_UPDATE_URI",
 										String.format("/%s/%s", configuration.getWebappContext(),
-												entity.getEntityVarName()))
+												entity.getVarName()))
 						.addMapEntry("GET_REQUEST_URI",
-								String.format("/%s/%s%s", configuration.getWebappContext(), entity.getEntityVarName(),
+								String.format("/%s/%s%s", configuration.getWebappContext(), entity.getVarName(),
 										generateInterpolateURL(entity.getKeyFields())))
 						.addMapEntry("WEBCONTEXT", configuration.getWebappContext())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName())
+						.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 		return generated;
 	}
@@ -78,7 +78,7 @@ public class AngularEntityFormGenerator extends CodeGenerator {
 	public String genAngularState() throws IOException {
 
 		Field kf = entity.getKeyField();
-		String pkName = kf == null ? "uniqueId" : kf.getVarname();
+		String pkName = kf == null ? "uniqueId" : kf.getVarName();
 
 		String generated = TemplateUtil
 				.renderTemplate(
@@ -90,9 +90,9 @@ public class AngularEntityFormGenerator extends CodeGenerator {
 								.addMapEntry("KEY_PARAMS", getKeyStateParameters())
 								.addMapEntry("KEY_URI_PARAMS", getKeyParamURI())
 								.addMapEntry("PK_FIELD_VAR_NAME", pkName)
-								.addMapEntry("VIEW_NAME", entity.getEntityVarName())
-								.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-								.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+								.addMapEntry("VIEW_NAME", entity.getVarName())
+								.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+								.addMapEntry("ENTITY_NAME", entity.getObjectName())
 								.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 		return generated;
 	}

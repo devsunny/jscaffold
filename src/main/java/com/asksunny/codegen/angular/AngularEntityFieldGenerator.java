@@ -24,7 +24,7 @@ public class AngularEntityFieldGenerator {
 
 	public String genField() throws IOException {
 		String entityVarName = JavaIdentifierUtil.toVariableName(entity.getName());
-		String fieldVarName = field.getVarname() != null ? field.getVarname()
+		String fieldVarName = field.getVarName() != null ? field.getVarName()
 				: JavaIdentifierUtil.toVariableName(field.getName());
 		String label = field.getLabel() == null ? field.getName() : field.getLabel();
 
@@ -100,7 +100,7 @@ public class AngularEntityFieldGenerator {
 						IOUtils.toString(getClass().getResourceAsStream("angularRadioOpt.html.tmpl")),
 						ParamMapBuilder.newBuilder().addMapEntry("OPTION_VALUE", enumvals[i])
 								.addMapEntry("ENTITY_VAR_NAME", entityVarName)
-								.addMapEntry("FIELD_NAME", field.getObjectname())
+								.addMapEntry("FIELD_NAME", field.getObjectName())
 								.addMapEntry("FIELD_VAR_NAME_SEQ", String.format("%s%02d", fieldVarName, i + 1))
 								.addMapEntry("FIELD_VAR_NAME", fieldVarName).addMapEntry("FIELD_LABEL", label)
 								.buildMap());
@@ -164,7 +164,7 @@ public class AngularEntityFieldGenerator {
 			}			
 			generated = TemplateUtil.renderTemplate(IOUtils.toString(getClass().getResourceAsStream(templ)),
 					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", fieldVarName)
-							.addMapEntry("FIELD_NAME", field.getObjectname()).addMapEntry("HTML_TYPE", HTML_INPUT_TYPE)
+							.addMapEntry("FIELD_NAME", field.getObjectName()).addMapEntry("HTML_TYPE", HTML_INPUT_TYPE)
 							.addMapEntry("ENTITY_VAR_NAME", entityVarName)
 							.addMapEntry("DATEPICKER_PICKER_FOR_DATETIME", datePicker)
 							.addMapEntry("FIELD_ATTRIBUTES", attrValue).addMapEntry("FIELD_INPUT_TYPE", element)

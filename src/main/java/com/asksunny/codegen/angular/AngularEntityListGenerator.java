@@ -26,8 +26,8 @@ public class AngularEntityListGenerator extends CodeGenerator {
 
 	@Override
 	public void doCodeGen() throws IOException {
-		writeCode(this.viewDir, String.format("%sList.html", entity.getEntityObjectName()), genTable(null));
-		writeCode(this.controllerDir, String.format("%sListController.js", entity.getEntityObjectName()),
+		writeCode(this.viewDir, String.format("%sList.html", entity.getObjectName()), genTable(null));
+		writeCode(this.controllerDir, String.format("%sListController.js", entity.getObjectName()),
 				genListController());
 		genDrillDownView();
 		genDrilldownController();
@@ -43,8 +43,8 @@ public class AngularEntityListGenerator extends CodeGenerator {
 				.renderTemplate(IOUtils.toString(getClass().getResourceAsStream("AngularNavigationItem.html.tmpl")),
 						ParamMapBuilder.newBuilder().addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 								.addMapEntry("NAVIGATION_STATE_NAME",
-										String.format("%sList", entity.getEntityVarName()))
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+										String.format("%sList", entity.getVarName()))
+						.addMapEntry("ENTITY_NAME", entity.getObjectName())
 						.addMapEntry("NAVIGATION_LABEL", entity.getLabel()).buildMap());
 		return generated;
 	}
@@ -55,9 +55,9 @@ public class AngularEntityListGenerator extends CodeGenerator {
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream("angularEntityListState.js.tmpl")),
 				ParamMapBuilder.newBuilder().addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
-						.addMapEntry("VIEW_NAME", entity.getEntityVarName())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+						.addMapEntry("VIEW_NAME", entity.getVarName())
+						.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 		allStates.append(generated);
 		List<Field> drilldownFields = entity.getDrillDownFields();
@@ -66,10 +66,10 @@ public class AngularEntityListGenerator extends CodeGenerator {
 			StringBuilder uri = new StringBuilder();
 			for (int i = 0; i <= drilldownFields.size(); i++) {
 				if (i > 0) {
-					uri.append(String.format("/:%s", drilldownFields.get(i - 1).getVarname()));
+					uri.append(String.format("/:%s", drilldownFields.get(i - 1).getVarName()));
 				}
 				String ddname = i < drilldownFields.size()
-						? String.format("Drilldown%s", drilldownFields.get(i).getObjectname()) : "DrilldownDetail";
+						? String.format("Drilldown%s", drilldownFields.get(i).getObjectName()) : "DrilldownDetail";
 				generated = TemplateUtil
 						.renderTemplate(
 								IOUtils.toString(
@@ -79,9 +79,9 @@ public class AngularEntityListGenerator extends CodeGenerator {
 										.addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 										.addMapEntry("DRILLDOWN_URL", uri.toString())
 										.addMapEntry("DRILLDOWN_NAME", ddname)
-										.addMapEntry("VIEW_NAME", entity.getEntityVarName())
-										.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-										.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+										.addMapEntry("VIEW_NAME", entity.getVarName())
+										.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+										.addMapEntry("ENTITY_NAME", entity.getObjectName())
 										.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 				allStates.append(generated);
 			}
@@ -99,23 +99,23 @@ public class AngularEntityListGenerator extends CodeGenerator {
 		List<String> linkParams = new ArrayList<String>();
 		for (int i = 0; i <= drilldownFields.size(); i++) {
 			String ddname = i < drilldownFields.size()
-					? String.format("Drilldown%s", drilldownFields.get(i).getObjectname()) : "DrilldownDetail";
+					? String.format("Drilldown%s", drilldownFields.get(i).getObjectName()) : "DrilldownDetail";
 			if (i < drilldownFields.size()) {
 				Field ddField = drilldownFields.get(i);
-				linkParams.add(String.format("%1$s:listItem.%1$s", ddField.getVarname()));
+				linkParams.add(String.format("%1$s:listItem.%1$s", ddField.getVarName()));
 				StringBuilder header = new StringBuilder();
 				header.append(String.format("<th>%s</th>\n", ddField.getLabel()));
 				StringBuilder body = new StringBuilder();
 				String ddNext = i < (drilldownFields.size() - 1)
-						? String.format("dashboard.%sDrilldown%s", entity.getEntityVarName(),
-								drilldownFields.get(i + 1).getObjectname())
-						: String.format("dashboard.%sDrilldownDetail", entity.getEntityVarName());
+						? String.format("dashboard.%sDrilldown%s", entity.getVarName(),
+								drilldownFields.get(i + 1).getObjectName())
+						: String.format("dashboard.%sDrilldownDetail", entity.getVarName());
 				body.append(String.format("<td><a ui-sref=\"%s({%s})\">{{listItem.%s}}</td>\n", ddNext,
-						StringUtils.join(linkParams, ","), ddField.getVarname()));
+						StringUtils.join(linkParams, ","), ddField.getVarName()));
 				if (groupFunct != null) {
 					header.append(String.format("<th>%s of %s</th>\n", groupFunct.getGroupFunction().toString(),
 							groupFunct.getLabel()));
-					body.append(String.format("<td>{{listItem.%s}}</td>\n", groupFunct.getVarname()));
+					body.append(String.format("<td>{{listItem.%s}}</td>\n", groupFunct.getVarName()));
 				}
 
 				String generated = TemplateUtil
@@ -125,14 +125,14 @@ public class AngularEntityListGenerator extends CodeGenerator {
 								ParamMapBuilder.newBuilder().addMapEntry("TABLE_HEADER", header.toString())
 										.addMapEntry("ITEMS_PER_PAGE", Integer.toString(entity.getItemsPerPage()))
 										.addMapEntry("TABLE_BODY", body.toString())
-										.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-										.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+										.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+										.addMapEntry("ENTITY_NAME", entity.getObjectName())
 										.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 
-				writeCode(this.viewDir, String.format("%s%s.html", entity.getEntityObjectName(), ddname), generated);
+				writeCode(this.viewDir, String.format("%s%s.html", entity.getObjectName(), ddname), generated);
 			} else {
-				String generated = genTable(String.format("%sDrilldownCtrl", entity.getEntityObjectName()));
-				writeCode(this.viewDir, String.format("%s%s.html", entity.getEntityObjectName(), ddname), generated);
+				String generated = genTable(String.format("%sDrilldownCtrl", entity.getObjectName()));
+				writeCode(this.viewDir, String.format("%s%s.html", entity.getObjectName(), ddname), generated);
 			}
 
 		}
@@ -148,7 +148,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 		for (Field field : drilldownFields) {
 			ddParams.append(TemplateUtil.renderTemplate(
 					IOUtils.toString(getClass().getResourceAsStream("angularDrilldownStateParam.js.tmpl")),
-					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", field.getVarname())
+					ParamMapBuilder.newBuilder().addMapEntry("FIELD_VAR_NAME", field.getVarName())
 							.buildMap()));
 		}
 
@@ -157,13 +157,13 @@ public class AngularEntityListGenerator extends CodeGenerator {
 				ParamMapBuilder.newBuilder().addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 						.addMapEntry("GET_REQUEST_URI",
 								String.format("/%s/%s/drilldown", configuration.getWebappContext(),
-										entity.getEntityVarName()))
+										entity.getVarName()))
 						.addMapEntry("STATE_PARAMETERS", ddParams.toString())
 						.addMapEntry("WEBCONTEXT", configuration.getWebappContext())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName())
+						.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
-		writeCode(this.controllerDir, String.format("%sDrilldownController.js", entity.getEntityObjectName()),
+		writeCode(this.controllerDir, String.format("%sDrilldownController.js", entity.getObjectName()),
 				generated);
 	}
 
@@ -187,7 +187,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 					format = String.format(" | date: \"%s\"", fmt);
 				}
 			}
-			String listItem = String.format("{{listItem.%s%s}}", field.getVarname(), format);
+			String listItem = String.format("{{listItem.%s%s}}", field.getVarName(), format);
 			if (link != null && field.isPrimaryKey()) {
 				listItem = String.format("<a ui-sref=\"%s\">%s</a>", link, listItem);
 			}
@@ -196,7 +196,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 			tbody.append("</td>").append("\n");
 		}
 
-		String ListCtrl = controllerName == null ? String.format("%sListCtrl", entity.getEntityObjectName())
+		String ListCtrl = controllerName == null ? String.format("%sListCtrl", entity.getObjectName())
 				: controllerName;
 		String label = entity.getLabel() == null ? entity.getName() : entity.getLabel();
 		
@@ -208,10 +208,10 @@ public class AngularEntityListGenerator extends CodeGenerator {
 							IOUtils.toString(
 									getClass()
 											.getResourceAsStream("angularDrilldownLink.html.tmpl")),
-							ParamMapBuilder.newBuilder().addMapEntry("FIELD_OBJECT_NAME", ddf.getObjectname())
+							ParamMapBuilder.newBuilder().addMapEntry("FIELD_OBJECT_NAME", ddf.getObjectName())
 									.addMapEntry("FIELD_LABEL", ddf.getLabel())									
 									.addMapEntry("ENTITY_VAR_NAME", entityVarName)
-									.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+									.addMapEntry("ENTITY_NAME", entity.getObjectName())
 									.addMapEntry("ENTITY_LABEL", label).buildMap());
 		}
 		
@@ -226,7 +226,7 @@ public class AngularEntityListGenerator extends CodeGenerator {
 								.addMapEntry("ITEMS_PER_PAGE", Integer.toString(entity.getItemsPerPage()))
 								.addMapEntry("TABLE_BODY", tbody.toString())
 								.addMapEntry("ENTITY_VAR_NAME", entityVarName)
-								.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+								.addMapEntry("ENTITY_NAME", entity.getObjectName())
 								.addMapEntry("ENTITY_LABEL", label).buildMap());
 		return generated;
 
@@ -238,25 +238,25 @@ public class AngularEntityListGenerator extends CodeGenerator {
 			return null;
 		List<String> parms = new ArrayList<String>();
 		for (Field field : keyfields) {
-			parms.add(String.format("%1$s:listItem.%1$s", field.getVarname()));
+			parms.add(String.format("%1$s:listItem.%1$s", field.getVarName()));
 		}
-		String aref = String.format("dashboard.%sForm({%s})", entity.getEntityVarName(), StringUtils.join(parms, ","));
+		String aref = String.format("dashboard.%sForm({%s})", entity.getVarName(), StringUtils.join(parms, ","));
 		return aref;
 	}
 
 	public String genListController() throws IOException {
 		Field kf = entity.getKeyField();
-		String pkName = kf == null ? "uniqueId" : kf.getVarname();
+		String pkName = kf == null ? "uniqueId" : kf.getVarName();
 		String generated = TemplateUtil
 				.renderTemplate(IOUtils.toString(getClass().getResourceAsStream("angularEntityListController.js.tmpl")),
 						ParamMapBuilder.newBuilder().addMapEntry("PK_FIELD_VAR_NAME", pkName)
 								.addMapEntry("ANGULAR_APP_NAME", configuration.getAngularAppName())
 								.addMapEntry("GET_REQUEST_URI",
 										String.format("/%s/%s", configuration.getWebappContext(),
-												entity.getEntityVarName()))
+												entity.getVarName()))
 						.addMapEntry("WEBCONTEXT", configuration.getWebappContext())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName())
+						.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap());
 		return generated;
 	}

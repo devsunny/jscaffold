@@ -32,6 +32,8 @@ public class Field {
 
 	@JsonIgnore
 	String varname;
+	@JsonIgnore
+	String objectName;
 
 	@JsonIgnore
 	String format;
@@ -249,27 +251,7 @@ public class Field {
 		return false;
 	}
 
-	@Override
-	public String toString() {
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		if (this.referencedBy != null) {
-			for (Field fd : this.referencedBy) {
-				sb.append(String.format("%s.%s", fd.getContainer().getName(), fd.getName())).append(", ");
-			}
-		}
-		if (sb.length() > 2) {
-			sb.deleteCharAt(sb.length() - 1);
-			sb.deleteCharAt(sb.length() - 1);
-		}
-		sb.append("]");
-		return "Field [container=" + container.getName() + ", name=" + name + ", fieldIndex=" + fieldIndex
-				+ ", jdbcType=" + jdbcType + ", precision=" + precision + ", scale=" + scale + ", displaySize="
-				+ displaySize + ", nullable=" + nullable + ", dataType=" + dataType + ", format=" + format
-				+ ", minValue=" + minValue + ", maxValue=" + maxValue + ", reference=" + reference + ", step=" + step
-				+ ", referencedBy=" + sb.toString() + "]\n";
-	}
+	
 
 	public String getEnumValues() {
 		return enumValues;
@@ -287,20 +269,28 @@ public class Field {
 		this.primaryKey = primaryKey;
 	}
 
-	public String getVarname() {
-		return varname == null ? JavaIdentifierUtil.toVariableName(name) : varname;
+	public String getVarName() {
+		return this.varname != null ? this.varname
+				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(objectName)
+						: JavaIdentifierUtil.toVariableName(name));
 	}
 
-	public String getObjectname() {
-		return varname == null ? JavaIdentifierUtil.toObjectName(name) : JavaIdentifierUtil.capitalize(varname);
+	public String getObjectName() {
+		return this.objectName != null ? this.objectName
+				: ((this.varname != null) ? JavaIdentifierUtil.capitalize(varname)
+						: JavaIdentifierUtil.toObjectName(name));
 	}
 
-	public void setVarname(String varname) {
-		this.varname = varname;
+	public void setObjectName(String objectName) {
+		this.objectName = JavaIdentifierUtil.capitalize(objectName);
+	}
+	
+	public void setVarName(String varname) {
+		this.varname = JavaIdentifierUtil.decapitalize(varname);
 	}
 
 	public String getLabel() {
-		return label == null ? getObjectname() : label;
+		return label == null ? getObjectName() : label;
 	}
 
 	public void setLabel(String uiname) {
@@ -417,7 +407,7 @@ public class Field {
 		this.setMinValue(anno.getMinValue());
 		this.setStep(anno.getStep());
 		this.setUitype(anno.getUitype());
-		this.setVarname(anno.getVarname());
+		this.setVarName(anno.getVarname());
 		this.setIgnoreView(anno.getIgnoreView());
 		this.setOrder(anno.getOrder());
 		this.setGroupFunction(anno.getGroupFunction());
@@ -487,6 +477,28 @@ public class Field {
 	@JsonIgnore
 	public String getJavaTypeName() {
 		return JdbcSqlTypeMap.toJavaTypeName(this);
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		if (this.referencedBy != null) {
+			for (Field fd : this.referencedBy) {
+				sb.append(String.format("%s.%s", fd.getContainer().getName(), fd.getName())).append(", ");
+			}
+		}
+		if (sb.length() > 2) {
+			sb.deleteCharAt(sb.length() - 1);
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		sb.append("]");
+		return "Field [container=" + container.getName() + ", name=" + name + ", fieldIndex=" + fieldIndex
+				+ ", jdbcType=" + jdbcType + ", precision=" + precision + ", scale=" + scale + ", displaySize="
+				+ displaySize + ", nullable=" + nullable + ", dataType=" + dataType + ", format=" + format
+				+ ", minValue=" + minValue + ", maxValue=" + maxValue + ", reference=" + reference + ", step=" + step
+				+ ", referencedBy=" + sb.toString() + "]\n";
 	}
 
 }

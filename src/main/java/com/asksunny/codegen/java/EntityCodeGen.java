@@ -51,7 +51,7 @@ public class EntityCodeGen {
 				primaryKeys.add(field);
 			}
 			allFieldDbNames.add(field.getName());
-			String name = field.getVarname() != null ? field.getVarname() : field.getName();
+			String name = field.getVarName() != null ? field.getVarName() : field.getName();
 			allFieldNames.add(JavaIdentifierUtil.toVariableName(name));
 		}
 		this.selectList = StringUtils.join(this.allFieldDbNames, ',');
@@ -120,7 +120,7 @@ public class EntityCodeGen {
 		out.printf("%1$sjava.util.List<%2$s> get%2$s();\n", INDENDENT_1, javaEntityName);
 		if (this.primaryKeys.size() == 1) {
 			Field primaryKey = this.primaryKeys.get(0);
-			String pname = primaryKey.getVarname() != null ? primaryKey.getVarname() : primaryKey.getName();
+			String pname = primaryKey.getVarName() != null ? primaryKey.getVarName() : primaryKey.getName();
 			String javaPKName = JavaIdentifierUtil.toObjectName(pname);
 			String javaPKVarName = JavaIdentifierUtil.toVariableName(pname);
 			String keyJavaTypeNmae = JdbcSqlTypeMap.toJavaTypeName(primaryKey);
@@ -177,7 +177,7 @@ public class EntityCodeGen {
 		out.println(INDENDENT_1 + "</select>");
 		if (this.primaryKeys.size() == 1) {
 			Field primaryKey = this.primaryKeys.get(0);
-			String pname = primaryKey.getVarname() != null ? primaryKey.getVarname() : primaryKey.getName();
+			String pname = primaryKey.getVarName() != null ? primaryKey.getVarName() : primaryKey.getName();
 			String javaPKName = JavaIdentifierUtil.toObjectName(pname);
 			String javaPKVarName = JavaIdentifierUtil.toVariableName(pname);
 			String keyJavaTypeNmae = JdbcSqlTypeMap.toJavaTypeName(primaryKey);
@@ -263,7 +263,7 @@ public class EntityCodeGen {
 			if (i > 0) {
 				out.println(INDENDENT_3 + "AND");
 			}
-			String pname = primaryKey.getVarname() != null ? primaryKey.getVarname() : primaryKey.getName();
+			String pname = primaryKey.getVarName() != null ? primaryKey.getVarName() : primaryKey.getName();
 			out.printf("%1$s%2$s=#{%3$s,jdbcType=%4$s}\n", INDENDENT_3, primaryKey.getName(),
 					JavaIdentifierUtil.toVariableName(pname), JdbcSqlTypeMap.getJdbcTyepName(primaryKey.getJdbcType()));
 			i++;
@@ -292,7 +292,7 @@ public class EntityCodeGen {
 
 		if (this.primaryKeys.size() == 1) {
 			Field primaryKey = this.primaryKeys.get(0);
-			String pname = primaryKey.getVarname() != null ? primaryKey.getVarname() : primaryKey.getName();
+			String pname = primaryKey.getVarName() != null ? primaryKey.getVarName() : primaryKey.getName();
 			String javaPKName = JavaIdentifierUtil.toObjectName(pname);
 			String javaPKVarName = JavaIdentifierUtil.toVariableName(pname);
 			String keyJavaTypeName = JdbcSqlTypeMap.toJavaTypeName(primaryKey);
@@ -379,7 +379,7 @@ public class EntityCodeGen {
 		out.printf("%sprivate static final long serialVersionUID = 1L;\n\n", INDENDENT_1);
 
 		for (Field field : this.allFields) {
-			String name = field.getVarname() != null ? field.getVarname() : field.getName();
+			String name = field.getVarName() != null ? field.getVarName() : field.getName();
 			out.printf("%sprivate %s %s;\n\n", INDENDENT_1, JdbcSqlTypeMap.toJavaTypeName(field),
 					JavaIdentifierUtil.toVariableName(name));
 

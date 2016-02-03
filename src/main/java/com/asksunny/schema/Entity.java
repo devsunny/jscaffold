@@ -51,7 +51,7 @@ public class Entity {
 			this.setLabel(anno.getLabel());
 		}
 		if (anno.getVarname() != null) {
-			this.setVarname(anno.getVarname());
+			this.setVarName(anno.getVarname());
 		}
 		if (anno.getIgnoreRest() != null) {
 			this.setIgnoreRest(anno.getIgnoreRest());
@@ -68,7 +68,7 @@ public class Entity {
 		this.setIgnoreData(anno.getIgnoreData());
 		this.setReadonly(anno.getReadonly());
 		this.setViewOrder(anno.getOrder());
-		this.setObjectName(anno.getObjectName());
+		// this.setObjectName(anno.getObjectName());
 	}
 
 	public String getName() {
@@ -112,7 +112,7 @@ public class Entity {
 	}
 
 	@JsonIgnore
-	public boolean hasDatetimeField() {
+	public boolean isHasDatetimeField() {
 		for (Field fd : fields) {
 			if (fd.isDatetimeField()) {
 				return true;
@@ -122,8 +122,7 @@ public class Entity {
 	}
 
 	@JsonIgnore
-	public boolean hasUniqueField() {
-
+	public boolean isHasUniqueField() {
 		for (Field fd : fields) {
 			if (fd.isUnique() && !fd.isPrimaryKey()) {
 				return true;
@@ -142,11 +141,35 @@ public class Entity {
 				}
 			}
 		}
+		Collections.sort(refs, new FieldOrderComparator());
 		return refs;
 	}
 
 	@JsonIgnore
-	public boolean hasKeyField() {
+	public List<Field> getNonUniqueFields() {
+		List<Field> refs = new ArrayList<Field>();
+		if (this.fields != null) {
+			for (Field fd : this.fields) {
+				if (!fd.isUnique()) {
+					refs.add(fd);
+				}
+			}
+		}
+		return refs;
+	}
+
+	@JsonIgnore
+	public String getUniqueFieldNames() {
+		StringBuilder buf = new StringBuilder();
+		List<Field> refs = getUniqueFields();
+		for (Field fd : refs) {
+			buf.append(fd.getObjectName());
+		}
+		return buf.toString();
+	}
+
+	@JsonIgnore
+	public boolean isHasKeyField() {
 
 		for (Field fd : fields) {
 			if (fd.isUnique()) {
@@ -156,6 +179,7 @@ public class Entity {
 		return false;
 	}
 
+	@JsonIgnore
 	public List<Field> getKeyFields() {
 		List<Field> refs = new ArrayList<Field>();
 		if (this.fields != null) {
@@ -163,10 +187,34 @@ public class Entity {
 				if (fd.isPrimaryKey()) {
 					refs.add(fd);
 				}
-
 			}
 		}
+		Collections.sort(refs, new FieldOrderComparator());
 		return refs;
+	}
+
+	@JsonIgnore
+	public List<Field> getNonKeyFields() {
+		List<Field> refs = new ArrayList<Field>();
+		if (this.fields != null) {
+			for (Field fd : this.fields) {
+				if (!fd.isPrimaryKey()) {
+					refs.add(fd);
+				}
+			}
+		}
+		Collections.sort(refs, new FieldOrderComparator());
+		return refs;
+	}
+
+	@JsonIgnore
+	public String getKeyFieldNames() {
+		StringBuilder buf = new StringBuilder();
+		List<Field> refs = getKeyFields();
+		for (Field fd : refs) {
+			buf.append(fd.getObjectName());
+		}
+		return buf.toString();
 	}
 
 	@JsonIgnore
@@ -213,7 +261,21 @@ public class Entity {
 	}
 
 	@JsonIgnore
-	public boolean hasGroupByFields() {
+	public List<Field> getNonGroupByFields() {
+		List<Field> refs = new ArrayList<Field>();
+		if (this.fields != null) {
+			for (Field fd : this.fields) {
+				if (fd.getGroupLevel() <= 0) {
+					refs.add(fd);
+				}
+			}
+		}
+		Collections.sort(refs, new FieldOrderComparator());
+		return refs;
+	}
+
+	@JsonIgnore
+	public boolean isHasGroupByFields() {
 
 		if (this.fields != null) {
 			for (Field fd : this.fields) {
@@ -223,6 +285,16 @@ public class Entity {
 			}
 		}
 		return false;
+	}
+
+	@JsonIgnore
+	public String getGroupByFieldNames() {
+		StringBuilder buf = new StringBuilder();
+		List<Field> refs = getGroupByFields();
+		for (Field fd : refs) {
+			buf.append(fd.getObjectName());
+		}
+		return buf.toString();
 	}
 
 	@JsonIgnore
@@ -322,34 +394,13 @@ public class Entity {
 		return "Entity [name=" + name + ", fields=\n" + fields + "\n]";
 	}
 
-	@JsonIgnore
-	public String getEntityObjectName() {
-		return this.objectName != null ? this.objectName
-				: (this.varname == null ? JavaIdentifierUtil.toObjectName(this.name)
-						: JavaIdentifierUtil.capitalize(this.varname));
-	}
-
-	@JsonIgnore
-	public String getEntityVarName() {
-		return varname != null ? this.varname
-				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(this.objectName)
-						: JavaIdentifierUtil.toVariableName(this.name));
-	}
-
-	@JsonIgnore
-	public String getVarName() {
-		return varname != null ? this.varname
-				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(this.objectName)
-						: JavaIdentifierUtil.toVariableName(this.name));
-	}
-
 	public Map<String, Field> getFieldMaps() {
 		return fieldMaps;
 	}
 
 	@JsonIgnore
 	public String getLabel() {
-		return label == null ? getEntityObjectName() : label;
+		return label == null ? getObjectName() : label;
 	}
 
 	public void setLabel(String label) {
@@ -404,15 +455,6 @@ public class Entity {
 
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
-	}
-
-	@JsonIgnore
-	public String getVarname() {
-		return varname == null ? JavaIdentifierUtil.toVariableName(name) : varname;
-	}
-
-	public void setVarname(String varname) {
-		this.varname = JavaIdentifierUtil.decapitalize(varname);
 	}
 
 	@JsonIgnore
@@ -472,12 +514,26 @@ public class Entity {
 		this.usePrincipal = usePrincipal;
 	}
 
+	@JsonIgnore
+	public String getVarName() {
+		return this.varname != null ? this.varname
+				: ((this.objectName != null) ? JavaIdentifierUtil.decapitalize(objectName)
+						: JavaIdentifierUtil.toVariableName(name));
+	}
+
+	@JsonIgnore
 	public String getObjectName() {
-		return getEntityObjectName();
+		return this.objectName != null ? this.objectName
+				: ((this.varname != null) ? JavaIdentifierUtil.capitalize(varname)
+						: JavaIdentifierUtil.toObjectName(name));
 	}
 
 	public void setObjectName(String objectName) {
 		this.objectName = JavaIdentifierUtil.capitalize(objectName);
+	}
+
+	public void setVarName(String varname) {
+		this.varname = JavaIdentifierUtil.decapitalize(varname);
 	}
 
 }

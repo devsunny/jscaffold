@@ -55,13 +55,13 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 					.addMapEntry("REST_PACKAGE_NAME", configuration.getRestPackageName())
 					.addMapEntry("entity", entity)
 					.addMapEntry("MORE_REST_METHODS", methods.toString())
-					.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-					.addMapEntry("ENTITY_NAME", entity.getEntityObjectName())
+					.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+					.addMapEntry("ENTITY_NAME", entity.getObjectName())
 					.addMapEntry("ENTITY_LABEL", entity.getLabel()).buildMap(), out);
 			out.flush();
 			String filePath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
 			writeCode(new File(configuration.getJavaBaseDir(), filePath),
-					String.format("%sRestController.java", entity.getEntityObjectName()), out.toString());
+					String.format("%sRestController.java", entity.getObjectName()), out.toString());
 			
 			if(configuration.isGenJunit()){
 				 out = new StringWriter();
@@ -75,7 +75,7 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 						.buildMap(), out);
 				out.flush();				
 				writeCode(new File(configuration.getJunitBaseDir(), filePath),
-						String.format("%sRestControllerTest.java", entity.getEntityObjectName()), out.toString());				
+						String.format("%sRestControllerTest.java", entity.getObjectName()), out.toString());				
 				
 			}			
 		} catch (TemplateException e) {
@@ -85,7 +85,7 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 
 
 	protected void doGroupBy(StringBuilder methods) throws IOException {
-		if (!entity.hasGroupByFields()) {
+		if (!entity.isHasGroupByFields()) {
 			return;
 		}
 		List<Field> gbFields = entity.getGroupByFields();
@@ -93,7 +93,7 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 		StringBuilder uri = new StringBuilder();
 		uri.append("/groupby");
 		for (Field kf : gbFields) {
-			uri.append("/{").append(kf.getVarname()).append("}");
+			uri.append("/{").append(kf.getVarName()).append("}");
 		}
 		methods.append(String.format("%1$s@RequestMapping(value=\"%2$s\", method = { RequestMethod.GET })\n",
 				INDENDENT_2, uri.toString()));
@@ -101,22 +101,22 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 		if (gbFields.size() == 1) {
 			Field keyField = gbFields.get(0);
 			methods.append(String.format("%2$spublic java.util.List<%1$s> select%1$sGroupBy%3$s(%5$s %4$s){\n",
-					entity.getEntityObjectName(), INDENDENT_2, keyField.getObjectname(), keyField.getVarname(),
+					entity.getObjectName(), INDENDENT_2, keyField.getObjectName(), keyField.getVarName(),
 					JdbcSqlTypeMap.toJavaTypeName(keyField)));
 			methods.append(String.format("%2$s return this.%6$sMapper.select%1$sGroupBy%3$s(%4$s);\n",
-					entity.getEntityObjectName(), INDENDENT_2, keyField.getObjectname(), keyField.getVarname(),
-					JdbcSqlTypeMap.toJavaTypeName(keyField), entity.getEntityVarName()));
+					entity.getObjectName(), INDENDENT_2, keyField.getObjectName(), keyField.getVarName(),
+					JdbcSqlTypeMap.toJavaTypeName(keyField), entity.getVarName()));
 
 		} else if (gbFields.size() > 1) {
 			StringBuilder buf = new StringBuilder();
 			for (Field keyField : gbFields) {
-				buf.append(keyField.getObjectname());
+				buf.append(keyField.getObjectName());
 			}
 			methods.append(String.format("%1$spublic java.util.List<%2$s> select%2$sGroupBy%4$s(%2$s %3$s){\n",
-					INDENDENT_2, entity.getEntityObjectName(), entity.getEntityVarName(), buf.toString()));
+					INDENDENT_2, entity.getObjectName(), entity.getVarName(), buf.toString()));
 
 			methods.append(String.format("%1$s return this.%3$sMapper.select%2$sGroupBy%4$s(%3$s){\n", INDENDENT_2,
-					entity.getEntityObjectName(), entity.getEntityVarName(), buf.toString()));
+					entity.getObjectName(), entity.getVarName(), buf.toString()));
 
 		}
 		methods.append(INDENDENT_2).append("}\n\n");
@@ -134,33 +134,33 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 		for (int i = 0; i <= ddFields.size(); i++) {
 			// Field dd0 = ddFields.get(i);
 			String drilldownName = (i == ddFields.size()) ? "Detail"
-					: String.format("By%s", ddFields.get(i).getObjectname());
+					: String.format("By%s", ddFields.get(i).getObjectName());
 			if (i > 0) {
-				restPath.append(String.format("/{%s}", ddFields.get(i - 1).getVarname()));
+				restPath.append(String.format("/{%s}", ddFields.get(i - 1).getVarName()));
 			}
 			String drillDownRestPath = restPath.toString();
 			List<String> params = new ArrayList<String>();
 			for (int k = 1; k <= i; k++) {
 				Field ddk = ddFields.get(k - 1);
 				params.add(String.format("@PathVariable(\"%2$s\")%1$s %2$s", JdbcSqlTypeMap.toJavaTypeName(ddk),
-						ddk.getVarname()));
+						ddk.getVarName()));
 			}
 			String paramstr = StringUtils.join(params, ", ");
 			methods.append(String.format("%1$s@RequestMapping(value=\"%2$s\", method = { RequestMethod.GET })\n",
 					INDENDENT_2, drillDownRestPath));
 			methods.append(INDENDENT_2).append("@ResponseBody\n");
 			methods.append(String.format("%1$s public java.util.List<%2$s> select%2$sDrilldown%4$s(%5$s){\n",
-					INDENDENT_2, entity.getEntityObjectName(), entity.getEntityVarName(), drilldownName, paramstr));
+					INDENDENT_2, entity.getObjectName(), entity.getVarName(), drilldownName, paramstr));
 
-			methods.append(String.format("%1$s %2$s %3$s = new %2$s();\n", INDENDENT_2, entity.getEntityObjectName(),
-					entity.getEntityVarName()));
+			methods.append(String.format("%1$s %2$s %3$s = new %2$s();\n", INDENDENT_2, entity.getObjectName(),
+					entity.getVarName()));
 			for (int k = 1; k <= i; k++) {
 				Field ddk = ddFields.get(k - 1);
-				methods.append(String.format("%1$s %3$s.set%4$s(%5$s);\n", INDENDENT_2, entity.getEntityObjectName(),
-						entity.getEntityVarName(), ddk.getObjectname(), ddk.getVarname()));
+				methods.append(String.format("%1$s %3$s.set%4$s(%5$s);\n", INDENDENT_2, entity.getObjectName(),
+						entity.getVarName(), ddk.getObjectName(), ddk.getVarName()));
 			}
 			methods.append(String.format("%1$s return this.%3$sMapper.select%2$sDrilldown%4$s(%3$s);\n", INDENDENT_2,
-					entity.getEntityObjectName(), entity.getEntityVarName(), drilldownName));
+					entity.getObjectName(), entity.getVarName(), drilldownName));
 			methods.append(INDENDENT_2).append("}\n\n");
 
 		}

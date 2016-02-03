@@ -104,8 +104,8 @@ public abstract class CodeGenerator {
 		if (keyFields.size() == 0)
 			return;
 		for (Field field : keyFields) {
-			keyUri.append("/:").append(field.getVarname());
-			keyVars.add(String.format("\"%s\":null", field.getVarname()));
+			keyUri.append("/:").append(field.getVarName());
+			keyVars.add(String.format("\"%s\":null", field.getVarName()));
 		}
 
 		keyParamURI = keyUri.toString();
@@ -160,7 +160,7 @@ public abstract class CodeGenerator {
 	public String generateInterpolateURL(List<Field> fields) {
 		List<String> parts = new ArrayList<String>();
 		for (Field fd : fields) {
-			parts.add(String.format("/{{%s}}", fd.getVarname()));
+			parts.add(String.format("/{{%s}}", fd.getVarName()));
 		}
 		return StringUtils.join(parts, "");
 	}

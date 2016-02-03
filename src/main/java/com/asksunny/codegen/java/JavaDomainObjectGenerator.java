@@ -52,18 +52,18 @@ public class JavaDomainObjectGenerator extends CodeGenerator {
 					IOUtils.toString(getClass().getResourceAsStream("JavaDomainObjectDeclaration.java.templ")),
 					ParamMapBuilder.newBuilder().addMapEntry("FIELD_TYPE", JdbcSqlTypeMap.toJavaTypeName(field))
 							.addMapEntry("JSON_DATEFORMAT_ANNO", fmtanno).addMapEntry("INITIALIZATION", init)
-							.addMapEntry("FIELD_VAR_NAME", field.getVarname()).buildMap()))
+							.addMapEntry("FIELD_VAR_NAME", field.getVarName()).buildMap()))
 					.append(NEW_LINE);
 
 			methods.append(TemplateUtil.renderTemplate(
 					IOUtils.toString(getClass().getResourceAsStream("JavaDomainObjectAccessor.java.templ")),
 					ParamMapBuilder.newBuilder().addMapEntry("FIELD_TYPE", JdbcSqlTypeMap.toJavaTypeName(field))
-							.addMapEntry("FIELD_NAME", field.getObjectname())
-							.addMapEntry("FIELD_VAR_NAME", field.getVarname()).buildMap()))
+							.addMapEntry("FIELD_NAME", field.getObjectName())
+							.addMapEntry("FIELD_VAR_NAME", field.getVarName()).buildMap()))
 					.append(NEW_LINE);
 		}
 
-		String jsonFmtImport = entity.hasDatetimeField() ? JSON_FORMAT_IMPORT : "";
+		String jsonFmtImport = entity.isHasDatetimeField() ? JSON_FORMAT_IMPORT : "";
 		String generated = TemplateUtil
 				.renderTemplate(
 						IOUtils.toString(
@@ -74,11 +74,11 @@ public class JavaDomainObjectGenerator extends CodeGenerator {
 								.addMapEntry("FIELD_DECLARATIONS", declarations.toString())
 								.addMapEntry("JSON_FORMAT_ANNO_IMPORT", jsonFmtImport)
 								.addMapEntry("FIELD_ACCESSORS", methods.toString())
-								.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-								.addMapEntry("ENTITY_NAME", entity.getEntityObjectName()).buildMap());
+								.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+								.addMapEntry("ENTITY_NAME", entity.getObjectName()).buildMap());
 		String filePath = configuration.getDomainPackageName().replaceAll("[\\.]", "/");
 		writeCode(new File(configuration.getJavaBaseDir(), filePath),
-				String.format("%s.java", entity.getEntityObjectName()), generated);
+				String.format("%s.java", entity.getObjectName()), generated);
 
 	}
 

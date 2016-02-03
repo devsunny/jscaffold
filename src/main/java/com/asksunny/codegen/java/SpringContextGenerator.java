@@ -125,8 +125,8 @@ public class SpringContextGenerator extends CodeGenerator {
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream("spring-mybatis-mapper.xml.tmpl")),
 				ParamMapBuilder.newBuilder().addMapEntry("MAPPER_PACKAGE", configuration.getMapperPackageName())
-						.addMapEntry("ENTITY_VAR_NAME", entity.getEntityVarName())
-						.addMapEntry("ENTITY_NAME", entity.getEntityObjectName()).buildMap());
+						.addMapEntry("ENTITY_VAR_NAME", entity.getVarName())
+						.addMapEntry("ENTITY_NAME", entity.getObjectName()).buildMap());
 		return generated;
 	}
 

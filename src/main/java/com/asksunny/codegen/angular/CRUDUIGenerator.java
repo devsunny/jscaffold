@@ -32,7 +32,7 @@ public class CRUDUIGenerator {
 			fields.append("<th>").append(field.getLabel()).append("</th>")
 					.append("\n");
 			tbody.append("<td>").append("{{listItem.")
-					.append(field.getVarname());
+					.append(field.getVarName());
 			if (field.getFormat() != null) {
 				if (field.getJdbcType() == Types.DATE
 						| field.getJdbcType() == Types.TIME
@@ -54,7 +54,7 @@ public class CRUDUIGenerator {
 						.addMapEntry("TABLE_BODY", tbody.toString())
 						.addMapEntry("ENTITY_VAR_NAME", entityVarName)
 						.addMapEntry("ENTITY_NAME",
-								entity.getEntityObjectName())
+								entity.getObjectName())
 						.addMapEntry("ENTITY_LABEL", label).buildMap());
 		return generated;
 	}
@@ -62,7 +62,7 @@ public class CRUDUIGenerator {
 	public String genAngularRoute() throws IOException {
 
 		Field kf = entity.getKeyField();
-		String pkName = kf == null ? "uniqueId" : kf.getVarname();
+		String pkName = kf == null ? "uniqueId" : kf.getVarName();
 
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream(
@@ -73,11 +73,11 @@ public class CRUDUIGenerator {
 								configuration.getAngularAppName())
 						.addMapEntry("PK_FIELD_VAR_NAME", pkName)
 						.addMapEntry("VIEW_NAME",
-								entity.getEntityVarName())
+								entity.getVarName())
 						.addMapEntry("ENTITY_VAR_NAME",
-								entity.getEntityVarName())
+								entity.getVarName())
 						.addMapEntry("ENTITY_NAME",
-								entity.getEntityObjectName())
+								entity.getObjectName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel())
 						.buildMap());
 		return generated;
@@ -101,7 +101,7 @@ public class CRUDUIGenerator {
 								configuration.getAngularAppName())
 						.addMapEntry("FORM_FIELDS", fields.toString())
 						.addMapEntry("ENTITY_NAME",
-								entity.getEntityObjectName())
+								entity.getObjectName())
 						.addMapEntry("ENTITY_LABEL", label).buildMap());
 		return generated;
 	}
@@ -109,7 +109,7 @@ public class CRUDUIGenerator {
 	public String genController() throws IOException {
 
 		Field kf = entity.getKeyField();
-		String pkName = kf == null ? "uniqueId" : kf.getVarname();
+		String pkName = kf == null ? "uniqueId" : kf.getVarName();
 		String generated = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream(
 						"angularControlller.js.tmpl")),
@@ -121,9 +121,9 @@ public class CRUDUIGenerator {
 						.addMapEntry("WEBCONTEXT",
 								configuration.getWebappContext())
 						.addMapEntry("ENTITY_NAME",
-								entity.getEntityObjectName())
+								entity.getObjectName())
 						.addMapEntry("ENTITY_VAR_NAME",
-								entity.getEntityVarName())
+								entity.getVarName())
 						.addMapEntry("ENTITY_LABEL", entity.getLabel())
 						.buildMap());
 		return generated;

@@ -1,14 +1,9 @@
 package com.asksunny.codegen;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.asksunny.codegen.CodeGenConfig.CodeOverwriteStrategy;
 import com.asksunny.codegen.java.JavaCodeGen;
-import com.asksunny.codegen.java.JavaMyBatisMapperGenerator;
-import com.asksunny.codegen.java.JavaRestControllerGenerator;
-import com.asksunny.schema.Entity;
 import com.asksunny.schema.Schema;
 import com.asksunny.schema.parser.SQLScriptLexer;
 import com.asksunny.schema.parser.SQLScriptParser;
@@ -26,7 +21,7 @@ public class JavaCodeGenTest {
 		config.setAppBootstrapClassName("ManConsoleBoostrap");		
 		config.setOverwriteStrategy(CodeOverwriteStrategy.OVERWRITE);		
 		config.setGenPomXml(false);
-		
+		config.setUseRestfulEnvelope(true);
 		SQLScriptLexer lexer = new SQLScriptLexer(getClass().getResourceAsStream("/TestAngularGen.ddl.sql"));
 		SQLScriptParser tokenReader = new SQLScriptParser(lexer);
 		Schema schema = tokenReader.parseSql();		

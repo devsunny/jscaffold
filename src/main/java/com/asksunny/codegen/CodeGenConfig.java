@@ -52,6 +52,7 @@ public class CodeGenConfig {
 	boolean genJunit = true;
 	boolean genSchema = true;
 	boolean genSeedData = false;
+	boolean useRestfulEnvelope = false;
 
 	boolean enableSSL = true;
 	String SSLIssuerDN = null;
@@ -459,6 +460,14 @@ public class CodeGenConfig {
 
 	public void setGenSeedData(boolean genSeedData) {
 		this.genSeedData = genSeedData;
+	}
+
+	public boolean isUseRestfulEnvelope() {
+		return useRestfulEnvelope;
+	}
+
+	public void setUseRestfulEnvelope(boolean useRestfulEnvelope) {
+		this.useRestfulEnvelope = useRestfulEnvelope;
 	}
 
 }

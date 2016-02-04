@@ -25,6 +25,17 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 		if (!configuration.isGenRestController()) {
 			return;
 		}
+		
+		if(configuration.isUseRestfulEnvelope()){
+			String generated = TemplateRender.newInstance().setLoaderClass(getClass())
+					.setTemplate("RestfulResponse.java.ftl", Locale.US).addTemplateParam("config", configuration)
+					.addTemplateParam("entity", entity).addTemplateParam("utils", new TypesBean()).renderTemplate();		
+			
+			String mapperPath = configuration.getDomainPackageName().replaceAll("[\\.]", "/");
+			writeCode(new File(configuration.getJavaBaseDir(), mapperPath),
+					"RestfulResponse.java", generated);
+		}
+		
 		String generated = TemplateRender.newInstance().setLoaderClass(getClass())
 				.setTemplate("SpringRestJavaController.java.ftl", Locale.US).addTemplateParam("config", configuration)
 				.addTemplateParam("entity", entity).addTemplateParam("utils", new TypesBean()).renderTemplate();		

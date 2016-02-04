@@ -16,7 +16,13 @@ public class TypesBean {
 		return Types.TIMESTAMP;
 	}
 	
+	public String getMyBatisParamStartTag() {
+		return "#{";
+	}
 	
+	public String getMyBatisParamEndTag() {
+		return "}";
+	}
 
 	public TypesBean() {
 		// TODO Auto-generated constructor stub

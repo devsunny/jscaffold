@@ -275,7 +275,7 @@ public class Entity {
 	}
 
 	@JsonIgnore
-	public boolean isHasGroupByFields() {
+	public boolean isHasGroupByField() {
 
 		if (this.fields != null) {
 			for (Field fd : this.fields) {
@@ -507,7 +507,16 @@ public class Entity {
 	}
 
 	public boolean isUsePrincipal() {
-		return usePrincipal;
+		if(usePrincipal){
+			return usePrincipal;
+		}		
+		List<Field> fields = getFields();
+		for (Field field : fields) {
+			if(field.getPrincipal()!=null){
+				return true;
+			}
+		}		
+		return false;
 	}
 
 	public void setUsePrincipal(boolean usePrincipal) {

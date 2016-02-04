@@ -1,21 +1,28 @@
-package ${MAPPER_PACKAGE_NAME};
+package ${config.mapperPackageName};
 
-import ${DOMAIN_PACKAGE}.*;
+import ${config.domainPackageName}.*;
 
 public interface ${entity.objectName}Mapper
 {
-	
-    ${entity.objectName} insert${ENTITY_NAME}(${entity.objectName} ${entity.varName});    
-    java.util.List<${entity.objectName}> select${entity.objectName}();    
-    <#if (entity.keyFields?size == 1) >
-    <#assign keyField = entity.keyFields?first >    	
-    ${ENTITY_NAME} select${ENTITY_NAME}By${keyField.objectName}(${keyField.javaTypeName} ${keyField.varName}) ;   	
-    int update${entity.objectName}By${keyField.objectName}(${entity.objectName} ${entity.varName});    	
-    int delete${entity.objectName}By${keyField.objectName}(${keyField.javaTypeName} ${keyField.varName});   
-    <#elseif (entity.keyFields?size > 1 ) >  
-    ${ENTITY_NAME} select${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.objectName} ${entity.varName})  ;
-    int update${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.objectName} ${entity.varName});
-    int delete${entity.objectName}By<#list entity.keyFields as keyField>${keyField.objectName}</#list>(${entity.objectName} ${entity.varName});    	
-	</#if>	
-	${MAPPER_METHODS}
+	java.util.List<${entity.objectName}>  select${entity.objectName}();	
+<#if entity.hasKeyField >
+	${entity.objectName}  select${entity.objectName}By${entity.keyFieldNames}(<#if (entity.keyFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.keyFields?first.javaTypeName} ${entity.keyFields?first.varName}</#if>);
+</#if>
+<#if entity.hasUniqueField >
+	${entity.objectName}  select${entity.objectName}By${entity.uniqueFieldNames}(<#if (entity.uniqueFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.uniqueFields?first.javaTypeName} ${entity.uniqueFields?first.varName}</#if>);
+</#if>	
+<#if entity.hasGroupByField >
+	java.util.List<${entity.objectName}>  select${entity.objectName}GroupBy${entity.groupByFieldNames}();
+</#if>	
+<#if !entity.readonly>
+	int insert${entity.objectName}(${entity.objectName} ${entity.varName});
+<#if entity.hasKeyField >
+	int update${entity.objectName}By${entity.keyFieldNames}(${entity.objectName} ${entity.varName});
+	int delete${entity.objectName}By${entity.keyFieldNames}(<#if (entity.keyFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.keyFields?first.javaTypeName} ${entity.keyFields?first.varName}</#if>);
+</#if>
+<#if entity.hasUniqueField >
+	int update${entity.objectName}By${entity.uniqueFieldNames}(${entity.objectName} ${entity.varName});
+	int delete${entity.objectName}By${entity.uniqueFieldNames}(<#if (entity.uniqueFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.uniqueFields?first.javaTypeName} ${entity.uniqueFields?first.varName}</#if>);
+</#if>
+</#if>    
 }

@@ -53,6 +53,7 @@ public class CodeGenConfig {
 	boolean genSchema = true;
 	boolean genSeedData = false;
 	boolean useRestfulEnvelope = false;
+	
 
 	boolean enableSSL = true;
 	String SSLIssuerDN = null;
@@ -68,6 +69,27 @@ public class CodeGenConfig {
 
 	public CodeGenConfig() {
 
+	}
+	
+	
+	public void setModelOnly()
+	{
+		this.genAngularView = false;
+		this.genAngularRoute = false;
+		this.genAngularController = false;
+		this.genDomainObject = true;
+		this.genMyBatisMapper = true;
+		this.genMyBatisXmlMapper = true;
+		this.genRestController = false;
+		this.genSpringContext = false;
+		this.enableSpringSecurity = false;
+		this.genMyBatisSpringBeans = false;		
+		this.genScaffoldTools = false;
+		this.genPomXml = false;
+		this.genJunit = false;
+		this.genSchema = false;
+		this.genSeedData = false;
+		this.useRestfulEnvelope = false;
 	}
 
 	public String getJavaBaseDir() {

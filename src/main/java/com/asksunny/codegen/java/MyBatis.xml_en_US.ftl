@@ -14,7 +14,7 @@
 </resultMap>
 
 
-<select id="select${entity.objectName}" resultMap="${entity.objectName}ResultMap">
+<select id="select${entity.objectName}" resultMap="${entity.varName}ResultMap">
   SELECT 
  <#list entity.fields as field>${field.name}<#sep>, </#list>
   FROM 
@@ -25,7 +25,7 @@
 </select>
 
 <#if entity.hasKeyField >
-<select id="select${entity.objectName}By${entity.keyFieldNames}" resultMap="${entity.objectName}ResultMap" parameterType="<#if (entity.keyFields?size>1) >${entity.objectName}<#else>${entity.keyFields?first.javaTypeName}</#if>">
+<select id="select${entity.objectName}By${entity.keyFieldNames}" resultMap="${entity.varName}ResultMap" parameterType="<#if (entity.keyFields?size>1) >${entity.objectName}<#else>${entity.keyFields?first.javaTypeName}</#if>">
   SELECT 
  <#list entity.fields as field>${field.name}<#sep>, </#list>
   FROM 
@@ -41,7 +41,7 @@
 </#if>
 	
 <#if entity.hasUniqueField >
-<select id="select${entity.objectName}By${entity.uniqueFieldNames}" resultMap="${entity.objectName}ResultMap" parameterType="<#if (entity.uniqueFields?size>1) >${entity.objectName}<#else>${entity.uniqueFields?first.javaTypeName}</#if>">
+<select id="select${entity.objectName}By${entity.uniqueFieldNames}" resultMap="${entity.varName}ResultMap" parameterType="<#if (entity.uniqueFields?size>1) >${entity.objectName}<#else>${entity.uniqueFields?first.javaTypeName}</#if>">
   SELECT 
  <#list entity.fields as field>${field.name}<#sep>, </#list>
   FROM 
@@ -57,7 +57,7 @@
 </#if>
 
 <#if entity.hasGroupByField >
-<select id="select${entity.objectName}GroupBy${entity.groupByFieldNames}" resultMap="${entity.objectName}ResultMap">
+<select id="select${entity.objectName}GroupBy${entity.groupByFieldNames}" resultMap="${entity.varName}ResultMap">
   SELECT 
   <#list entity.groupByFields as field>${field.name}<#sep>,</#list>
   <#if entity.groupFunctionField??>

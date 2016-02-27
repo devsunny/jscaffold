@@ -27,10 +27,10 @@ public class CRUDUIGeneratorTest {
 		SQLScriptLexer lexer = new SQLScriptLexer(getClass().getResourceAsStream("/TestAngularGen.ddl.sql"));
 		SQLScriptParser tokenReader = new SQLScriptParser(lexer);
 		Schema schema = tokenReader.parseSql();		
-		Entity entity = schema.get("Persons1");		
+		Entity entity = schema.get("Persons2");		
 		JavaMyBatisMapperGenerator gen = new JavaMyBatisMapperGenerator(config, entity);
 		gen.doCodeGen();
-		Entity entity2 = schema.get("Persons1");	
+		Entity entity2 = schema.get("Persons2");	
 		JavaRestControllerGenerator gen2 = new JavaRestControllerGenerator(config, entity2);
 		gen2.doCodeGen();
 		

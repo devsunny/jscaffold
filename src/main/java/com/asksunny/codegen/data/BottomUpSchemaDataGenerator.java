@@ -13,6 +13,9 @@ public class BottomUpSchemaDataGenerator {
 	public void generateData() {
 		schema.buildRelationship();
 		for (Entity entity : schema.getAllEntities()) {
+			if (this.config.isDebug()) {
+				System.out.println("Generating Data for entity:" + entity.getName());
+			}
 			if (entity.isIgnoreData()) {
 				continue;
 			}

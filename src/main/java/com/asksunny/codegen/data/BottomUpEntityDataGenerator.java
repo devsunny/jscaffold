@@ -80,6 +80,9 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	 * This way can limit the memory usage while generating hierarchical dataset
 	 */
 	public void generateFullDataSet() {
+		if (this.config.isDebug()) {
+			System.out.println("Generating record count:" + this.totalRecordCount);
+		}
 		while (this.totalRecordCount > 0) {
 			if (this.config.isDebug()) {
 				System.out.println(String.format("%s [%d]", this.entity.getName(), this.totalRecordCount));
@@ -152,7 +155,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 			case Types.DECIMAL:
 			case Types.BINARY:
 				buf.append(values.get(i));
-				break;			
+				break;
 			default:
 				String val = values.get(i);
 				if (val == null) {
@@ -164,6 +167,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 				break;
 			}
 		}
+		
 		out.println(String.format(insertTemplate, buf.toString()));
 		out.flush();
 	}
@@ -185,7 +189,9 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	}
 
 	public void open() {
+		
 		if (this.openned.compareAndSet(false, true)) {
+			
 			try {
 				for (Field f : entity.getAllReferences()) {
 					if (config.isDebug()) {
@@ -201,7 +207,9 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 					if (this.getConfig().getOutputType() == DataOutputType.INSERT) {
 						fileName = String.format("%s.%s", entity.getName(), "sql");
 					}
+					
 					File fout = new File(this.getConfig().getDataOutputDir(), fileName);
+					System.out.println("Writing data to:" + fout);
 					out = new PrintWriter(fout);
 				} else {
 					out = new PrintWriter(System.out);

@@ -77,7 +77,7 @@
 		<property name="arguments">
 			<list>
 				<ref bean="filterHolder"></ref>
-				<value>/WebUI/*</value>
+				<value>/${WEBAPP_CONTEXT}/*</value>
 				<ref bean="allDispatchTypes"/>
 			</list>
 		</property>

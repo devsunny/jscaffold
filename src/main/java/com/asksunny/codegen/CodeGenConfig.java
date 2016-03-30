@@ -123,7 +123,7 @@ public class CodeGenConfig {
 
 	public String getKeyStoreDirectory() {
 		return keyStoreDirectory == null ? String.format("%s/src/test/resources", getBaseSrcDir())
-				: String.format("%s/%S", getBaseSrcDir(), keyStoreDirectory);
+				: String.format("%s/%s", getBaseSrcDir(), keyStoreDirectory);
 	}
 
 	public void setKeyStoreDirectory(String keyStoreDirectory) {

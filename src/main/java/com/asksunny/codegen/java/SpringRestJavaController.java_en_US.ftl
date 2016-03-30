@@ -127,8 +127,8 @@ public class ${entity.objectName}RestController {
 	 public <#if config.useRestfulEnvelope>RestfulResponse<java.util.List<${entity.objectName}>><#else>java.util.List<${entity.objectName}></#if>  select${entity.objectName}GroupBy${entity.groupByFieldNames}(<#if entity.usePrincipal >java.security.Principal principal</#if>)
 	 {
 	 	if(logger.isDebugEnabled()){
-    			logger.debug("select ${entity.objectName} Group By <#list entity.groupByFields as field>${field.varName}<#sep>,</#list>");
-    			}
+    		logger.debug("select ${entity.objectName} Group By <#list entity.groupByFields as field>${field.varName}<#sep>,</#list>");
+    	}
     	
     	java.util.List<${entity.objectName}> ret =  this.${entity.varName}Mapper.select${entity.objectName}GroupBy${entity.groupByFieldNames}();
     	<#if config.useRestfulEnvelope>
@@ -200,21 +200,22 @@ public class ${entity.objectName}RestController {
 	 	
 	 @RequestMapping(value="<#list entity.keyFields as field>/{${field.varName}}</#list>", method = { RequestMethod.DELETE })
      @ResponseBody	
-	 public  <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> delete${entity.objectName}By${entity.keyFieldNames}(<#if (entity.keyFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.keyFields?first.javaTypeName} ${entity.keyFields?first.varName}</#if><#if entity.usePrincipal >, java.security.Principal principal</#if>)
+	 public  <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> delete${entity.objectName}By${entity.keyFieldNames}(
+	 <#list entity.keyFields as field>
+    			@PathVariable("${field.varName}") ${field.javaTypeName} ${field.varName}<#sep>, 
+     </#list>
+	 <#if entity.usePrincipal >, java.security.Principal principal</#if>)
 	 {
 	 	if(logger.isDebugEnabled()){
     			logger.debug("delete ${entity.objectName} By ${entity.keyFieldNames}");
     			}
     	
-    	<#if (entity.keyFields?size>1) >
-    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
-    		<#list entity.keyFields as field>
-    			${entity.varName}.set${field.objectName}(${field.varName});
-    		</#list>
-    		int ret =  this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.varName});
-    	<#else>
-    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.keyFields?first.varName});
-    	</#if>
+    	${entity.objectName} ${entity.varName} = new ${entity.objectName}();
+		<#list entity.keyFields as field>
+			${entity.varName}.set${field.objectName}(${field.varName});
+		</#list>
+		int ret =  this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.varName});
+    		
     	<#if config.useRestfulEnvelope>
     	RestfulResponse<Integer> response = new RestfulResponse<Integer>();
     	response.setPayload(ret);
@@ -229,7 +230,10 @@ public class ${entity.objectName}RestController {
 <#if entity.hasUniqueField >
 	@RequestMapping( method = { RequestMethod.PUT })
      @ResponseBody	
-	 public <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> update${entity.objectName}By${entity.uniqueFieldNames}(${entity.objectName} ${entity.varName}<#if entity.usePrincipal >, java.security.Principal principal</#if>)
+	 public <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> update${entity.objectName}By${entity.uniqueFieldNames}(
+	 ${entity.objectName} ${entity.varName}
+	 
+	 <#if entity.usePrincipal >, java.security.Principal principal</#if>)
 	 {
 	 	if(logger.isDebugEnabled()){
     			logger.debug("update ${entity.objectName} By ${entity.uniqueFieldNames}");
@@ -254,17 +258,17 @@ public class ${entity.objectName}RestController {
 	 }
 	 @RequestMapping(value="<#list entity.uniqueFields as field>/{${field.varName}}</#list>", method = { RequestMethod.DELETE })
      @ResponseBody	
-	 public <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> delete${entity.objectName}By${entity.uniqueFieldNames}(<#if (entity.uniqueFields?size>1) >${entity.objectName} ${entity.varName}<#else>${entity.uniqueFields?first.javaTypeName} ${entity.uniqueFields?first.varName}</#if><#if entity.usePrincipal >, java.security.Principal principal</#if>)
+	 public <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> delete${entity.objectName}By${entity.uniqueFieldNames}(
+	<#list entity.uniqueFields as field>
+	@PathVariable("${field.varName}") ${field.javaTypeName} ${field.varName}<#sep>, 
+	</#list>	 
+	 <#if entity.usePrincipal >, java.security.Principal principal</#if>)
 	 {
-	 	<#if (entity.uniqueFields?size>1) >
-    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
-    		<#list entity.uniqueFields as field>
-    			${entity.varName}.set${field.objectName}(${field.varName});
-    		</#list>
-    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.varName});
-    	<#else>
-    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.uniqueFields?first.varName});
-    	</#if>	
+	 	${entity.objectName} ${entity.varName} = new ${entity.objectName}();
+		<#list entity.uniqueFields as field>
+			${entity.varName}.set${field.objectName}(${field.varName});
+		</#list>
+		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.varName});
     	<#if config.useRestfulEnvelope>
     	RestfulResponse<Integer> response = new RestfulResponse<Integer>();
     	response.setPayload(ret);

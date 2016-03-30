@@ -210,12 +210,15 @@ public class ${entity.objectName}RestController {
     			logger.debug("delete ${entity.objectName} By ${entity.keyFieldNames}");
     			}
     	
-    	${entity.objectName} ${entity.varName} = new ${entity.objectName}();
-		<#list entity.keyFields as field>
-			${entity.varName}.set${field.objectName}(${field.varName});
-		</#list>
-		int ret =  this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.varName});
-    		
+    	<#if (entity.keyFields?size>1) >
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
+    		<#list entity.keyFields as field>
+    			${entity.varName}.set${field.objectName}(${field.varName});
+    		</#list>
+    		int ret =  this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.varName});
+    	<#else>
+    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.keyFieldNames}(${entity.keyFields?first.varName});
+    	</#if>
     	<#if config.useRestfulEnvelope>
     	RestfulResponse<Integer> response = new RestfulResponse<Integer>();
     	response.setPayload(ret);
@@ -256,6 +259,7 @@ public class ${entity.objectName}RestController {
     	return ret;
     	</#if>   
 	 }
+	 
 	 @RequestMapping(value="<#list entity.uniqueFields as field>/{${field.varName}}</#list>", method = { RequestMethod.DELETE })
      @ResponseBody	
 	 public <#if config.useRestfulEnvelope>RestfulResponse<Integer><#else>int</#if> delete${entity.objectName}By${entity.uniqueFieldNames}(
@@ -264,11 +268,15 @@ public class ${entity.objectName}RestController {
 	</#list>	 
 	 <#if entity.usePrincipal >, java.security.Principal principal</#if>)
 	 {
-	 	${entity.objectName} ${entity.varName} = new ${entity.objectName}();
-		<#list entity.uniqueFields as field>
-			${entity.varName}.set${field.objectName}(${field.varName});
-		</#list>
-		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.varName});
+	 	<#if (entity.uniqueFields?size>1) >
+    		${entity.objectName} ${entity.varName} = new ${entity.objectName}();
+    		<#list entity.uniqueFields as field>
+    			${entity.varName}.set${field.objectName}(${field.varName});
+    		</#list>
+    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.varName});
+    	<#else>
+    		int ret = this.${entity.varName}Mapper.delete${entity.objectName}By${entity.uniqueFieldNames}(${entity.uniqueFields?first.varName});
+    	</#if>	
     	<#if config.useRestfulEnvelope>
     	RestfulResponse<Integer> response = new RestfulResponse<Integer>();
     	response.setPayload(ret);

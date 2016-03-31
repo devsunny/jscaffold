@@ -22,11 +22,9 @@ public class JavaCodeGenTest {
 		config.setOverwriteStrategy(CodeOverwriteStrategy.OVERWRITE);		
 		config.setGenPomXml(false);
 		config.setUseRestfulEnvelope(true);
-		SQLScriptLexer lexer = new SQLScriptLexer(getClass().getResourceAsStream("/TestAngularGen.ddl.sql"));
-		SQLScriptParser tokenReader = new SQLScriptParser(lexer);
-		Schema schema = tokenReader.parseSql();		
+		config.setSchemaFiles("TestAngularGen.ddl.sql");		
 		JavaCodeGen javaGen  = new JavaCodeGen(config);
-		javaGen.doCodeGen(schema);
+		javaGen.doCodeGen();
 	}
 
 }

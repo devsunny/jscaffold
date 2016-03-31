@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.CodeGenerator;
+import com.asksunny.codegen.TemplateRender;
 import com.asksunny.codegen.utils.FMParamMapBuilder;
 import com.asksunny.codegen.utils.ParamMapBuilder;
 import com.asksunny.codegen.utils.TemplateUtil;
@@ -30,15 +31,13 @@ public class SpringContextGenerator extends CodeGenerator {
 			mapperBeans.append(genSpringMyBatisBeanXml(entity)).append("\n");
 			
 		}
-		String generated = TemplateUtil.renderTemplate(
-				IOUtils.toString(getClass().getResourceAsStream("spring-mybatis-context.xml.tmpl")),
-				ParamMapBuilder.newBuilder()
-						.addMapEntry("MAPPER_PACKAGE_PATH",
-								configuration.getMapperPackageName().replaceAll("[\\.]", "/"))
-						.addMapEntry("MYBATIS_MAPPERS", mapperBeans.toString())
-						.addMapEntry("DOMAIN_PACKAGE_NAME", configuration.getDomainPackageName())
-						.addMapEntry("REST_PACKAGE_NAME", configuration.getRestPackageName()).buildMap());
-
+		String generated;
+		generated = TemplateRender.newInstance().setTemplate("spring-mybatis-context.xml.ftl", Locale.US)
+		.setLoaderClass(getClass())
+		.addTemplateParam("config", configuration)
+		.addTemplateParam("MYBATIS_MAPPERS", mapperBeans.toString()).renderTemplate();
+		
+		
 		String myBatisSpringContext = String.format("%s-spring-mybatis-context.xml", configuration.getWebappContext());
 		writeCode(new File(configuration.getSpringXmlBaseDir()), myBatisSpringContext, generated);
 

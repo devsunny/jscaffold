@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.codegen.DataOutputType;
 import com.asksunny.schema.Entity;
@@ -128,7 +130,7 @@ public class BottomUpEntityDataGenerator implements IEntityDataGenerator {
 	}
 
 	protected void doCsvOutput(List<Field> fields, List<String> values) {
-		out.println(String.join(",", values));
+		out.println(StringUtils.join( values, ","));
 		out.flush();
 	}
 

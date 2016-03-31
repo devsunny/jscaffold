@@ -29,8 +29,9 @@
 	
 	<!-- uncomment the following dataSource to use other database for production -->
 	<jdbc:embedded-database id="dataSource" type="H2">
-		<jdbc:script location="classpath:schema_ddl.sql" />	
-		<jdbc:script location="classpath:seed_data.sql" />	
+		<#list config.schemaFileList as scfile>
+			<jdbc:script location="classpath:${scfile}" />	
+		</#list>		
 	</jdbc:embedded-database>
 
 	<bean id="transactionManager"
@@ -44,11 +45,11 @@
 			<bean
 				class="org.apache.ibatis.transaction.managed.ManagedTransactionFactory" />
 		</property>
-		<property name="mapperLocations" value="classpath*:#{MAPPER_PACKAGE_PATH}/*.xml" />
-		<property name="typeAliasesPackage" value="#{DOMAIN_PACKAGE_NAME}" />
+		<property name="mapperLocations" value="classpath*:${config.mapperPackagePath}/*.xml" />
+		<property name="typeAliasesPackage" value="${config.domainPackagePath}" />
 	</bean>	
 	
-	#{MYBATIS_MAPPERS}
+	${MYBATIS_MAPPERS}
 	
 	<task:annotation-driven executor="poolExecutor"
 		scheduler="poolScheduler" />
@@ -56,5 +57,5 @@
 	<task:scheduler id="poolScheduler" pool-size="10" />	
 	
 	<context:component-scan
-		base-package="#{REST_PACKAGE_NAME}"  />
+		base-package="${config.restPackageName}"  />
 </beans>

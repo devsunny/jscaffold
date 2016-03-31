@@ -10,6 +10,24 @@ angular.module('#{ANGULAR_APP_NAME}')
   .controller('#{ENTITY_NAME}FormCtrl', ['$scope', '$filter', '$interpolate', '$http', '$stateParams', function ($scope, $filter, $interpolate, $http,  $stateParams) {
    $scope.#{ENTITY_VAR_NAME}={};   
    $scope.message="";
+   /**
+   * change field name if date field
+   **/
+   $scope.datepickers = {
+        dateFieldName1: false,
+        dateFieldName2: false
+   }
+   	$scope.openCalendar = function($event, which) {
+	    $event.preventDefault();
+	    $event.stopPropagation();	
+	    $scope.datepickers[which]= true;
+	};
+	
+	$scope.dateOptions = {
+	    'year-format': "'yyyy'",
+	    'starting-day': 1
+	};  
+	 
    
    var errhandler = function(errresponse){ 
    		$scope.error=errresponse.data || "failed on request"; 

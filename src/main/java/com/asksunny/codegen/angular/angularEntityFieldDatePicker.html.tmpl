@@ -1,13 +1,13 @@
 <div class="dropdown">
     <label>#{FIELD_LABEL}</label>
-    <a class="dropdown-toggle" id="dropdown#{FIELD_NAME}" role="button" data-toggle="dropdown">
-        <div class="input-group">
-            <input type="text" name="#{FIELD_VAR_NAME}"  id="#{FIELD_VAR_NAME}"  class="form-control" data-ng-model="#{ENTITY_VAR_NAME}.#{FIELD_VAR_NAME}">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-        </div>
-    </a>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-        <datetimepicker data-ng-model="#{ENTITY_VAR_NAME}.#{FIELD_VAR_NAME}"
-                        data-datetimepicker-config="{ dropdownSelector: '#dropdown#{FIELD_NAME}', startView:'day', minView:'day'}"></datetimepicker>
-    </ul>
+    <div class="input-group">
+     <input type="text" class="form-control" datepicker-popup="yyyy-MM-dd" 
+            name="#{FIELD_VAR_NAME}" ng-model="#{ENTITY_VAR_NAME}.#{FIELD_VAR_NAME}" is-open="datepickers.#{FIELD_VAR_NAME}" 
+            datepicker-options="dateOptions" ng-required="true" 
+            close-text="Close" />
+      <span class="input-group-btn">
+        <button class="btn btn-default" ng-click="openCalendar(\$event,'#{FIELD_VAR_NAME}')">
+            <i class="glyphicon glyphicon-calendar"></i></button>
+      </span>
+    </div>    
 </div>

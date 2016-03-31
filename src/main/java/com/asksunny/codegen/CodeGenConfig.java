@@ -1,6 +1,10 @@
 package com.asksunny.codegen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -171,10 +175,23 @@ public class CodeGenConfig {
 	public void setDomainPackageName(String domainPackageName) {
 		this.domainPackageName = domainPackageName;
 	}
+	
+	public String getDomainPackagePath() {
+		return getDomainPackageName().replaceAll(Pattern.quote("\\"), "/");
+	}
+
 
 	public String getMapperPackageName() {
 		return mapperPackageName == null ? String.format("%s.mappers", getBasePackageName()) : mapperPackageName;
 	}
+	
+	
+	
+	public String getMapperPackagePath() {
+		
+		return getMapperPackageName().replaceAll(Pattern.quote("\\"), "/");
+	}
+	
 
 	public void setMapperPackageName(String mapperPackageName) {
 		this.mapperPackageName = mapperPackageName;
@@ -183,6 +200,10 @@ public class CodeGenConfig {
 	public String getRestPackageName() {
 		return restPackageName == null ? String.format("%s.rest", getBasePackageName()) : restPackageName;
 	}
+	
+	public String getRestPackagePath() {
+		return getRestPackageName().replaceAll(Pattern.quote("\\"), "/");
+	}
 
 	public void setRestPackageName(String restPackageName) {
 		this.restPackageName = restPackageName;
@@ -190,6 +211,15 @@ public class CodeGenConfig {
 
 	public String getSchemaFiles() {
 		return schemaFiles;
+	}
+	
+	public List<String> getSchemaFileList() {
+		if(schemaFiles.trim().length()>0){
+			return Arrays.asList(schemaFiles.split("[;, ]+"));
+		}else{
+			return new ArrayList<String>();
+		}
+		
 	}
 
 	public void setSchemaFiles(String schemaFiles) {

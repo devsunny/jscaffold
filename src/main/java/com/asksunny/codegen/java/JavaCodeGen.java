@@ -39,15 +39,12 @@ public class JavaCodeGen extends CodeGenerator {
 		if (schema == null) {
 			loadSchema();
 		}
-		doCodeGen(schema);
-
-		
+		doCodeGen(schema);		
 		if (new File(configuration.getSpringXmlBaseDir(), "log4j.xml").exists() == false) {
 			String log4j = TemplateUtil.renderTemplate(getClassTemplate(getClass(), "log4j.xml.tmpl"),
 					ParamMapBuilder.newBuilder().buildMap());
 			writeCode(new File(configuration.getSpringXmlBaseDir()), "log4j.xml", log4j);
 		}
-
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(schema.getAllEntities());
 		writeCode(new File(configuration.getSpringXmlBaseDir()), "object_mode.json", json);
@@ -106,7 +103,9 @@ public class JavaCodeGen extends CodeGenerator {
 		}
 
 		if (configuration.isGenAngular()) {
+			System.out.println("Generating Angular artifacts");
 			AngularUIGenerator augularGenerator = new AngularUIGenerator(configuration, schema);
+			
 			augularGenerator.doCodeGen();
 		}
 

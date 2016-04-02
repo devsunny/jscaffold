@@ -76,6 +76,29 @@ public class CodeGenConfig {
 	}
 	
 	
+	public void setAngularUIOnly()
+	{
+		this.genAngularView = true;
+		this.genAngularRoute = true;
+		this.genAngularController = true;
+		
+		this.genDomainObject = false;
+		this.genMyBatisMapper = false;
+		this.genMyBatisXmlMapper = false;
+		this.genRestController = false;
+		this.genSpringContext = false;
+		this.enableSpringSecurity = false;
+		this.genMyBatisSpringBeans = false;		
+		this.genScaffoldTools = false;
+		this.genPomXml = false;
+		this.genJunit = false;
+		this.genSchema = false;
+		this.genSeedData = false;
+		this.useRestfulEnvelope = false;
+	}
+	
+	
+	
 	public void setModelOnly()
 	{
 		this.genAngularView = false;

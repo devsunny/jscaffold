@@ -75,9 +75,7 @@ public class AngularUIGenerator extends CodeGenerator {
 
 	protected void genEntityForm(StringBuilder states, StringBuilder navigations, Entity entity) throws IOException {
 		AngularEntityFormGenerator formGen = new AngularEntityFormGenerator(configuration, entity);
-		formGen.doCodeGen();
-		// System.out.println(formGen.genForm());
-		// System.out.println(formGen.genFormController());
+		formGen.doCodeGen();		
 		states.append(formGen.genAngularState());
 		AngularEntityListGenerator listGen = new AngularEntityListGenerator(configuration, entity);
 		listGen.doCodeGen();
@@ -92,13 +90,16 @@ public class AngularUIGenerator extends CodeGenerator {
 		try {
 			ZipEntry entry = null;
 			while ((entry = zipin.getNextEntry()) != null) {
+				System.out.println("Writing file:" + entry.getName());
 				File path = new File(webappPath, entry.getName());
+				System.out.println("Writing file:" + path);
 				if (path.exists() || entry.isDirectory()) {
 					continue;
 				}
 				if (!path.getParentFile().exists() && !path.getParentFile().mkdirs()) {
 					throw new IOException("Failed to extract template, permission denied:" + path.getParentFile());
 				}
+				
 				FileOutputStream fout = new FileOutputStream(path);
 				try {
 					IOUtils.copy(zipin, fout);

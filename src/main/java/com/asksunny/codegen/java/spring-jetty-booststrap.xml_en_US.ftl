@@ -24,6 +24,45 @@
 	<!-- uncomment the following line to externalize the properties -->
 	<!-- <context:property-placeholder location="classpath:app-booststrap.properties" /> -->
 
+	
+	<bean id="devServletHolder" class="org.eclipse.jetty.servlet.ServletHolder">
+		<constructor-arg>
+			<bean id="devServlet" class="${config.basePackageName}.NoCacheStaticResourceServlet">
+				<property name="staticResourceCPBase" value="/${WEBAPP_CONTEXT}/app"></property>
+				<property name="requestBasePath" value="/${WEBAPP_CONTEXT}/app"></property>
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<!-- , classpath:web-view-context.xml -->
+
+
+	<bean id="iconServletHolder" class="org.eclipse.jetty.servlet.ServletHolder">
+		<constructor-arg>
+			<bean id="iconServlet" class="${config.basePackageName}.FavorIconStaticResourceServlet">
+				<property name="favicon" value="/META-INF/app/favicon.ico"></property>
+			</bean>
+		</constructor-arg>
+	</bean>
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject">
+			<ref bean="servletContextHandler" />
+		</property>
+		<property name="targetMethod">
+			<value>addServlet</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<ref bean="iconServletHolder"></ref>
+				<value>/favicon.ico</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+
+
 	<bean id="springDispatcher" class="org.springframework.web.servlet.DispatcherServlet">
 		<property name="contextConfigLocation"
 			value="<#if config.enableSpringSecurity >classpath:${WEBAPP_CONTEXT}-spring-security-context.xml,</#if>classpath:${WEBAPP_CONTEXT}-spring-mybatis-context.xml, classpath:${WEBAPP_CONTEXT}-spring-ui-context.xml"></property>

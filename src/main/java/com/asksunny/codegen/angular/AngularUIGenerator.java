@@ -44,8 +44,14 @@ public class AngularUIGenerator extends CodeGenerator {
 
 		StringBuilder states = new StringBuilder();
 		StringBuilder navigations = new StringBuilder();
-		List<Entity> entities = schema.getAllEntities();
+		List<Entity> entities = schema.getAllEntities();		
 		for (Entity entity : entities) {
+			if (configuration.getIncludes().size() > 0 && !configuration.shouldInclude(entity.getName())) {
+				continue;
+			}
+			if (configuration.shouldIgnore(entity.getName())) {
+				continue;
+			}			
 			if (entity.isIgnoreView()) {
 				continue;
 			} else {
@@ -89,10 +95,8 @@ public class AngularUIGenerator extends CodeGenerator {
 		ZipInputStream zipin = new ZipInputStream(getClass().getResourceAsStream("/sbadmin-template.zip"));
 		try {
 			ZipEntry entry = null;
-			while ((entry = zipin.getNextEntry()) != null) {
-				System.out.println("Writing file:" + entry.getName());
-				File path = new File(webappPath, entry.getName());
-				System.out.println("Writing file:" + path);
+			while ((entry = zipin.getNextEntry()) != null) {				
+				File path = new File(webappPath, entry.getName());			
 				if (path.exists() || entry.isDirectory()) {
 					continue;
 				}

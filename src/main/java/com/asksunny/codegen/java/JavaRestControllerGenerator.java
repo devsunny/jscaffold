@@ -40,8 +40,21 @@ public class JavaRestControllerGenerator extends CodeGenerator {
 				.setTemplate("SpringRestJavaController.java.ftl", Locale.US).addTemplateParam("config", configuration)
 				.addTemplateParam("entity", entity).addTemplateParam("utils", new TypesBean()).renderTemplate();		
 		
-		String mapperPath = configuration.getRestPackageName().replaceAll("[\\.]", "/");
+		String mapperPath = configuration.getRestPackagePath();
 		writeCode(new File(configuration.getJavaBaseDir(), mapperPath),
 				String.format("%sRestController.java", entity.getObjectName()), generated);
+		
+		if(!configuration.isGenJunit()){
+			return;
+		}
+		
+		generated = TemplateRender.newInstance().setLoaderClass(getClass())
+				.setTemplate("SpringRestJavaControllerTest.java.ftl", Locale.US).addTemplateParam("config", configuration)
+				.addTemplateParam("entity", entity).addTemplateParam("utils", new TypesBean()).renderTemplate();
+		
+		String filePath = configuration.getRestPackagePath();
+		writeCode(new File(configuration.getJunitBaseDir(), filePath),
+				String.format("%sRestControllerTest.java", entity.getObjectName()), generated);
+		
 	}
 }

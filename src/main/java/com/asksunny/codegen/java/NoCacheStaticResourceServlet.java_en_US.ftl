@@ -31,12 +31,27 @@ public class NoCacheStaticResourceServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
+		resp.setHeader("Cache-control", "no-cache, no-store");
+		resp.setHeader("Pragma", "no-cache");
+		resp.setHeader("Expires", "-1");
 		String reqPath = req.getRequestURI();
-		if(requestBasePath!=null && reqPath.startsWith(requestBasePath)){
+		if (requestBasePath != null && reqPath.startsWith(requestBasePath)) {
 			reqPath = reqPath.substring(requestBasePath.length());
 		}
-		if(reqPath.startsWith("/")){
-			reqPath = reqPath.substring(1);			
+		if (reqPath.startsWith("/")) {
+			reqPath = reqPath.substring(1);
+		}
+		logger.info("Request:{}, {}", staticResourceCPBase, reqPath);
+		Path path = Paths.get(staticResourceCPBase.toString(), reqPath);
+		resp.setContentType(Files.probeContentType(path));
+		resp.setContentLengthLong(path.toFile().length());
+		FileInputStream fin = null;
+		try {
+			fin = new FileInputStream(path.toFile());
+			IOUtils.copy(fin, resp.getOutputStream());
+			resp.getOutputStream().flush();
+		} finally {
+			fin.close();
 		}
 		
 				

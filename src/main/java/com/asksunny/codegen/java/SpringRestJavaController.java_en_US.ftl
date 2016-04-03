@@ -286,7 +286,17 @@ public class ${entity.objectName}RestController {
     	</#if>   
 	 }
 </#if>
-</#if>    
+</#if>   
 		
+	public void set${entity.objectName}Mapper(${entity.objectName}Mapper ${entity.varName}Mapper)
+	{
+		this.${entity.varName}Mapper = ${entity.varName}Mapper;
+	}
+	
+	public ${entity.objectName}Mapper get${entity.objectName}Mapper()
+	{
+		return this.${entity.varName}Mapper;
+	}
+	
 	
 }

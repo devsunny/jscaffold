@@ -32,6 +32,7 @@ public class CodeGenConfig {
 	String angularAppName = "sbAdminApp";
 	String appBootstrapPackage;
 	String appBootstrapClassName;
+	
 
 	private DataOutputType outputType;
 	private String outputUri;
@@ -554,5 +555,8 @@ public class CodeGenConfig {
 	public void setUseRestfulEnvelope(boolean useRestfulEnvelope) {
 		this.useRestfulEnvelope = useRestfulEnvelope;
 	}
+
+
+	
 
 }

@@ -1,4 +1,4 @@
-package ${REST_PACKAGE_NAME};
+package ${config.restPackageName};
 
 
 import org.junit.*;
@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
  
-import ${MAPPER_PACKAGE_NAME}.*;
-import ${DOMAIN_PACKAGE_NAME}.*;
+import ${config.mapperPackageName}.*;
+import ${config.domainPackageName}.*;
 
 /**
  * Please refer http://spring.io/guides/tutorials/bookmarks/ 
@@ -36,7 +36,7 @@ import ${DOMAIN_PACKAGE_NAME}.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration({"classpath:${WEBAPP_CONTEXT}-spring-mybatis-context.xml", "classpath:${WEBAPP_CONTEXT}-spring-ui-context.xml"})
+@ContextConfiguration({"classpath:${config.webappContext}-spring-mybatis-context.xml", "classpath:${config.webappContext}-spring-ui-context.xml"})
 public class ${entity.objectName}RestControllerTest {
  
  
@@ -52,8 +52,7 @@ public class ${entity.objectName}RestControllerTest {
 
     @Before
     public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
-        
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();        
     }
    
        

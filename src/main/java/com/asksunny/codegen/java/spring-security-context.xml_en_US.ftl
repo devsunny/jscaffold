@@ -13,6 +13,7 @@
 		<security:intercept-url pattern="/**"
 			access="hasRole('ROLE_USER')" />
 		<security:http-basic />
+		<security:csrf disabled="true"/>
 	</security:http>
 
 	<!-- Configures in-memory implementation of the UserDetailsService implementation -->

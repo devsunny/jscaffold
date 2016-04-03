@@ -41,6 +41,16 @@ public class SpringContextGenerator extends CodeGenerator {
 		String myBatisSpringContext = String.format("%s-spring-mybatis-context.xml", configuration.getWebappContext());
 		writeCode(new File(configuration.getSpringXmlBaseDir()), myBatisSpringContext, generated);
 
+		generated = TemplateRender.newInstance().setTemplate("NoCacheStaticResourceServlet.java.ftl", Locale.US)
+				.setLoaderClass(getClass())
+				.addTemplateParam("config", configuration).renderTemplate();
+		writeCode(new File(configuration.getJavaBaseDir(), configuration.getBasePackagePath()), "NoCacheStaticResourceServlet.java", generated);
+		
+		generated = TemplateRender.newInstance().setTemplate("FavorIconStaticResourceServlet.java.ftl", Locale.US)
+				.setLoaderClass(getClass())
+				.addTemplateParam("config", configuration).renderTemplate();
+		writeCode(new File(configuration.getJavaBaseDir(), configuration.getBasePackagePath()), "FavorIconStaticResourceServlet.java", generated);
+			
 		String uicontext = TemplateUtil.renderTemplate(
 				IOUtils.toString(getClass().getResourceAsStream("spring-webui-context.xml.tmpl")),
 				ParamMapBuilder.newBuilder().buildMap());

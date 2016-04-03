@@ -200,7 +200,7 @@ public class CodeGenConfig {
 	}
 	
 	public String getDomainPackagePath() {
-		return getDomainPackageName().replaceAll(Pattern.quote("\\"), "/");
+		return getDomainPackageName().replaceAll("[\\.]", "/");
 	}
 
 
@@ -212,7 +212,7 @@ public class CodeGenConfig {
 	
 	public String getMapperPackagePath() {
 		
-		return getMapperPackageName().replaceAll(Pattern.quote("\\"), "/");
+		return getMapperPackageName().replaceAll("[\\.]", "/");
 	}
 	
 
@@ -225,7 +225,7 @@ public class CodeGenConfig {
 	}
 	
 	public String getRestPackagePath() {
-		return getRestPackageName().replaceAll(Pattern.quote("\\"), "/");
+		return getRestPackageName().replaceAll("[\\.]", "/");
 	}
 
 	public void setRestPackageName(String restPackageName) {
@@ -364,6 +364,10 @@ public class CodeGenConfig {
 	public String getAppBootstrapPackage() {
 		return appBootstrapPackage == null ? getBasePackageName() : appBootstrapPackage;
 	}
+	
+	public String getAppBootstrapPackagePath() {
+		return getAppBootstrapPackage().replaceAll("[\\.]", "/");
+	}
 
 	public void setAppBootstrapPackage(String appBootstrapPackage) {
 		this.appBootstrapPackage = appBootstrapPackage;
@@ -404,6 +408,12 @@ public class CodeGenConfig {
 	public String getBasePackageName() {
 		return basePackageName == null ? "com.foo" : basePackageName;
 	}
+	
+	public String getBasePackagePath() {
+		return getBasePackageName().replaceAll("[\\.]", "/");
+	}
+	
+	
 
 	public void setBasePackageName(String basePackageName) {
 		this.basePackageName = basePackageName;

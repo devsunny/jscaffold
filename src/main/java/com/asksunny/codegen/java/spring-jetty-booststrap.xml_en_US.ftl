@@ -33,6 +33,23 @@
 			</bean>
 		</constructor-arg>
 	</bean>
+	
+	<bean
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject">
+			<ref bean="servletContextHandler" />
+		</property>
+		<property name="targetMethod">
+			<value>addServlet</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<ref bean="devServletHolder"></ref>
+				<value>/${WEBAPP_CONTEXT}/app/*</value>
+			</list>
+		</property>
+	</bean>
+	
 
 	<!-- , classpath:web-view-context.xml -->
 

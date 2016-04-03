@@ -54,7 +54,7 @@ public class CodeGenConfig {
 	boolean suffixSequenceIfExists = true;
 	boolean genScaffoldTools = true;
 	boolean genPomXml = true;
-	boolean genJunit = true;
+	boolean genJunit = false;
 	boolean genSchema = true;
 	boolean genSeedData = false;
 	boolean useRestfulEnvelope = false;

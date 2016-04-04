@@ -44,6 +44,8 @@ public class CodeGenConfig {
 	boolean genAngularView = true;
 	boolean genAngularRoute = true;
 	boolean genAngularController = true;
+	
+	
 	boolean genDomainObject = true;
 	boolean genMyBatisMapper = true;
 	boolean genMyBatisXmlMapper = true;

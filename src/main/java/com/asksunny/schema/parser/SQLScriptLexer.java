@@ -1,27 +1,26 @@
 package com.asksunny.schema.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
-import com.asksunny.parser.LookaheadReader;
-
 public class SQLScriptLexer {
 
-	private LookaheadReader lhReader = null;
+	private BufferedReader lhReader = null;
 	private int line = 1;
 	private int column = 1;
 	private boolean eof = false;
 	private KeywordDictionary kdict = new KeywordDictionary();
 
 	public SQLScriptLexer(Reader reader) throws IOException {
-		lhReader = new LookaheadReader(3, reader);
+		lhReader = new BufferedReader(reader);
 	}
 
 	public SQLScriptLexer(InputStream in) throws IOException {
-		lhReader = new LookaheadReader(3, new InputStreamReader(in, Charset.defaultCharset()));
+		lhReader = new BufferedReader(new InputStreamReader(in, Charset.defaultCharset()));
 	}
 
 	
@@ -71,8 +70,8 @@ public class SQLScriptLexer {
 				ret.setKind(LexerTokenKind.EQUAL);
 				break;
 			case '-':
-				int l1 = lhReader.peek(0);
-				int l2 = lhReader.peek(1);
+				int l1 = peek(0);
+				int l2 = peek(1);
 				if (l1 == '-' && l2 == '#') {
 					// annoatation comment;
 					readChar();
@@ -147,7 +146,7 @@ public class SQLScriptLexer {
 
 	protected void readNumber(StringBuilder buf) throws IOException {
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1) {
 				eof = true;
 				break;
@@ -163,7 +162,7 @@ public class SQLScriptLexer {
 
 	protected void readTo(int c, StringBuilder buf, boolean inclusive) throws IOException {
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1) {
 				eof = true;
 				break;
@@ -184,7 +183,7 @@ public class SQLScriptLexer {
 
 	protected void readToEnd(int c, StringBuilder buf) throws IOException {
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1) {
 				eof = true;
 				break;
@@ -203,7 +202,7 @@ public class SQLScriptLexer {
 
 	protected void readIdentifier(StringBuilder buf) throws IOException {
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1) {
 				eof = true;
 				break;
@@ -215,6 +214,19 @@ public class SQLScriptLexer {
 			}
 		} while (true);
 
+	}
+	
+	public int peek(int pos) throws IOException
+	{
+		int len = pos+1;
+		lhReader.mark(len);
+		int ret = -1;
+		for (int i = 0; i < len; i++) {
+			 ret = lhReader.read();
+		}
+		lhReader.reset();
+		return ret;
+		
 	}
 	
 	public void close() throws IOException

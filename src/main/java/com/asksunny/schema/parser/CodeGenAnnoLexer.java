@@ -1,5 +1,6 @@
 package com.asksunny.schema.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,23 +9,22 @@ import java.nio.charset.Charset;
 
 import com.asksunny.codegen.CodeGenTokenKind;
 import com.asksunny.io.Lexer;
-import com.asksunny.parser.LookaheadReader;
 
 public class CodeGenAnnoLexer implements Lexer
 {
 
-	private LookaheadReader lhReader = null;
+	private BufferedReader lhReader = null;
 	private int line;
 	private int column;
 
 	public CodeGenAnnoLexer(Reader reader, int line, int column) throws IOException {
-		lhReader = new LookaheadReader(3, reader);
+		lhReader = new BufferedReader(reader);
 		this.line = line;
 		this.column = column;
 	}
 
 	public CodeGenAnnoLexer(InputStream in, int line, int column) throws IOException {
-		lhReader = new LookaheadReader(3, new InputStreamReader(in, Charset.defaultCharset()));
+		lhReader = new BufferedReader(new InputStreamReader(in, Charset.defaultCharset()));
 		this.line = line;
 		this.column = column;
 	}
@@ -144,7 +144,7 @@ public class CodeGenAnnoLexer implements Lexer
 	protected void readNumber(StringBuilder buf) throws IOException {
 
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1 || ic == '=' || ic == ' ' || ic == '\t' || (ic != '.' && (ic > '9' || ic < '0'))) {
 				break;
 			}
@@ -155,7 +155,7 @@ public class CodeGenAnnoLexer implements Lexer
 	protected void readIdentifier(StringBuilder buf) throws IOException {
 
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1 || ic == '='  || ic == ',' || ic == ' ' || ic == '\t') {
 				break;
 			}
@@ -170,7 +170,7 @@ public class CodeGenAnnoLexer implements Lexer
 
 	protected void readTo(int c, StringBuilder buf, boolean inclusive) throws IOException {
 		do {
-			int ic = lhReader.peek(0);
+			int ic = peek(0);
 			if (ic == -1) {
 				break;
 			}
@@ -186,6 +186,20 @@ public class CodeGenAnnoLexer implements Lexer
 			}
 		} while (true);
 
+	}
+	
+	
+	public int peek(int pos) throws IOException
+	{
+		int len = pos+1;
+		lhReader.mark(len);
+		int ret = -1;
+		for (int i = 0; i < len; i++) {
+			 ret = lhReader.read();
+		}
+		lhReader.reset();
+		return ret;
+		
 	}
 
 	public int getLine() {

@@ -13,7 +13,7 @@ public class TextGenerator implements Generator<String> {
 		this.size = field.getDisplaySize();
 		if (this.size == 0) {
 			this.size = field.getPrecision();
-		}		
+		}
 		if (size == 0) {
 			size = 8;
 		}
@@ -28,10 +28,10 @@ public class TextGenerator implements Generator<String> {
 	public String nextValue() {
 		if (field.isNullable() && RandomUtil.getInstance().isOddEnough()) {
 			return null;
-		}	
-		int gsize = field.getMaxValue()!=null?Integer.valueOf(field.getMaxValue()):field.getDisplaySize();		
-		
-		String ret = TextUtils.getInstance().getText(1, gsize);
+		}
+		int gsize = field.getMaxValue() != null ? Integer.valueOf(field.getMaxValue()) : field.getDisplaySize();
+		int minSize = field.getMinValue() != null ? Integer.valueOf(field.getMinValue()) : 1;
+		String ret = TextUtils.getInstance().getText(minSize, gsize);
 		return ret;
 	}
 

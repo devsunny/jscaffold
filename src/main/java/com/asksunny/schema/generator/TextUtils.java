@@ -40,8 +40,8 @@ public final class TextUtils {
 		while (buf.length() < size) {
 			if (buf.length() > 0) {
 				len = buf.length();
-				if (RandomUtil.getInstance().getUnsignedInt(maxLen) % 7 == 0) {
-					buf.append(",");
+				if (RandomUtil.getInstance().getUnsignedInt(maxLen) % 7 == 0) {					
+					buf.append("_");
 				} else if (RandomUtil.getInstance().getUnsignedInt(maxLen) % 9 == 0) {
 					buf.append(";");
 				} else if (RandomUtil.getInstance().getUnsignedInt(maxLen) % 13 == 0) {

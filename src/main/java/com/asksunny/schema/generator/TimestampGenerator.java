@@ -33,7 +33,7 @@ public class TimestampGenerator implements Generator<Timestamp> {
 
 	public String nextStringValue() {
 		Timestamp out = nextValue();
-		return out != null ? sdf.format(nextValue()) : null;
+		return out != null ? sdf.format(out) : null;
 	}
 
 	public Timestamp nextValue() {

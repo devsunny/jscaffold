@@ -56,7 +56,7 @@ public class FieldGeneratorFactory {
 
 	}
 
-	public static synchronized Generator<?> createFieldGenerator(Field field) {			
+	public static synchronized Generator<?> createFieldGenerator(Field field) {
 		Generator<?> gen = createExtendFieldGenerator(field);
 		if (gen == null) {
 			gen = createJdbcFieldGenerator(field);
@@ -90,7 +90,7 @@ public class FieldGeneratorFactory {
 		case Types.BINARY:
 		case Types.BLOB:
 		case Types.VARBINARY:
-		case Types.LONGVARBINARY:		
+		case Types.LONGVARBINARY:
 			gen = new BinaryGenerator(field);
 			break;
 		case Types.DATE:
@@ -98,9 +98,13 @@ public class FieldGeneratorFactory {
 			break;
 		case Types.TIME:
 			gen = new TimeGenerator(field);
-			break;			
+			break;
 		case Types.TIMESTAMP:
 			gen = new TimestampGenerator(field);
+			break;
+		case Types.CHAR:
+			setCharStringField(field);
+			gen = new FormattedStringGenerator(field);
 			break;
 		default:
 			gen = new TextGenerator(field);
@@ -108,6 +112,22 @@ public class FieldGeneratorFactory {
 		}
 
 		return gen;
+	}
+
+	protected static void setCharStringField(Field field) {
+		if (field.getFormat() != null) {
+			return;
+		}
+		int size = field.getDisplaySize();
+		if (size == 0) {
+			size = field.getMaxValue() != null ? Integer.valueOf(field.getMaxValue())
+					: (field.getMinValue() != null ? Integer.valueOf(field.getMinValue()) : 1);
+		}
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < size; i++) {
+			buf.append("A");
+		}
+		field.setFormat(buf.toString());
 	}
 
 	public static synchronized Generator<?> createExtendFieldGenerator(Field field) {

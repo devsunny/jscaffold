@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.asksunny.codegen.CodeGenAnnotation;
 import com.asksunny.codegen.CodeGenAttrName;
 import com.asksunny.codegen.CodeGenTokenKind;
-import com.asksunny.codegen.CodeGenType;
+import com.asksunny.codegen.FieldDomainType;
 import com.asksunny.io.LHTokenReader;
 
 public class CodeGenAnnoParser {
@@ -25,7 +25,7 @@ public class CodeGenAnnoParser {
 				if (peek(1) == null || peek(1).getKind() == CodeGenTokenKind.COMMA) {
 					CodeGenAnnoToken tok = consume();
 					try {
-						anno.setCodeGenType(CodeGenType.valueOf(tok.getImage().toUpperCase()));
+						anno.setCodeGenType(FieldDomainType.valueOf(tok.getImage().toUpperCase()));
 					} catch (Exception e) {
 						;
 					}

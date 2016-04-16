@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.asksunny.codegen.CodeGenAnnotation;
-import com.asksunny.codegen.CodeGenType;
+import com.asksunny.codegen.FieldDomainType;
 import com.asksunny.codegen.GroupFunction;
 import com.asksunny.codegen.GroupView;
 import com.asksunny.codegen.utils.JavaIdentifierUtil;
@@ -45,7 +45,7 @@ public class Field {
 	String step;
 
 	@JsonIgnore
-	CodeGenType dataType;
+	FieldDomainType dataType;
 
 	@JsonIgnore
 	String enumValues;
@@ -85,7 +85,7 @@ public class Field {
 	}
 
 	public Field(int jdbcType, int scale, int precision, int displaySize, boolean nullable, String name,
-			CodeGenType dataType, String minValue, String maxValue, String format, String step) {
+			FieldDomainType dataType, String minValue, String maxValue, String format, String step) {
 		super();
 		this.jdbcType = jdbcType;
 		this.scale = scale;
@@ -113,7 +113,7 @@ public class Field {
 	}
 
 	public static Field newField(int jdbcType, int scale, int precision, int displaySize, boolean nullable, String name,
-			CodeGenType dataType, String minValue, String maxValue, String format, String step) {
+			FieldDomainType dataType, String minValue, String maxValue, String format, String step) {
 		return new Field(jdbcType, scale, precision, displaySize, nullable, name, dataType, minValue, maxValue, format,
 				step);
 	}
@@ -192,11 +192,11 @@ public class Field {
 		this.name = name;
 	}
 
-	public CodeGenType getDataType() {
+	public FieldDomainType getDataType() {
 		return dataType;
 	}
 
-	public void setDataType(CodeGenType dataType) {
+	public void setDataType(FieldDomainType dataType) {
 		this.dataType = dataType;
 	}
 
@@ -244,7 +244,7 @@ public class Field {
 	}
 
 	public boolean isUnqiueEnum() {
-		return getDataType() == CodeGenType.ENUM && (isPrimaryKey() || isUnique());
+		return getDataType() == FieldDomainType.ENUM && (isPrimaryKey() || isUnique());
 	}
 
 	public String getStep() {

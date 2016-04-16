@@ -5,10 +5,13 @@ import com.asksunny.schema.Field;
 public class UserNameGenerator implements Generator<String> {
 
 	private Field field;
+	private int maxLength = 1;
 
 	public UserNameGenerator(Field field) {
 		super();
 		this.field = field;
+		maxLength = field.getMaxValue()!=null?Integer.valueOf(field.getMaxValue()):field.getDisplaySize();
+		
 	}
 
 	@Override
@@ -22,8 +25,11 @@ public class UserNameGenerator implements Generator<String> {
 		if (field.isNullable() && RandomUtil.getInstance().isOddEnough()) {
 			return null;
 		}
-
-		return PersonNameUtils.getInstance().getFirstName().charAt(0) + PersonNameUtils.getInstance().getLastName();
+		String text = PersonNameUtils.getInstance().getFirstName().charAt(0) + PersonNameUtils.getInstance().getLastName();
+		if(text.length()>maxLength){
+			text = text.substring(0, maxLength);
+		}
+		return text;
 	}
 
 }

@@ -35,7 +35,7 @@ public class TimeGenerator implements Generator<Time> {
 
 	public String nextStringValue() {
 		Time out = nextValue();
-		return out != null ? sdf.format(nextValue()) : null;
+		return out != null ? sdf.format(out) : null;
 	}
 
 	public Time nextValue() {

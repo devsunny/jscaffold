@@ -1,5 +1,10 @@
 package com.asksunny.codegen;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +14,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import com.asksunny.collections.CaselessHashSet;
+import com.asksunny.schema.Schema;
+import com.asksunny.schema.parser.SQLScriptParser;
 
 public class CodeGenConfig {
 
@@ -32,7 +39,6 @@ public class CodeGenConfig {
 	String angularAppName = "sbAdminApp";
 	String appBootstrapPackage;
 	String appBootstrapClassName;
-	
 
 	private DataOutputType outputType;
 	private String outputUri;
@@ -44,8 +50,7 @@ public class CodeGenConfig {
 	boolean genAngularView = true;
 	boolean genAngularRoute = true;
 	boolean genAngularController = true;
-	
-	
+
 	boolean genDomainObject = true;
 	boolean genMyBatisMapper = true;
 	boolean genMyBatisXmlMapper = true;
@@ -60,7 +65,6 @@ public class CodeGenConfig {
 	boolean genSchema = true;
 	boolean genSeedData = false;
 	boolean useRestfulEnvelope = false;
-	
 
 	boolean enableSSL = true;
 	String SSLIssuerDN = null;
@@ -71,27 +75,26 @@ public class CodeGenConfig {
 
 	CaselessHashSet includes = new CaselessHashSet();
 	CaselessHashSet excludes = new CaselessHashSet();
-
 	CodeOverwriteStrategy overwriteStrategy = CodeOverwriteStrategy.RENAME_EXISTING;
+
+	private Schema schema = null;
 
 	public CodeGenConfig() {
 
 	}
-	
-	
-	public void setAngularUIOnly()
-	{
+
+	public void setAngularUIOnly() {
 		this.genAngularView = true;
 		this.genAngularRoute = true;
 		this.genAngularController = true;
-		
+
 		this.genDomainObject = false;
 		this.genMyBatisMapper = false;
 		this.genMyBatisXmlMapper = false;
 		this.genRestController = false;
 		this.genSpringContext = false;
 		this.enableSpringSecurity = false;
-		this.genMyBatisSpringBeans = false;		
+		this.genMyBatisSpringBeans = false;
 		this.genScaffoldTools = false;
 		this.genPomXml = false;
 		this.genJunit = false;
@@ -99,11 +102,8 @@ public class CodeGenConfig {
 		this.genSeedData = false;
 		this.useRestfulEnvelope = false;
 	}
-	
-	
-	
-	public void setModelOnly()
-	{
+
+	public void setModelOnly() {
 		this.genAngularView = false;
 		this.genAngularRoute = false;
 		this.genAngularController = false;
@@ -113,7 +113,7 @@ public class CodeGenConfig {
 		this.genRestController = false;
 		this.genSpringContext = false;
 		this.enableSpringSecurity = false;
-		this.genMyBatisSpringBeans = false;		
+		this.genMyBatisSpringBeans = false;
 		this.genScaffoldTools = false;
 		this.genPomXml = false;
 		this.genJunit = false;
@@ -201,23 +201,19 @@ public class CodeGenConfig {
 	public void setDomainPackageName(String domainPackageName) {
 		this.domainPackageName = domainPackageName;
 	}
-	
+
 	public String getDomainPackagePath() {
 		return getDomainPackageName().replaceAll("[\\.]", "/");
 	}
 
-
 	public String getMapperPackageName() {
 		return mapperPackageName == null ? String.format("%s.mappers", getBasePackageName()) : mapperPackageName;
 	}
-	
-	
-	
+
 	public String getMapperPackagePath() {
-		
+
 		return getMapperPackageName().replaceAll("[\\.]", "/");
 	}
-	
 
 	public void setMapperPackageName(String mapperPackageName) {
 		this.mapperPackageName = mapperPackageName;
@@ -226,7 +222,7 @@ public class CodeGenConfig {
 	public String getRestPackageName() {
 		return restPackageName == null ? String.format("%s.rest", getBasePackageName()) : restPackageName;
 	}
-	
+
 	public String getRestPackagePath() {
 		return getRestPackageName().replaceAll("[\\.]", "/");
 	}
@@ -238,14 +234,14 @@ public class CodeGenConfig {
 	public String getSchemaFiles() {
 		return schemaFiles;
 	}
-	
+
 	public List<String> getSchemaFileList() {
-		if(schemaFiles.trim().length()>0){
+		if (schemaFiles.trim().length() > 0) {
 			return Arrays.asList(schemaFiles.split("[;, ]+"));
-		}else{
+		} else {
 			return new ArrayList<String>();
 		}
-		
+
 	}
 
 	public void setSchemaFiles(String schemaFiles) {
@@ -367,7 +363,7 @@ public class CodeGenConfig {
 	public String getAppBootstrapPackage() {
 		return appBootstrapPackage == null ? getBasePackageName() : appBootstrapPackage;
 	}
-	
+
 	public String getAppBootstrapPackagePath() {
 		return getAppBootstrapPackage().replaceAll("[\\.]", "/");
 	}
@@ -411,12 +407,10 @@ public class CodeGenConfig {
 	public String getBasePackageName() {
 		return basePackageName == null ? "com.foo" : basePackageName;
 	}
-	
+
 	public String getBasePackagePath() {
 		return getBasePackageName().replaceAll("[\\.]", "/");
 	}
-	
-	
 
 	public void setBasePackageName(String basePackageName) {
 		this.basePackageName = basePackageName;
@@ -558,7 +552,44 @@ public class CodeGenConfig {
 		this.useRestfulEnvelope = useRestfulEnvelope;
 	}
 
+	public Schema getSchema() {
+		if (schema == null) {
+			if (schemaFiles != null) {
+				String[] sfs = schemaFiles.split("\\s*[,;]\\s*");
+				for (int i = 0; i < sfs.length; i++) {
+					System.out.println("Loading schema file:" + sfs[i]);
+					String prefix = sfs[i].startsWith("/") ? "" : "/";
+					System.out.println("Loading schema file:" + String.format("%s%s", prefix, sfs[i]));
+					InputStream in = getClass().getResourceAsStream(String.format("%s%s", prefix, sfs[i]));
+					try {
+						if (in == null && new File(sfs[i]).exists()) {
+							in = new FileInputStream(sfs[i]);
+						} else if (in == null) {
+							System.out.println(String.format("Schema file [%s] does not exist.", prefix, sfs[i]));
+							continue;
+						}
+						try {
+							SQLScriptParser parser = new SQLScriptParser(new InputStreamReader(in));
+							if (isDebug()) {
+								parser.setDebug(true);
+							}
+							Schema schemax = parser.parseSql();
+							if (schema == null) {
+								schema = schemax;
+							} else {
+								schema.getAllEntities().addAll(schemax.getAllEntities());
+							}
+						} finally {
+							in.close();
+						}
+					} catch (IOException iox) {
+						iox.printStackTrace();
+					}
+				}
 
-	
+			}
+		}
+		return schema;
+	}
 
 }

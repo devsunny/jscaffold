@@ -1,5 +1,7 @@
 package com.asksunny.codegen.data;
 
+import java.util.List;
+
 import com.asksunny.codegen.CodeGenConfig;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Schema;
@@ -11,21 +13,33 @@ public class BottomUpSchemaDataGenerator {
 	private String schemaUri;
 
 	public void generateData() {
-		schema.buildRelationship();
-		for (Entity entity : schema.getAllEntities()) {
+		System.out.println(config.getSchema().getAllEntities().size());
+		config.getSchema().buildRelationship();
+		List<Entity> entities = config.getSchema().getAllEntities();
+		int size = entities.size();
+		for (int i = 0; i < size; i++) {
+			Entity entity = entities.get(i);
+			System.out.println("BottomUpEntityDataGenerator for entity:" + entity.getName());
 			if (this.config.isDebug()) {
 				System.out.println("Generating Data for entity:" + entity.getName());
 			}
 			if (entity.isIgnoreData()) {
+				System.out.println("Ignore data generation for entity:" + entity.getName());
 				continue;
 			}
-			if (!entity.hasReferencedBy()) {
-				BottomUpEntityDataGenerator entityGen = EntityGeneratorFactory.createEntityGenerator(entity, config);
+			BottomUpEntityDataGenerator entityGen = EntityGeneratorFactory.createEntityGenerator(entity, config);
+			try {
 				entityGen.generateFullDataSet();
+			} catch (Throwable ex) {
+				ex.printStackTrace();
 			}
 		}
-		for (BottomUpEntityDataGenerator entityGen : EntityGeneratorFactory.getAllCachedEntityGenerators()) {
-			entityGen.generateFullDataSet();
+		for (BottomUpEntityDataGenerator entityGen : EntityGeneratorFactory.getAllCachedEntityGenerators()) {			
+			try {
+				entityGen.generateFullDataSet();
+			} catch (Throwable ex) {
+				ex.printStackTrace();
+			}
 		}
 
 	}

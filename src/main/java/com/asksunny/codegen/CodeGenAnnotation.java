@@ -2,7 +2,7 @@ package com.asksunny.codegen;
 
 public class CodeGenAnnotation {
 
-	private CodeGenType codeGenType = CodeGenType.OTHER;
+	private FieldDomainType codeGenType = FieldDomainType.OTHER;
 	
 	String format;
 	String maxValue;
@@ -30,10 +30,10 @@ public class CodeGenAnnotation {
 	
 	
 	
-	public CodeGenType getCodeGenType() {
+	public FieldDomainType getCodeGenType() {
 		return codeGenType;
 	}
-	public void setCodeGenType(CodeGenType codeGenType) {
+	public void setCodeGenType(FieldDomainType codeGenType) {
 		this.codeGenType = codeGenType;
 	}
 	public String getFormat() {

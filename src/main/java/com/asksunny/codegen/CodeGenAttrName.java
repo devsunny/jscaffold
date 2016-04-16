@@ -1,6 +1,7 @@
 package com.asksunny.codegen;
 
-public enum CodeGenAttrName {
+public enum CodeGenAttrName 
+{
 	
 	PRINCIPAL, READONLY, 
 	IGNOREDATA, 

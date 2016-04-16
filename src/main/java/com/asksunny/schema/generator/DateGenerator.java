@@ -29,12 +29,14 @@ public class DateGenerator implements Generator<Date> {
 		} else {
 			this.minValue = dateField.getMinValue() == null ? 0 : Long.valueOf(minValue);
 			this.maxValue = dateField.getMaxValue() == null ? System.currentTimeMillis() : Long.valueOf(maxValue);
-		}
+			this.sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+		}		
 	}
 
 	public String nextStringValue() {
 		Date out = nextValue();
-		return out != null ? sdf.format(nextValue()) : null;
+		return out != null ? sdf.format(out) : null;
 	}
 
 	public Date nextValue() {

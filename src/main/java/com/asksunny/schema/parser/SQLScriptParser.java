@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.asksunny.codegen.CodeGenAnnotation;
-import com.asksunny.codegen.CodeGenType;
+import com.asksunny.codegen.FieldDomainType;
 import com.asksunny.schema.Entity;
 import com.asksunny.schema.Field;
 import com.asksunny.schema.Schema;

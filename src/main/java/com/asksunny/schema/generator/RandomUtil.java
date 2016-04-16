@@ -7,6 +7,7 @@ import java.util.UUID;
 public final class RandomUtil {
 
 	public static final char[] LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	public static final char[] ALPHA_NUMERICS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
 	public static final char[] UPPER_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 	public static final char[] LOWER_LETTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 	public static final char[] DIGITS = "0123456789".toCharArray();
@@ -22,6 +23,14 @@ public final class RandomUtil {
 		int idx = Math.abs(random.nextInt(100)) % DIGITS.length;
 		return DIGITS[idx];
 	}
+	
+	public char getAlphaNumeric() {
+
+		int idx = Math.abs(random.nextInt(100)) % ALPHA_NUMERICS.length;
+		return ALPHA_NUMERICS[idx];
+	}
+	
+	
 
 	public char getLetter() {
 
@@ -57,10 +66,9 @@ public final class RandomUtil {
 		}
 		return l;
 	}
-	
-	public boolean isOddEnough()
-	{
-		return getUnsignedInt(10000)%13==0;
+
+	public boolean isOddEnough() {
+		return getUnsignedInt(10000) % 13 == 0;
 	}
 
 	public int getRandomInt(int min, int max) {
@@ -79,7 +87,7 @@ public final class RandomUtil {
 	public long getRandomLong(long min, long max) {
 
 		long rlong = random.nextLong();
-		if(rlong<0 && min>=0){
+		if (rlong < 0 && min >= 0) {
 			rlong = rlong * -1;
 		}
 		if (rlong >= min && rlong <= max) {
@@ -121,7 +129,9 @@ public final class RandomUtil {
 		int len = format.length();
 		for (int i = 0; i < len; i++) {
 			char c = format.charAt(i);
-			if (c == 'X') {
+			if (c == 'A' || c == 'a') {
+				buf.append(getAlphaNumeric());
+			} else if (c == 'X') {
 				buf.append(getUpperLetter());
 			} else if (c == 'x') {
 				buf.append(getLowerLetter());

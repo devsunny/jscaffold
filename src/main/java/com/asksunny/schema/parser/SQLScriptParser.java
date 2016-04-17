@@ -290,6 +290,8 @@ public class SQLScriptParser {
 			tok = peek();
 		}
 
+		//Parse table level key and constraints:
+		
 		while ((tok = peek()) != null) {
 			switch (tok.getKind()) {
 			case SEMICOLON:
@@ -301,12 +303,20 @@ public class SQLScriptParser {
 			default:
 				switch (tok.getKeyword()) {
 				case PRIMARY:
+					//TODO:
+					consume();
 					break;
 				case UNIQUE:
+					//TODO:
+					consume();
 					break;
 				case CONSTRAINT:
+					//TODO:
+					consume();
 					break;
 				case FOREIGN:
+					//TODO:
+					consume();
 					break;
 				default:
 					if (tok.getKeyword() == Keyword.CREATE || tok.getKeyword() == Keyword.DROP
@@ -380,6 +390,11 @@ public class SQLScriptParser {
 				case KEY:
 					consume();
 					field.setPrimaryKey(true);
+					break;
+				case DEFAULT:
+					consume();
+					Token dftok = consume();
+					field.setDefaultValue(dftok.getImage());
 					break;
 				case UNIQUE:
 					consume();

@@ -79,6 +79,8 @@ public class Field {
 
 	@JsonIgnore
 	private boolean readonly;
+	
+	private String defaultValue;
 
 	public Field() {
 		super();
@@ -98,6 +100,7 @@ public class Field {
 		this.maxValue = maxValue;
 		this.format = format;
 		this.step = step;
+		
 	}
 
 	public String getJdbcTypeName() {
@@ -522,6 +525,14 @@ public class Field {
 				+ displaySize + ", nullable=" + nullable + ", dataType=" + dataType + ", format=" + format
 				+ ", minValue=" + minValue + ", maxValue=" + maxValue + ", reference=" + reference + ", step=" + step
 				+ ", referencedBy=" + sb.toString() + "]\n";
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 }

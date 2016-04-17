@@ -12,6 +12,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.TabableView;
+
 import com.asksunny.codegen.CodeGenAnnotation;
 import com.asksunny.codegen.FieldDomainType;
 import com.asksunny.schema.Entity;
@@ -22,7 +24,7 @@ import com.asksunny.schema.Schema;
 public class SQLScriptParser {
 
 	private final SQLScriptLookaheadTokenReader tokenReader;
-	private boolean debug = false;
+	private boolean debug = true;
 	private PrintWriter debugWriter = null;
 
 	public void debug(Object... args) {
@@ -79,15 +81,36 @@ public class SQLScriptParser {
 		Schema schema = new Schema();
 		try {
 			Token t = null;
-			while ((t = tokenReader.read()) != null) {
+			while ((t = peek()) != null) {
 				debug(t);
 				switch (t.getKind()) {
 				case KEYWORD:
 					debug(String.format("start parsing statement:[%s]", t.getImage()));
-					parseStatement(schema, t);
+					switch (t.getKeyword()) {
+					case CREATE:
+						consume();
+						parseCreateBody(schema);
+						break;
+					case ALTER:
+						consume();
+						break;
+					case DROP:
+						consume();
+						break;
+					case SELECT:
+					case INSERT:
+					case UPDATE:
+					case DELETE:
+						consume();
+						break;
+					default:
+						consume();
+						break;
+					}
+					// parseStatement(schema, t);
 					break;
 				default:
-					ignoreStatement();
+					consume();
 					break;
 				}
 			}
@@ -97,398 +120,21 @@ public class SQLScriptParser {
 		return schema;
 	}
 
-	public void close() throws IOException {
-		if (this.tokenReader != null) {
-			this.tokenReader.close();
-		}
-	}
-
-	protected void parseCreateTable(Schema schema) throws IOException {
-		Token ct = consume();
-		Token tb = consume();
-		if (tb == null) {
-			throw new InvalidSQLException("<table_name>", "null", ct.getLine(), ct.getColumn());
-		}
-		Entity entity = new Entity(tb.image);
-		if (peekMatch(0, LexerTokenKind.ANNOTATION_COMMENT)) {
-			Token cmt = consume();
-			CodeGenAnnoParser parser = new CodeGenAnnoParser(
-					new CodeGenAnnoLexer(new StringReader(cmt.getImage()), 0, 0));
-			CodeGenAnnotation anno = parser.parseCodeAnnotation();
-			entity.setAnnotation(anno);
-
-		}
-		debug("parse Table body", entity);
-		parseCreateTableBody(entity);
-		debug(String.format("Add table to schema:[%s]\n", entity.getName()));
-		schema.put(entity.getName(), entity);
-	}
-
-	protected void parseUniqueIndex(Schema schema) throws IOException {
-		Token idxName = consume();
-
-		Token on = consume();
-		Token tb = consume();
-		Entity entity = schema.get(tb.getImage());
-		List<Token> idxTokens = consumeItemList();
-		for (Token token : idxTokens) {
-			Field fd = entity.findField(token.getImage());
-			fd.setUnique(true);
-		}
-	}
-
-	protected void parseAlterTableStatement(Schema schema) throws IOException {
-
-		Token table = consume();
-		Token action = consume();
-		debug(String.format("Found Entity Name:[%s]", table.getImage()));
-		Entity entity = schema.get(table.getImage());
-		debug("Found entity?", entity != null);
-
-		if (action.getKeyword() == Keyword.ADD) {
-			Token actName = tokenReader.peek(0);
-			switch (actName.getKeyword()) {
-			case UNIQUE:
-				parseUniqueConstraint(entity);
-				break;
-			case PRIMARY:
-				parsePKConstraint(entity);
-				break;
-			case FOREIGN:
-				parseFKConstraint(entity);
-				break;
-			case CONSTRAINT:
-				drain(2);
-				Token constx = tokenReader.peek(0);
-				switch (constx.getKeyword()) {
-				case UNIQUE:
-					parseUniqueConstraint(entity);
-					break;
-				case PRIMARY:
-					parsePKConstraint(entity);
-					break;
-				case FOREIGN:
-					parseFKConstraint(entity);
-					break;
-				default:
-					ignoreStatement();
-				}
-				break;
-			default:
-				ignoreStatement();
-			}
-		} else {
-			ignoreStatement();
-		}
-
-	}
-
-	protected void parseStatement(Schema schema, Token startToken) throws IOException {
-		debug("----------------------parseStatement", startToken, tokenReader.peek(0));
-		switch (startToken.getKeyword()) {
-		case CREATE:
-			Token nxtTok = tokenReader.peek(0);
-			switch (nxtTok.getKeyword()) {
-			case TABLE:
-				parseCreateTable(schema);
-				break;
-			case UNIQUE:
-				if (tokenReader.peek(1).getKeyword() == Keyword.INDEX) {
-					drain(2);
-					parseUniqueIndex(schema);
-					ignoreStatement();
-				} else {
-					ignoreStatement();
-				}
-				break;
-			case INDEX:
-				ignoreStatement();
-				break;
-			default:
-				ignoreStatement();
-				break;
-			}
-			break;
-		case ALTER:
-			Token anxtTok = tokenReader.peek(0);
-			switch (anxtTok.getKeyword()) {
-			case TABLE:
-				debug(String.format("Alter table:[%s]", tokenReader.peek(1).getImage()));
-				drain(1);
-				parseAlterTableStatement(schema);
-				break;
-			default:
-				ignoreStatement();
-				break;
-			}
-			break;
-		default:
-			ignoreStatement();
-			break;
-		}
-
-	}
-
-	protected void parseCreateTableBody(Entity entity) throws IOException {
-
-		if (!peekMatch(0, LexerTokenKind.LPAREN)) {
-			Token p = tokenReader.peek(0);
-			throw new InvalidSQLException("<table_name>", p.getImage(), p.getLine(), p.getColumn());
-		} else {
-			consume();
-		}
-		Field field = null;
-		while ((field = parseField(entity)) != null) {
-			debug(String.format("Adding field [%s] to [%s]", field.getName(), entity.getName()));
-			entity.addField(field);
-		}
-		debug("All field parsed.");
-		parseEntityClause(entity);
-
-		if (peekMatch(0, LexerTokenKind.RPAREN)) {
-			consume();
-		}
-		ignoreStatement();
-	}
-
-	protected void parseUniqueConstraint(Entity entity) throws IOException {
-		consume();
-		List<Token> utoks = consumeItemList();
-		if (utoks != null) {
-			for (Token token : utoks) {
-				Field fd = entity.findField(token.image);
-				if (fd != null) {
-					fd.setUnique(true);
-					debug(fd);
-				}
-			}
-		}
-		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
-			ignoreStatement();
-		}
-	}
-
-	protected void parsePKConstraint(Entity entity) throws IOException {
-		drain(2);
-		List<Token> toks = consumeItemList();
-		if (toks != null) {
-			for (Token token : toks) {
-				Field fd = entity.findField(token.image);
-				if (fd != null) {
-					fd.setPrimaryKey(true);
-				}
-			}
-		}
-		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
-			ignoreStatement();
-		}
-	}
-
-	protected void parseFKConstraint(Entity entity) throws IOException {
-		if (entity == null) {
-			throw new RuntimeException("Foreign key table cannot be null");
-		}
-		drain(2);
-		List<Token> ftoks = consumeItemList();
-		debug("Hello FK columns:", ftoks);
-		Token reference = consume();
-		debug("Hello FK Keyword:", reference);
-		Token tb = consume(); // refrence table name
-		debug("Hello FK reference table:", tb);
-		debug("before FK token:", tokenReader.peek(0));
-		List<Token> rtoks = consumeItemList();
-		int size = ftoks.size();
-		debug("FK columns size:", ftoks.size());
-		debug("Reference columns size:", rtoks.size());
-		debug("Hello FK reference:", rtoks);
-		for (int i = 0; i < size; i++) {
-			Token fk = ftoks.get(i);
-			Token rk = rtoks.get(i);
-			debug("Lookup foreign key:", fk.image);
-			Field fd = entity.findField(fk.image);
-			Entity e = new Entity(tb.image);
-			Field rd = new Field();
-			rd.setContainer(e);
-			rd.setName(rk.getImage());
-			fd.setReference(rd);
-		}
-		debug("after FK token:", tokenReader.peek(0));
-		if (peekMatch(0, LexerTokenKind.SEMICOLON)) {
-			ignoreStatement();
-		}
-	}
-
-	protected void parseEntityClause(Entity entity) throws IOException {
-		while (tokenReader.peek(0) != null) {
-			Token kk = tokenReader.peek(0);
-			debug(kk, kk.getKind());
-			if (kk.getKind() == LexerTokenKind.KEYWORD) {
-				switch (kk.getKeyword()) {
-				case CONSTRAINT:
-					drain(2);
-					break;
-				case PRIMARY:
-					parsePKConstraint(entity);
-					break;
-				case FOREIGN:
-					parseFKConstraint(entity);
-					break;
-				case UNIQUE:
-					parseUniqueConstraint(entity);
-					break;
-				default:
-					debug(kk.getKeyword());
-					consume();
-				}
-			} else if (kk.getKind() == LexerTokenKind.COMMA) {
-				consume();
-			} else if (kk.getKind() == LexerTokenKind.RPAREN) {
-				break;
-			} else {
-				Token tok = consume();
-				debug("Not handled token:" + tok);
-			}
-		}
-
-	}
-
-	protected Field parseField(Entity entity) throws IOException {
-		Field ret = null;
-
-		if (peekMatch(0, LexerTokenKind.IDENTIFIER)) {
-			ret = new Field();
-			ret.setName(tokenReader.read().image);
-			String tname = consume().image;
-			// if(ret.getName().equals("house_number")){
-			// System.out.println(JdbcSqlTypeMap.getInstance().findJdbcType(tname));
-			// System.out.println(tname);
-			// }
-			ret.setJdbcType(JdbcSqlTypeMap.getInstance().findJdbcType(tname));
-			ret.setDbTypeName(tname);
-			if (peekMatch(0, LexerTokenKind.LPAREN) && !peekMatch(1, LexerTokenKind.RPAREN)) {
-				consume();
-				Token num1 = consume();
-				if (num1.getKeyword() == Keyword.ASTERISK) {
-					ret.setPrecision(16);
-					ret.setDisplaySize(16);
-				} else if (num1.getKind() != LexerTokenKind.NUMBER) {
-					throw new InvalidSQLException("<NUMBER>", num1.image, num1.line, num1.column);
-				} else {
-					ret.setPrecision(Integer.valueOf(num1.image));
-					ret.setDisplaySize(Integer.valueOf(num1.image));
-				}
-				Token num2 = null;
-				if (peekMatch(0, LexerTokenKind.COMMA)) {
-					consume();
-					num2 = consume();
-					if (num2.getKind() != LexerTokenKind.NUMBER) {
-						throw new InvalidSQLException("<NUMBER>", num2.image, num2.line, num2.column);
-					} else {
-						ret.setScale(Integer.valueOf(num2.image));
-					}
-				}
-				if (peekMatch(0, Keyword.BYTE)) {
-					consume();
-				}
-
-				if (peekMatch(0, LexerTokenKind.RPAREN)) {
-					consume();
-				} else {
-					Token p = tokenReader.peek(0);
-					throw new InvalidSQLException(LexerTokenKind.RPAREN.name(), p.getImage(), p.getLine(),
-							p.getColumn());
-				}
-			} else if (peekMatch(0, LexerTokenKind.LPAREN) && peekMatch(1, LexerTokenKind.RPAREN)) {
-				consume();
-				if (ret != null && ret.isNumericField()) {
-					ret.setPrecision(16);
-					ret.setDisplaySize(16);
-					ret.setMaxValue("100000");
-					ret.setMinValue("0");
-				}
-			}
-			while (tokenReader.peek(0) != null && !peekMatch(0, LexerTokenKind.COMMA)
-					&& !peekMatch(0, LexerTokenKind.RPAREN) && !peekMatch(0, LexerTokenKind.ANNOTATION_COMMENT)) {
-				Token att = consume();
-				if (att.getKind() == LexerTokenKind.KEYWORD) {
-					if (att.getKeyword() == Keyword.NOT) {
-						if (!peekMatch(0, Keyword.NULL)) {
-							Token p = tokenReader.peek(0);
-							throw new InvalidSQLException(Keyword.NULL.name(), p.getImage(), p.getLine(),
-									p.getColumn());
-						} else {
-							consume();
-							ret.setNullable(false);
-						}
-					} else if (att.getKeyword() == Keyword.NULL) {
-						ret.setNullable(true);
-					} else if (att.getKeyword() == Keyword.UNIQUE) {
-						ret.setUnique(true);
-					} else if (att.getKeyword() == Keyword.PRIMARY) {
-						if (!peekMatch(0, Keyword.KEY)) {
-							Token p = tokenReader.peek(0);
-							throw new InvalidSQLException(Keyword.KEY.name(), p.getImage(), p.getLine(), p.getColumn());
-						} else {
-							consume();
-							ret.setPrimaryKey(true);
-						}
-					}
-
-				}
-			}
-			boolean gotComma = false;
-			if (peekMatch(0, LexerTokenKind.COMMA)) {
-				consume();
-				gotComma = true;
-			}
-
-			if (peekMatch(0, LexerTokenKind.ANNOTATION_COMMENT)) {
-				Token anno = consume();
-				parseAnnotationComment(ret, anno.getImage());
-
-			}
-
-			if (!gotComma && peekMatch(0, LexerTokenKind.COMMA)) {
-				consume();
-			}
-
-		} else if (peekMatch(0, LexerTokenKind.RPAREN) || peekMatch(0, LexerTokenKind.KEYWORD)) {
-			return null;
-		} else {
-			Token p = tokenReader.peek(0);
-			throw new InvalidSQLException(LexerTokenKind.IDENTIFIER.name(), p.getImage(), p.getLine(), p.getColumn());
-		}
-		return ret;
-	}
-
-	protected void parseAnnotationComment(Field field, String commentText) {
-		try {
-			CodeGenAnnoParser parser = new CodeGenAnnoParser(new CodeGenAnnoLexer(new StringReader(commentText), 0, 0));
-			CodeGenAnnotation anno = parser.parseCodeAnnotation();
-			field.setDataType(anno.getCodeGenType());
-			if (anno.getRef() != null) {
-				String[] refs = anno.getRef().split("\\.");
-				if (refs.length != 2) {
-					throw new InvalidSQLException(String.format("Invalid ref format[%s]", anno.getRef()));
-				}
-				Field xf = new Field();
-				xf.setName(refs[1]);
-				xf.setContainer(new Entity(refs[0]));
-				field.setReference(xf);
-			}
-			field.setAnnotation(anno);
-			parser.close();
-		} catch (Exception ex) {
-			throw new RuntimeException("Invalid Annotation:" + commentText, ex);
-		}
-
-	}
-
 	protected Token consume() throws IOException {
 		Token tt = tokenReader.read();
 		if (tt == null) {
 			throw new InvalidSQLException("Unexpected end of token stream");
 		}
+		return tt;
+	}
+
+	protected Token peek() throws IOException {
+		Token tt = tokenReader.peek(0);
+		return tt;
+	}
+
+	protected Token peek(int idx) throws IOException {
+		Token tt = tokenReader.peek(idx);
 		return tt;
 	}
 
@@ -504,35 +150,63 @@ public class SQLScriptParser {
 		}
 	}
 
-	protected List<Token> consumeItemList() throws IOException {
-		List<Token> toks = new ArrayList<Token>();
-		if (peekMatch(0, LexerTokenKind.LPAREN)) {
-			consume();
-			while (!peekMatch(0, LexerTokenKind.RPAREN)) {
-				Token t = consume();
-				debug("consumeItemList", t);
-				if (t.kind != LexerTokenKind.COMMA) {
-					toks.add(t);
-				}
+	protected boolean matchAny(Token tok, LexerTokenKind... kinds) throws IOException {
+		for (int i = 0; i < kinds.length; i++) {
+			if (tok != null && tok.getKind() == kinds[i]) {
+				return true;
 			}
-			Token tt = consume();
-			debug("RPAREN", tt);
 		}
-		return toks;
+		return false;
 	}
 
-	protected void consumeTo(LexerTokenKind kind) throws IOException {
-		while (!peekMatch(0, kind)) {
-			consume();
+	protected boolean matchAny(Token tok, Keyword... keywords) throws IOException {
+		for (int i = 0; i < keywords.length; i++) {
+			if (tok != null && tok.getKeyword() == keywords[i]) {
+				return true;
+			}
 		}
-		consume();
+		return false;
 	}
 
-	protected void consumeTo(LexerTokenKind kind, LexerTokenKind... kinds) throws IOException {
-		while (!peekMatch(0, kind)) {
-			consume();
+	protected void consumeAllNotMatch(LexerTokenKind... kinds) throws IOException {
+		Token tok = null;
+		while ((tok = peek()) != null) {
+			if (matchAny(tok, kinds)) {
+				return;
+			} else {
+				consume();
+			}
 		}
+
+	}
+
+	protected void consumeAllNotMatch(Keyword... keywords) throws IOException {
+		Token tok = null;
+		while ((tok = peek()) != null) {
+			if (matchAny(tok, keywords)) {
+				return;
+			} else {
+				consume();
+			}
+		}
+
+	}
+
+	protected void consumeParenthesis() throws IOException {
+		int p = 1;
 		consume();
+		Token tok = null;
+		while ((tok = peek()) != null) {
+			consume();
+			if (tok.getKind() == LexerTokenKind.LPAREN) {
+				p++;
+			} else if (tok.getKind() == LexerTokenKind.RPAREN) {
+				p--;
+			}
+			if (p == 0) {
+				return;
+			}
+		}
 	}
 
 	public boolean peekMatch(int idx, LexerTokenKind kind, LexerTokenKind... kinds) {
@@ -562,7 +236,246 @@ public class SQLScriptParser {
 			throw new InvalidSQLException("Unexpected end of token stream");
 		}
 		return (p.getKind() == LexerTokenKind.KEYWORD && p.getKeyword() == keyword);
+	}
 
+	protected String parseTableName() throws IOException {
+		Token tok = consume();
+		Token speTok = peek();
+		if (speTok != null && speTok.getImage().equals(".")) {
+			consume();
+			tok = consume();
+		}
+		if (tok == null) {
+			throw new InvalidSQLException("<table_name>", "null", -1, -1);
+		}
+		return tok.getImage();
+	}
+
+	protected void parseCreateBody(Schema schema) throws IOException {
+		consumeAllNotMatch(Keyword.TABLE, Keyword.INDEX);
+		Token tok = consume();
+		switch (tok.getKeyword()) {
+		case TABLE:
+			String tbName = parseTableName();
+			consumeAllNotMatch(LexerTokenKind.LPAREN);
+			consume();
+			Entity entity = new Entity(tbName);
+			parseFields(entity);
+			schema.addEntity(entity);
+			break;
+		case ALTER:
+			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE, Keyword.DELETE, Keyword.SELECT);
+			break;
+		default:
+			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE, Keyword.DELETE, Keyword.SELECT);
+			break;
+		}
+	}
+
+	public void close() throws IOException {
+		if (this.tokenReader != null) {
+			this.tokenReader.close();
+		}
+	}
+
+	protected void parseFields(Entity entity) throws IOException {
+		Token tok = peek();
+		while (!(matchAny(tok, Keyword.PRIMARY, Keyword.CONSTRAINT, Keyword.FOREIGN))) {
+			if (tok.getKind() == LexerTokenKind.RPAREN) {
+				break;
+			}
+			parseField(entity);
+			tok = peek();
+		}
+
+		while ((tok = peek()) != null) {
+			switch (tok.getKind()) {
+			case SEMICOLON:
+				consume();
+				return;
+			case RPAREN:
+				consume();
+				break;
+			default:
+				switch (tok.getKeyword()) {
+				case PRIMARY:
+					break;
+				case UNIQUE:
+					break;
+				case CONSTRAINT:
+					break;
+				case FOREIGN:
+					break;
+				default:
+					if (tok.getKeyword() == Keyword.CREATE || tok.getKeyword() == Keyword.DROP
+							|| tok.getKeyword() == Keyword.ALTER || tok.getKeyword() == Keyword.INSERT
+							|| tok.getKeyword() == Keyword.UPDATE || tok.getKeyword() == Keyword.DELETE
+							|| tok.getKeyword() == Keyword.SELECT) {
+						return;
+					} else {
+						consume();
+					}
+					break;
+				}
+				break;
+			}
+		}
+
+	}
+
+	/**
+	 * column_name type_name (1, 2)
+	 * 
+	 * @param entity
+	 * @throws IOException
+	 */
+	protected void parseField(Entity entity) throws IOException {
+
+		Token tok = consume();
+		Field field = new Field();
+		field.setName(tok.getImage());
+		Token tokType = consume();
+		field.setJdbcType(JdbcSqlTypeMap.getInstance().findJdbcType(tokType.getImage()));
+		field.setDbTypeName(tokType.getImage());
+		entity.addField(field);
+
+		if (peekMatch(0, LexerTokenKind.LPAREN)) {
+			consume();
+			parseFieldSizeSpec(field);
+		}
+		while ((tok = peek()) != null) {
+			switch (tok.getKind()) {
+			case COMMA:
+				consume();
+				return;
+			case RPAREN:
+				return;
+			default:
+				switch (tok.getKeyword()) {
+				case NOT:
+					consume();
+					if (peekMatch(0, Keyword.NULL)) {
+						consume();
+						field.setNullable(false);
+					}
+					break;
+				case NULL:
+					field.setNullable(true);
+					consume();
+					break;
+				case PRIMARY:
+					consume();
+					if (peekMatch(0, Keyword.KEY)) {
+						consume();
+						field.setPrimaryKey(true);
+					}
+					break;
+				case KEY:
+					consume();
+					field.setPrimaryKey(true);
+					break;
+				case UNIQUE:
+					consume();
+					if (peekMatch(0, Keyword.KEY)) {
+						consume();
+					}
+					field.setUnique(true);
+					break;
+				case FORMAT:
+					consume();
+					Token ftok = consume();
+					field.setFormat(ftok.getImage());
+					break;
+				case IDENTITY:
+					consume();
+					field.setDataType(FieldDomainType.SEQUENCE);
+					Token px = peek();
+					if (px.getKind() == LexerTokenKind.LPAREN) {
+						consumeAllNotMatch(LexerTokenKind.RPAREN);
+						consume();
+					}
+					break;
+				default:
+					if (tok.getKind() == LexerTokenKind.LPAREN) {
+						consumeParenthesis();
+					} else {
+						consume();
+					}
+					break;
+				}
+				break;
+			}
+		}
+
+	}
+
+	protected void parseFieldSizeSpec(Field field) throws IOException {
+		Token tok = consume();
+
+		if (tok.getKeyword() == Keyword.ASTERISK) {
+			field.setPrecision(16);
+			field.setDisplaySize(16);
+			consume();
+		} else if (tok.getKind() == LexerTokenKind.NUMBER) {
+			field.setPrecision(Integer.valueOf(tok.getImage()));
+			field.setDisplaySize(field.getPrecision());
+			if (peekMatch(0, LexerTokenKind.COMMA)) {
+				consume();
+				tok = consume();
+				if (tok.getKind() != LexerTokenKind.NUMBER) {
+					throw new InvalidSQLException("NUMBER", tok.getImage(), tok.getLine(), tok.getColumn());
+				} else {
+					field.setScale(Integer.valueOf(tok.getImage()));
+				}
+			}
+			consumeAllNotMatch(LexerTokenKind.RPAREN);
+			consume();
+		} else if (tok.getKind() == LexerTokenKind.RPAREN) {
+			field.setPrecision(16);
+			field.setDisplaySize(16);
+		} else {
+			throw new InvalidSQLException("NUMBER", tok.getImage(), tok.getLine(), tok.getColumn());
+		}
+	}
+
+	protected void parseAnnotationComment(Field field, String commentText) {
+		try {
+			CodeGenAnnoParser parser = new CodeGenAnnoParser(new CodeGenAnnoLexer(new StringReader(commentText), 0, 0));
+			CodeGenAnnotation anno = parser.parseCodeAnnotation();
+			field.setDataType(anno.getCodeGenType());
+			if (anno.getRef() != null) {
+				String[] refs = anno.getRef().split("\\.");
+				if (refs.length != 2) {
+					throw new InvalidSQLException(String.format("Invalid ref format[%s]", anno.getRef()));
+				}
+				Field xf = new Field();
+				xf.setName(refs[1]);
+				xf.setContainer(new Entity(refs[0]));
+				field.setReference(xf);
+			}
+			field.setAnnotation(anno);
+			parser.close();
+		} catch (Exception ex) {
+			throw new RuntimeException("Invalid Annotation:" + commentText, ex);
+		}
+
+	}
+
+	protected List<Token> consumeItemList() throws IOException {
+		List<Token> toks = new ArrayList<Token>();
+		if (peekMatch(0, LexerTokenKind.LPAREN)) {
+			consume();
+			while (!peekMatch(0, LexerTokenKind.RPAREN)) {
+				Token t = consume();
+				debug("consumeItemList", t);
+				if (t.kind != LexerTokenKind.COMMA) {
+					toks.add(t);
+				}
+			}
+			Token tt = consume();
+			debug("RPAREN", tt);
+		}
+		return toks;
 	}
 
 	protected void ignoreStatement() throws IOException {

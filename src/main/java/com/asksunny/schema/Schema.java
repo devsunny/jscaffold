@@ -10,6 +10,8 @@ import java.util.Set;
 
 public class Schema extends HashMap<String, Entity> {
 
+	public static final Schema EMPTY_SCHEMA = new Schema();
+	
 	public Schema() {
 		super();
 	}

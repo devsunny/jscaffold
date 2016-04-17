@@ -305,18 +305,28 @@ public class SQLScriptParser {
 				case PRIMARY:
 					//TODO:
 					consume();
+					Token kyTok = consume();
+					consumeParenthesis();
 					break;
 				case UNIQUE:
 					//TODO:
 					consume();
+					kyTok = consume();
+					consumeParenthesis();
 					break;
 				case CONSTRAINT:
 					//TODO:
 					consume();
+					Token cnstName = consume();
 					break;
 				case FOREIGN:
 					//TODO:
 					consume();
+					kyTok = consume();
+					consumeParenthesis();					
+					Token refkyTok = consume();
+					String tbName = parseTableName();
+					consumeParenthesis();					
 					break;
 				default:
 					if (tok.getKeyword() == Keyword.CREATE || tok.getKeyword() == Keyword.DROP

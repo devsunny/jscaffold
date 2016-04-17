@@ -18,6 +18,11 @@ public class Token
 		this.line = line;
 		this.column = column;
 	}
+	
+	public boolean isObjSeparator()
+	{
+		return (this.image!=null && this.image.equals("."));
+	}
 	public String getImage() {
 		return image;
 	}
@@ -43,7 +48,7 @@ public class Token
 		this.kind = kind;
 	}
 	public Keyword getKeyword() {
-		return keyword;
+		return keyword!=null?keyword:Keyword.NOT_KEYWORD;
 	}
 	public void setKeyword(Keyword keyword) {
 		this.keyword = keyword;

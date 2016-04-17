@@ -28,7 +28,7 @@ copy the following to a file "demo.ddl.sql" and add to classpath;
 create table manufacturers --#itemsPerPage=10
 (
 id bigint not null auto_increment, --#SEQUENCE,min=1
-active bit not null,  --#ENUM, values=0,1
+active bit not null,  --#ENUM, values="0,1"
 created_on datetime,  --#TIMESTAMP,format="yyyy-MM-dd HH:mm:ss",label="Created On"
 link_rewrite varchar(255), --#label="Rewrite",max=32
 meta_description varchar(255), --#label="Description",max=32

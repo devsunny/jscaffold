@@ -264,10 +264,12 @@ public class SQLScriptParser {
 			schema.addEntity(entity);
 			break;
 		case ALTER:
-			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE, Keyword.DELETE, Keyword.SELECT);
+			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE,
+					Keyword.DELETE, Keyword.SELECT);
 			break;
 		default:
-			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE, Keyword.DELETE, Keyword.SELECT);
+			consumeAllNotMatch(Keyword.CREATE, Keyword.ALTER, Keyword.DROP, Keyword.INSERT, Keyword.UPDATE,
+					Keyword.DELETE, Keyword.SELECT);
 			break;
 		}
 	}
@@ -347,6 +349,11 @@ public class SQLScriptParser {
 			switch (tok.getKind()) {
 			case COMMA:
 				consume();
+				tok = peek();
+				if (tok != null && tok.getKind() == LexerTokenKind.ANNOTATION_COMMENT) {
+					Token annoToken = consume();
+					parseAnnotationComment(field, annoToken.getImage());
+				}
 				return;
 			case RPAREN:
 				return;

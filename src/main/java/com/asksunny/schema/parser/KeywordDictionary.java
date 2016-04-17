@@ -24,7 +24,7 @@ public class KeywordDictionary extends HashMap<String, Keyword> {
 		this.put("BIGINT", Keyword.BIGINT);
 		this.put("INTEGER", Keyword.INTEGER);
 		this.put("DOUBLE", Keyword.DOUBLE);
-		this.put("VARCHAR2", Keyword.VARCHAR2);
+		this.put("VARCHAR2", Keyword.VARCHAR);
 		this.put("BINARY", Keyword.BINARY);
 		this.put("LONG", Keyword.LONG);
 		this.put("DATE", Keyword.DATE);
@@ -32,6 +32,7 @@ public class KeywordDictionary extends HashMap<String, Keyword> {
 		this.put("TIMESTAMP", Keyword.TIMESTAMP);
 		this.put("ALTER", Keyword.ALTER);
 		this.put("ADD", Keyword.ADD);
+		this.put("CHAR", Keyword.CHAR);
 		this.put("CONSTRAINT", Keyword.CONSTRAINT);
 		this.put("FOREIGN", Keyword.FOREIGN);
 		this.put("REFERENCES", Keyword.REFERENCES);
@@ -44,7 +45,12 @@ public class KeywordDictionary extends HashMap<String, Keyword> {
 		this.put("*", Keyword.ASTERISK);
 		this.put("IMAGE", Keyword.IMAGE);
 		this.put("TEXT", Keyword.TEXT);
-		
+		this.put("IDENTITY", Keyword.IDENTITY);
+		this.put("AUTOINCREMENT", Keyword.IDENTITY);
+		this.put("AUTO_INCREMENT", Keyword.IDENTITY);
+		this.put("DEFAULT", Keyword.DEFAULT);
+		this.put("COLUMN_FORMAT", Keyword.FORMAT);
+		this.put("FORMAT", Keyword.FORMAT);		
 	}
 	
 	
